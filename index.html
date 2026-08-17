@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GestARClimAS - Gestão da Pegada Ecológica Escolar & ODS 13</title>
+  
+  <!-- Favicon Oficial GestARClimAS -->
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  
+  <!-- Meta tags institucionais e SEO -->
+  <meta name="description" content="Sistema de Diagnóstico e Gestão Ambiental da Pegada Ecológica Escolar e Mudanças Climáticas, alinhado ao ODS 13 da ONU." />
+  <meta name="keywords" content="GestARClimAS, ODS 13, Sustentabilidade Escolar, Clima, Pegada Ecológica, Resiliência Climática" />
+  <meta name="author" content="Projeto GestARClimAS" />
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Chart.js para Gráficos Analíticos Integrados -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Estilos da Aplicação -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body>
+
+  <!-- ==========================================================================
+       HEADER & LOGO COM IMAGEM NA NAVBAR
+       ========================================================================== -->
+  <header class="app-header">
+    <div class="header-container">
+      <!-- Logo em Imagem no Header -->
+      <a href="#" class="brand-wrapper" onclick="window.location.reload(); return false;" title="GestARClimAS - Início">
+        <img src="assets/logo_gestarclimas.jpg" alt="GestARClimAS" class="brand-nav-logo" />
+      </a>
+
+      <div class="header-actions">
+        <div class="badge-ods" title="Objetivo de Desenvolvimento Sustentável 13: Ação Contra a Mudança Global do Clima">
+          ODS 13: Ação Climática
+        </div>
+        
+        <button class="btn-header-history" id="btnOpenRanking" onclick="window.gestarclimasApp && window.gestarclimasApp.abrirRanking(); return false;" title="Ver ranking e comparar laudos das escolas">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          Ranking & Comparador
+        </button>
+
+        <button class="btn-header-history" id="btnOpenHistory" onclick="window.gestarclimasApp && window.gestarclimasApp.abrirHistorico(); return false;" title="Ver laudos gravados anteriormente">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+            <path d="M12 7v5l4 2"/>
+          </svg>
+          Histórico
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       CONTAINER PRINCIPAL (QUESTIONÁRIO MULTI-STEP & RESULTADOS)
+       ========================================================================== -->
+  <main class="main-container">
+
+    <!-- Stepper / Barra de Progresso Visual -->
+    <section class="stepper-card" id="stepperContainer">
+      <div class="stepper-header">
+        <div class="stepper-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" stroke-width="2.5">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+          <span id="currentStepTitle">Etapa 1 de 5: Identificação da Unidade Escolar</span>
+        </div>
+        <div class="stepper-percentage" id="progressPercent">0% Concluído</div>
+      </div>
+
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progressBarFill"></div>
+      </div>
+
+      <div class="stepper-steps">
+        <div class="step-item active" data-step="0">
+          <div class="step-bubble">1</div>
+          <span class="step-label">Identificação</span>
+        </div>
+        <div class="step-item" data-step="1">
+          <div class="step-bubble">2</div>
+          <span class="step-label">Riscos & Chuvas</span>
+        </div>
+        <div class="step-item" data-step="2">
+          <div class="step-bubble">3</div>
+          <span class="step-label">Gestão Hídrica</span>
+        </div>
+        <div class="step-item" data-step="3">
+          <div class="step-bubble">4</div>
+          <span class="step-label">Áreas Verdes</span>
+        </div>
+        <div class="step-item" data-step="4">
+          <div class="step-bubble">5</div>
+          <span class="step-label">Resíduos</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- FORMULÁRIO MULTI-STEP -->
+    <form id="diagnosticForm" onsubmit="return false;" novalidate>
+
+      <!-- ====================================================================
+           ETAPA 0: IDENTIFICAÇÃO DA UNIDADE ESCOLAR & LOCALIZAÇÃO DINÂMICA (IBGE)
+           ==================================================================== -->
+      <div class="form-step active" data-step-index="0">
+        <div class="step-card natural-fade">
+          <div class="step-card-header">
+            <div class="step-category-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 21h18"/>
+                <path d="M5 21V7l8-4 6 4v14"/>
+                <path d="M9 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+                <path d="M10 21v-5a2 2 0 0 1 4 0v5"/>
+              </svg>
+            </div>
+            <div class="step-category-info">
+              <h2>Identificação da Unidade Escolar</h2>
+              <p>Informe a localização e dados da instituição para emissão do laudo ambiental.</p>
+            </div>
+          </div>
+
+          <!-- 1. Nome da Instituição (Seleção de Escola Cadastrada ou Cadastro Manual) -->
+          <div class="form-group" id="groupSchoolName">
+            <label class="form-label" for="schoolNameSelect">1. Nome da Instituição de Ensino <span class="req">*</span></label>
+            <select id="schoolNameSelect" class="form-select">
+              <option value="_NOVA_ESCOLA_" selected>✏️ + Cadastrar Nova Instituição (Digitar nome)...</option>
+            </select>
+            <div id="customSchoolNameGroup" style="margin-top: 0.5rem;">
+              <input type="text" id="schoolNameInput" class="form-input" placeholder="Escreva o nome da instituição de ensino..." required />
+            </div>
+          </div>
+
+          <!-- 2. CEP -->
+          <div class="form-group" id="groupSchoolCep">
+            <label class="form-label" for="schoolCep">2. CEP (Busca Automática via Brasil Aberto / BrasilAPI)</label>
+            <div style="display: flex; gap: 0.5rem;">
+              <input type="text" id="schoolCep" class="form-input" placeholder="00000-000 (Opcional)" maxlength="9" />
+              <button type="button" class="btn btn-secondary btn-sm" id="btnBuscarCep" style="white-space: nowrap; padding: 0 1rem;">
+                Buscar CEP
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. Estado & 4. Cidade -->
+          <div class="form-grid-2">
+            <div class="form-group" id="groupSchoolState">
+              <label class="form-label" for="schoolState">3. Estado (UF) <span class="req">*</span></label>
+              <select id="schoolState" class="form-select" required>
+                <option value="">Carregando estados (IBGE / BrasilAPI)...</option>
+              </select>
+            </div>
+
+            <div class="form-group" id="groupSchoolCity">
+              <label class="form-label" for="schoolCity">4. Cidade / Município <span class="req">*</span></label>
+              <select id="schoolCity" class="form-select" required>
+                <option value="">Selecione o Estado primeiro...</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 5. Bairro & 6. Rua -->
+          <div class="form-grid-2">
+            <div class="form-group" id="groupSchoolNeighborhood">
+              <label class="form-label" for="schoolNeighborhood">5. Bairro / Região <span class="req">*</span></label>
+              <select id="schoolNeighborhood" class="form-select" required>
+                <option value="">Selecione o Município primeiro...</option>
+              </select>
+              <div id="customNeighborhoodGroup" style="display: none; margin-top: 0.5rem;">
+                <input type="text" id="customNeighborhoodInput" class="form-input" placeholder="Digite o nome do seu bairro ou localidade rural..." />
+              </div>
+            </div>
+
+            <div class="form-group" id="groupSchoolStreet">
+              <label class="form-label" for="schoolStreet">6. Rua / Logradouro</label>
+              <select id="schoolStreet" class="form-select">
+                <option value="">Selecione o Bairro primeiro...</option>
+              </select>
+              <div id="customStreetGroup" style="display: none; margin-top: 0.5rem;">
+                <input type="text" id="customStreetInput" class="form-input" placeholder="Digite o nome da sua rua / avenida..." />
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. Responsável & 8. Turno/Modalidade -->
+          <div class="form-grid-2">
+            <div class="form-group" id="groupEvaluatorName">
+              <label class="form-label" for="evaluatorName">7. Nome do Responsável / Avaliador <span class="req">*</span></label>
+              <input type="text" id="evaluatorName" class="form-input" placeholder="Escreva o nome do responsável / avaliador..." required />
+            </div>
+
+            <div class="form-group" id="groupSchoolShift">
+              <label class="form-label" for="schoolShift">8. Turno e Modalidade de Atendimento <span class="req">*</span></label>
+              <select id="schoolShift" class="form-select" required>
+                <option value="" selected>Selecione a modalidade / turno...</option>
+                <option value="Matutino e Vespertino">Matutino e Vespertino (2 Turnos)</option>
+                <option value="Tempo Integral">Ensino em Tempo Integral</option>
+                <option value="Educação Profissional / Técnico Integrado">Educação Profissional / Ensino Médio Técnico Integrado</option>
+                <option value="Técnico Integrado em Meio Ambiente / Agroecologia">Técnico Integrado em Meio Ambiente / Agroecologia</option>
+                <option value="Noturno (EJA / Técnico Subsequente)">Noturno (EJA / Técnico Subsequente)</option>
+                <option value="Três Turnos (Matutino, Vespertino e Noturno)">Três Turnos (Matutino, Vespertino e Noturno)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-navigation">
+          <div></div>
+          <button type="button" class="btn btn-primary" id="btnNextStep">
+            Iniciar Diagnóstico
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           ETAPA 1: RISCOS DE DESASTRES E PERÍODO CHUVOSO
+           ==================================================================== -->
+      <div class="form-step" data-step-index="1">
+        <div class="step-card natural-fade">
+          <div class="step-card-header">
+            <div class="step-category-icon" style="background-color: var(--amber-50); color: var(--amber-600);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
+            <div class="step-category-info">
+              <h2>1. Riscos de Desastres e Período Chuvoso</h2>
+              <p>Vulnerabilidade a temporais, infiltrações, riscos elétricos e alagamentos.</p>
+            </div>
+          </div>
+
+          <!-- P1 -->
+          <div class="question-block" id="block_p1">
+            <div class="question-header">
+              <div class="question-number">1</div>
+              <div>
+                <div class="question-title">Fiação elétrica exposta a umidade ou infiltrações de chuva</div>
+                <div class="question-desc">Quadros elétricos, tomadas e conduítes próximos a paredes úmidas ou goteiras.</div>
+              </div>
+            </div>
+            <div class="options-grid">
+              <label class="option-card type-critico">
+                <input type="radio" name="p1" value="critico" required />
+                <div class="option-top"><span class="option-badge badge-critico">Crítico</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Fiação exposta, sem eletroduto e com risco iminente de curto-circuito/choque na chuva.</div>
+              </label>
+              <label class="option-card type-moderado">
+                <input type="radio" name="p1" value="moderado" />
+                <div class="option-top"><span class="option-badge badge-moderado">Moderado</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Fiação parcialmente canalizada, com pontos isolados que necessitam de vedação.</div>
+              </label>
+              <label class="option-card type-excelente">
+                <input type="radio" name="p1" value="excelente" />
+                <div class="option-top"><span class="option-badge badge-excelente">Excelente</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Totalmente embutida, com quadro blindado, disjuntores DR e livre de umidade.</div>
+              </label>
+            </div>
+          </div>
+
+          <!-- P2 -->
+          <div class="question-block" id="block_p2">
+            <div class="question-header">
+              <div class="question-number">2</div>
+              <div>
+                <div class="question-title">Corrosão e risco de eletrização em estruturas metálicas</div>
+                <div class="question-desc">Grades, corrimãos, portões e postes em áreas de circulação de alunos.</div>
+              </div>
+            </div>
+            <div class="options-grid">
+              <label class="option-card type-critico">
+                <input type="radio" name="p2" value="critico" required />
+                <div class="option-top"><span class="option-badge badge-critico">Crítico</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Corrosão severa próxima a condutores elétricos ou histórico de choques de toque.</div>
+              </label>
+              <label class="option-card type-moderado">
+                <input type="radio" name="p2" value="moderado" />
+                <div class="option-top"><span class="option-badge badge-moderado">Moderado</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Oxidação leve/superficial sem risco de choque elétrico imediato.</div>
+              </label>
+              <label class="option-card type-excelente">
+                <input type="radio" name="p2" value="excelente" />
+                <div class="option-top"><span class="option-badge badge-excelente">Excelente</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Pintura anticorrosiva em dia, estruturas aterradas e seguras.</div>
+              </label>
+            </div>
+          </div>
+
+          <!-- P3 -->
+          <div class="question-block" id="block_p3">
+            <div class="question-header">
+              <div class="question-number">3</div>
+              <div>
+                <div class="question-title">Drenagem pluvial e histórico de empoçamento / alagamento</div>
+                <div class="question-desc">Escoamento no pátio e acessos durante e após fortes tempestades.</div>
+              </div>
+            </div>
+            <div class="options-grid">
+              <label class="option-card type-critico">
+                <input type="radio" name="p3" value="critico" required />
+                <div class="option-top"><span class="option-badge badge-critico">Crítico</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Alagamentos severos que impedem a circulação e invadem salas de aula.</div>
+              </label>
+              <label class="option-card type-moderado">
+                <input type="radio" name="p3" value="moderado" />
+                <div class="option-top"><span class="option-badge badge-moderado">Moderado</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Empoçamento temporário, mas com escoamento em até 1 hora.</div>
+              </label>
+              <label class="option-card type-excelente">
+                <input type="radio" name="p3" value="excelente" />
+                <div class="option-top"><span class="option-badge badge-excelente">Excelente</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Drenagem eficiente com canaletas limpas, grelhas desobstruídas e piso permeável.</div>
+              </label>
+            </div>
+          </div>
+
+          <!-- P4 -->
+          <div class="question-block" id="block_p4">
+            <div class="question-header">
+              <div class="question-number">4</div>
+              <div>
+                <div class="question-title">Integridade de telhados, calhas e forros escolares</div>
+                <div class="question-desc">Goteiras, calhas entupidas ou risco de colapso de placas de forro úmidas.</div>
+              </div>
+            </div>
+            <div class="options-grid">
+              <label class="option-card type-critico">
+                <input type="radio" name="p4" value="critico" required />
+                <div class="option-top"><span class="option-badge badge-critico">Crítico</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Goteiras intensas em salas de aula e forros deformados/cedendo por umidade.</div>
+              </label>
+              <label class="option-card type-moderado">
+                <input type="radio" name="p4" value="moderado" />
+                <div class="option-top"><span class="option-badge badge-moderado">Moderado</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Pequenas infiltrações isoladas que necessitam de vedação preventiva.</div>
+              </label>
+              <label class="option-card type-excelente">
+                <input type="radio" name="p4" value="excelente" />
+                <div class="option-top"><span class="option-badge badge-excelente">Excelente</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Telhado revisado, calhas desobstruídas e forro 100% firme e seguro.</div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-navigation">
+          <button type="button" class="btn btn-secondary" onclick="gestarclimasApp.voltarEtapa()">Voltar</button>
+          <button type="button" class="btn btn-primary" onclick="gestarclimasApp.avancarEtapa()">Próxima: Consumo Hídrico</button>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           ETAPA 2: CONSUMO HÍDRICO E EFICIÊNCIA
+           ==================================================================== -->
+      <div class="form-step" data-step-index="2">
+        <div class="step-card natural-fade">
+          <div class="step-card-header">
+            <div class="step-category-icon" style="background-color: var(--petrol-50); color: var(--petrol-700);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+              </svg>
+            </div>
+            <div class="step-category-info">
+              <h2>2. Consumo Hídrico e Eficiência Hidráulica</h2>
+              <p>Mapeamento de perdas de água, conservação de bebedouros e reuso pluvial.</p>
+            </div>
+          </div>
+
+          <!-- P5 -->
+          <div class="question-block" id="block_p5">
+            <div class="question-header">
+              <div class="question-number">5</div>
+              <div>
+                <div class="question-title">Estado de conservação das torneiras (banheiros e cozinha)</div>
+                <div class="question-desc">Torneiras que não fecham completamente ou pingam continuamente.</div>
+              </div>
+            </div>
+            <div class="options-grid">
+              <label class="option-card type-critico">
+                <input type="radio" name="p5" value="critico" required />
+                <div class="option-top"><span class="option-badge badge-critico">Crítico</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Múltiplas torneiras com vazamento contínuo ou fechamento quebrado.</div>
+              </label>
+              <label class="option-card type-moderado">
+                <input type="radio" name="p5" value="moderado" />
+                <div class="option-top"><span class="option-badge badge-moderado">Moderado</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Gotejamento leve em 1 ou 2 pontos com manutenção pendente.</div>
+              </label>
+              <label class="option-card type-excelente">
+                <input type="radio" name="p5" value="excelente" />
+                <div class="option-top"><span class="option-badge badge-excelente">Excelente</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Todas com vedação perfeita, arejadores ou acionamento hidromecânico.</div>
+              </label>
+            </div>
+          </div>
+
+          <!-- P6 -->
+          <div class="question-block" id="block_p6">
+            <div class="question-header">
+              <div class="question-number">6</div>
+              <div>
+                <div class="question-title">Regulagem e manutenção das descargas sanitárias</div>
+                <div class="question-desc">Válvulas disparadas ou fugas contínuas de água na bacia sanitária.</div>
+              </div>
+            </div>
+            <div class="options-grid">
+              <label class="option-card type-critico">
+                <input type="radio" name="p6" value="critico" required />
+                <div class="option-top"><span class="option-badge badge-critico">Crítico</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Válvulas travadas com fluxo ininterrupto de água limpa descartada.</div>
+              </label>
+              <label class="option-card type-moderado">
+                <input type="radio" name="p6" value="moderado" />
+                <div class="option-top"><span class="option-badge badge-moderado">Moderado</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Descargas funcionais, porém sem sistema de duplo fluxo econômico (3L/6L).</div>
+              </label>
+              <label class="option-card type-excelente">
+                <input type="radio" name="p6" value="excelente" />
+                <div class="option-top"><span class="option-badge badge-excelente">Excelente</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Descargas reguladas, ecológicas e sem qualquer fuga hídrica.</div>
+              </label>
+            </div>
+          </div>
+
+          <!-- P7 -->
+          <div class="question-block" id="block_p7">
+            <div class="question-header">
+              <div class="question-number">7</div>
+              <div>
+                <div class="question-title">Bebedouros escolares: escoamento e controle de perdas</div>
+                <div class="question-desc">Vazamentos constantes no piso e drenagem de água potável.</div>
+              </div>
+            </div>
+            <div class="options-grid">
+              <label class="option-card type-critico">
+                <input type="radio" name="p7" value="critico" required />
+                <div class="option-top"><span class="option-badge badge-critico">Crítico</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Vazamento contínuo gerando lama e desperdício visível de água potável.</div>
+              </label>
+              <label class="option-card type-moderado">
+                <input type="radio" name="p7" value="moderado" />
+                <div class="option-top"><span class="option-badge badge-moderado">Moderado</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Sem vazamento grave, porém com respingos e drenagem lenta no ralo.</div>
+              </label>
+              <label class="option-card type-excelente">
+                <input type="radio" name="p7" value="excelente" />
+                <div class="option-top"><span class="option-badge badge-excelente">Excelente</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Bebedouros higiênicos, com dreno canalizado e vedação perfeita.</div>
+              </label>
+            </div>
+          </div>
+
+          <!-- P8 -->
+          <div class="question-block" id="block_p8">
+            <div class="question-header">
+              <div class="question-number">8</div>
+              <div>
+                <div class="question-title">Captação e reuso de água da chuva (cisternas)</div>
+                <div class="question-desc">Sistemas de reservação para irrigação de canteiros e lavagem de pátios.</div>
+              </div>
+            </div>
+            <div class="options-grid">
+              <label class="option-card type-critico">
+                <input type="radio" name="p8" value="critico" required />
+                <div class="option-top"><span class="option-badge badge-critico">Crítico</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Nenhum sistema de captação ou reservação pluvial existente.</div>
+              </label>
+              <label class="option-card type-moderado">
+                <input type="radio" name="p8" value="moderado" />
+                <div class="option-top"><span class="option-badge badge-moderado">Moderado</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Captação improvisada em tambores com uso esporádico.</div>
+              </label>
+              <label class="option-card type-excelente">
+                <input type="radio" name="p8" value="excelente" />
+                <div class="option-top"><span class="option-badge badge-excelente">Excelente</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Cisterna com filtragem em pleno funcionamento para fins não potáveis.</div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-navigation">
+          <button type="button" class="btn btn-secondary" onclick="gestarclimasApp.voltarEtapa()">Voltar</button>
+          <button type="button" class="btn btn-primary" onclick="gestarclimasApp.avancarEtapa()">Próxima: Áreas Verdes & Clima</button>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           ETAPA 3: ÁREAS VERDES E MICROCLIMA
+           ==================================================================== -->
+      <div class="form-step" data-step-index="3">
+        <div class="step-card natural-fade">
+          <div class="step-card-header">
+            <div class="step-category-icon" style="background-color: var(--primary-50); color: var(--primary-700);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 10v10"/>
+                <path d="M12 10a5 5 0 0 0-5-5c-2.5 0-3 2-3 2a5 5 0 0 0 8 3Z"/>
+                <path d="M12 14a5 5 0 0 1 5-5c2.5 0 3 2 3 2a5 5 0 0 1-8 3Z"/>
+              </svg>
+            </div>
+            <div class="step-category-info">
+              <h2>3. Áreas Verdes, Microclima e Conforto Térmico</h2>
+              <p>Mitigação de ilhas de calor, sombreamento natural e biodiversidade escolar.</p>
+            </div>
+          </div>
+
+          <!-- P9 -->
+          <div class="question-block" id="block_p9">
+            <div class="question-header">
+              <div class="question-number">9</div>
+              <div>
+                <div class="question-title">Estado de conservação de canteiros e solo permeável</div>
+                <div class="question-desc">Presença de solo exposto degradado, áreas 100% concretadas ou jardins vivos.</div>
+              </div>
+            </div>
+            <div class="options-grid">
+              <label class="option-card type-critico">
+                <input type="radio" name="p9" value="critico" required />
+                <div class="option-top"><span class="option-badge badge-critico">Crítico</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Pátio 100% cimentado ou canteiros secos e abandonados.</div>
+              </label>
+              <label class="option-card type-moderado">
+                <input type="radio" name="p9" value="moderado" />
+                <div class="option-top"><span class="option-badge badge-moderado">Moderado</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Poucos canteiros com manutenção irregular e plantas espaçadas.</div>
+              </label>
+              <label class="option-card type-excelente">
+                <input type="radio" name="p9" value="excelente" />
+                <div class="option-top"><span class="option-badge badge-excelente">Excelente</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Jardins bem cuidados com forração vegetal viva e solo fértil.</div>
+              </label>
+            </div>
+          </div>
+
+          <!-- P10 -->
+          <div class="question-block" id="block_p10">
+            <div class="question-header">
+              <div class="question-number">10</div>
+              <div>
+                <div class="question-title">Densidade de árvores e sombreamento no perímetro escolar</div>
+                <div class="question-desc">Presença de árvores de porte que proporcionem sombra real contra o calor intenso.</div>
+              </div>
+            </div>
+            <div class="options-grid">
+              <label class="option-card type-critico">
+                <input type="radio" name="p10" value="critico" required />
+                <div class="option-top"><span class="option-badge badge-critico">Crítico</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Nenhuma ou quase nenhuma árvore no pátio ou arredores imediatos.</div>
+              </label>
+              <label class="option-card type-moderado">
+                <input type="radio" name="p10" value="moderado" />
+                <div class="option-top"><span class="option-badge badge-moderado">Moderado</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Presença modesta de árvores jovens com pouca cobertura de copa.</div>
+              </label>
+              <label class="option-card type-excelente">
+                <input type="radio" name="p10" value="excelente" />
+                <div class="option-top"><span class="option-badge badge-excelente">Excelente</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Múltiplas árvores adultas e frondosas proporcionando sombra abundante.</div>
+              </label>
+            </div>
+          </div>
+
+          <!-- P11 -->
+          <div class="question-block" id="block_p11">
+            <div class="question-header">
+              <div class="question-number">11</div>
+              <div>
+                <div class="question-title">Nível de insolação direta e sensação térmica nas áreas comuns</div>
+                <div class="question-desc">Desconforto térmico no recreio e pátio nos horários de pico solar.</div>
+              </div>
+            </div>
+            <div class="options-grid">
+              <label class="option-card type-critico">
+                <input type="radio" name="p11" value="critico" required />
+                <div class="option-top"><span class="option-badge badge-critico">Crítico</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Calor extremo e sol direto sem refúgio fresco para alunos e professores.</div>
+              </label>
+              <label class="option-card type-moderado">
+                <input type="radio" name="p11" value="moderado" />
+                <div class="option-top"><span class="option-badge badge-moderado">Moderado</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Apenas coberturas metálicas que esquentam e pouca ventilação natural.</div>
+              </label>
+              <label class="option-card type-excelente">
+                <input type="radio" name="p11" value="excelente" />
+                <div class="option-top"><span class="option-badge badge-excelente">Excelente</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Ambiente termicamente agradável com ventilação cruzada e sombra fresca.</div>
+              </label>
+            </div>
+          </div>
+
+          <!-- P12 -->
+          <div class="question-block" id="block_p12">
+            <div class="question-header">
+              <div class="question-number">12</div>
+              <div>
+                <div class="question-title">Horta escolar pedagógica e práticas agroecológicas</div>
+                <div class="question-desc">Canteiros de hortaliças, ervas medicinais e atividades práticas com alunos.</div>
+              </div>
+            </div>
+            <div class="options-grid">
+              <label class="option-card type-critico">
+                <input type="radio" name="p12" value="critico" required />
+                <div class="option-top"><span class="option-badge badge-critico">Crítico</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Inexistente ou totalmente desativada.</div>
+              </label>
+              <label class="option-card type-moderado">
+                <input type="radio" name="p12" value="moderado" />
+                <div class="option-top"><span class="option-badge badge-moderado">Moderado</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Horta pequena com produção esporádica e pouca integração curricular.</div>
+              </label>
+              <label class="option-card type-excelente">
+                <input type="radio" name="p12" value="excelente" />
+                <div class="option-top"><span class="option-badge badge-excelente">Excelente</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Horta viva, produtiva e integrada ao reforço da merenda escolar.</div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-navigation">
+          <button type="button" class="btn btn-secondary" onclick="gestarclimasApp.voltarEtapa()">Voltar</button>
+          <button type="button" class="btn btn-primary" onclick="gestarclimasApp.avancarEtapa()">Próxima: Resíduos & ODS 13</button>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           ETAPA 4: GESTÃO DE RESÍDUOS E SUSTENTABILIDADE
+           ==================================================================== -->
+      <div class="form-step" data-step-index="4">
+        <div class="step-card natural-fade">
+          <div class="step-card-header">
+            <div class="step-category-icon" style="background-color: var(--primary-100); color: var(--primary-800);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23 4 23 10 17 10"/>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+              </svg>
+            </div>
+            <div class="step-category-info">
+              <h2>4. Gestão de Resíduos e Sustentabilidade</h2>
+              <p>Coleta seletiva, tratamento de resíduos alimentares e engajamento escolar.</p>
+            </div>
+          </div>
+
+          <!-- P13 -->
+          <div class="question-block" id="block_p13">
+            <div class="question-header">
+              <div class="question-number">13</div>
+              <div>
+                <div class="question-title">Coleta seletiva e triagem de materiais recicláveis</div>
+                <div class="question-desc">Separação de papéis de rascunho, embalagens plásticas, papelão e metais.</div>
+              </div>
+            </div>
+            <div class="options-grid">
+              <label class="option-card type-critico">
+                <input type="radio" name="p13" value="critico" required />
+                <div class="option-top"><span class="option-badge badge-critico">Crítico</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Todo o lixo é descartado misturado sem nenhuma triagem preliminar.</div>
+              </label>
+              <label class="option-card type-moderado">
+                <input type="radio" name="p13" value="moderado" />
+                <div class="option-top"><span class="option-badge badge-moderado">Moderado</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Separação parcial apenas em salas de professores ou informática.</div>
+              </label>
+              <label class="option-card type-excelente">
+                <input type="radio" name="p13" value="excelente" />
+                <div class="option-top"><span class="option-badge badge-excelente">Excelente</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Coletores identificados em toda a escola com destinação para reciclagem.</div>
+              </label>
+            </div>
+          </div>
+
+          <!-- P14 -->
+          <div class="question-block" id="block_p14">
+            <div class="question-header">
+              <div class="question-number">14</div>
+              <div>
+                <div class="question-title">Destinação dos restos alimentares e resíduos da cozinha</div>
+                <div class="question-desc">Cascas de frutas, sobras de preparo e restos da merenda escolar.</div>
+              </div>
+            </div>
+            <div class="options-grid">
+              <label class="option-card type-critico">
+                <input type="radio" name="p14" value="critico" required />
+                <div class="option-top"><span class="option-badge badge-critico">Crítico</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Descartados integralmente no lixo comum, indo para o aterro sanitário.</div>
+              </label>
+              <label class="option-card type-moderado">
+                <input type="radio" name="p14" value="moderado" />
+                <div class="option-top"><span class="option-badge badge-moderado">Moderado</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Doação informal para animais de criadores sem compostagem escolar.</div>
+              </label>
+              <label class="option-card type-excelente">
+                <input type="radio" name="p14" value="excelente" />
+                <div class="option-top"><span class="option-badge badge-excelente">Excelente</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Compostagem ativa na escola gerando adubo orgânico fértil via biomassa.</div>
+              </label>
+            </div>
+          </div>
+
+          <!-- P15 -->
+          <div class="question-block" id="block_p15">
+            <div class="question-header">
+              <div class="question-number">15</div>
+              <div>
+                <div class="question-title">Descarte de lixo eletrônico, pilhas e lâmpadas</div>
+                <div class="question-desc">Resíduos com risco de contaminação química do solo e lençol freático.</div>
+              </div>
+            </div>
+            <div class="options-grid">
+              <label class="option-card type-critico">
+                <input type="radio" name="p15" value="critico" required />
+                <div class="option-top"><span class="option-badge badge-critico">Crítico</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Jogados no lixo comum ou acumulados sem descarte adequado.</div>
+              </label>
+              <label class="option-card type-moderado">
+                <input type="radio" name="p15" value="moderado" />
+                <div class="option-top"><span class="option-badge badge-moderado">Moderado</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Guardados com segurança até haver campanhas municipais.</div>
+              </label>
+              <label class="option-card type-excelente">
+                <input type="radio" name="p15" value="excelente" />
+                <div class="option-top"><span class="option-badge badge-excelente">Excelente</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Ponto de entrega voluntária e logística reversa formal ativa.</div>
+              </label>
+            </div>
+          </div>
+
+          <!-- P16 -->
+          <div class="question-block" id="block_p16">
+            <div class="question-header">
+              <div class="question-number">16</div>
+              <div>
+                <div class="question-title">Ações e projetos de Educação Ambiental e Ação Climática (ODS 13)</div>
+                <div class="question-desc">Envolvimento contínuo de alunos, professores e comunidade em sustentabilidade.</div>
+              </div>
+            </div>
+            <div class="options-grid">
+              <label class="option-card type-critico">
+                <input type="radio" name="p16" value="critico" required />
+                <div class="option-top"><span class="option-badge badge-critico">Crítico</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Nenhum projeto ou atividade ambiental desenvolvida no ano letivo.</div>
+              </label>
+              <label class="option-card type-moderado">
+                <input type="radio" name="p16" value="moderado" />
+                <div class="option-top"><span class="option-badge badge-moderado">Moderado</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Atividades pontuais somente em datas comemorativas ambientais.</div>
+              </label>
+              <label class="option-card type-excelente">
+                <input type="radio" name="p16" value="excelente" />
+                <div class="option-top"><span class="option-badge badge-excelente">Excelente</span><div class="radio-circle"></div></div>
+                <div class="option-label-text">Programa contínuo com Comitê Climático Escolar e ações práticas permanentes.</div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-navigation">
+          <button type="button" class="btn btn-secondary" onclick="gestarclimasApp.voltarEtapa()">Voltar</button>
+          <button type="button" class="btn btn-primary" id="btnFinishDiagnostic">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            Processar Diagnóstico ODS 13
+          </button>
+        </div>
+      </div>
+
+    </form>
+
+    <!-- ==========================================================================
+         PAINEL DE RESULTADOS & LAUDO TÉCNICO AMPLIADO COM 4 DASHBOARDS E MATRIZ
+         ========================================================================== -->
+    <div class="results-container" id="resultsContainer">
+
+      <!-- Hero Card de Score -->
+      <section class="score-hero-card natural-fade">
+        <div class="score-hero-grid">
+          <div>
+            <div class="school-report-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              Laudo Oficial GestARClimAS • ODS 13
+            </div>
+            <h2 class="school-report-title" id="resSchoolTitle">Nome da Escola</h2>
+            <div class="school-report-meta">
+              <div><strong>Localização:</strong> <span id="resSchoolLocation">-</span></div>
+              <div><strong>Avaliador(a):</strong> <span id="resEvaluatorName">-</span></div>
+              <div><strong>Turno / Modalidade:</strong> <span id="resSchoolShift">-</span></div>
+              <div><strong>Data da Emissão:</strong> <span id="resDiagnosticDate">-</span></div>
+            </div>
+            <div class="school-report-desc" id="resStatusDesc">
+              Processando análise pericial...
+            </div>
+          </div>
+
+          <div class="gauge-wrapper">
+            <div class="gauge-box">
+              <svg class="gauge-svg" viewBox="0 0 160 160">
+                <circle class="gauge-bg" cx="80" cy="80" r="70"></circle>
+                <circle class="gauge-fill" id="gaugeCircle" cx="80" cy="80" r="70"></circle>
+              </svg>
+              <div class="gauge-center">
+                <div class="gauge-score-value" id="resScoreNumber">0%</div>
+                <div class="gauge-score-label">Resiliência</div>
+              </div>
+            </div>
+            <div class="classification-tag" id="resClassificationBadge">Calculando...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Indicadores de Impacto Ecológico Estimado (4 KPIs) -->
+      <div class="impact-kpi-grid natural-fade">
+        <div class="impact-kpi-card carbon">
+          <div class="impact-kpi-icon">🌍</div>
+          <div class="impact-kpi-info">
+            <h4>Pegada de Carbono</h4>
+            <div class="val" id="resCarbonoVal">-</div>
+            <p>Estimativa anual por aluno</p>
+          </div>
+        </div>
+
+        <div class="impact-kpi-card water">
+          <div class="impact-kpi-icon">💧</div>
+          <div class="impact-kpi-info">
+            <h4>Economia Hídrica</h4>
+            <div class="val" id="resAguaVal">-</div>
+            <p>Potencial de poupança mensal</p>
+          </div>
+        </div>
+
+        <div class="impact-kpi-card trees">
+          <div class="impact-kpi-icon">🌳</div>
+          <div class="impact-kpi-info">
+            <h4>Mudas Recomendadas</h4>
+            <div class="val" id="resMudasVal">-</div>
+            <p>Mitigação de ilha de calor</p>
+          </div>
+        </div>
+
+        <div class="impact-kpi-card projection">
+          <div class="impact-kpi-icon">📈</div>
+          <div class="impact-kpi-info">
+            <h4>Meta Pós-Ação</h4>
+            <div class="val" id="resScoreProjetadoVal">-</div>
+            <p>Resiliência projetada</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Gráficos Integrados no Laudo (Chart.js) -->
+      <div class="results-charts-grid natural-fade">
+        <!-- Gráfico 1: Radar -->
+        <div class="chart-box-card">
+          <div class="chart-box-header">
+            <h3>1. Radar de Resiliência nos 4 Pilares</h3>
+            <p>Equilíbrio entre riscos, água, microclima e resíduos</p>
+          </div>
+          <div class="chart-canvas-wrapper">
+            <canvas id="chartResultRadar"></canvas>
+          </div>
+        </div>
+
+        <!-- Gráfico 2: Barra Horizontal por Dimensão -->
+        <div class="chart-box-card">
+          <div class="chart-box-header">
+            <h3>2. Desempenho por Dimensão Ambiental (%)</h3>
+            <p>Índice percentual de conformidade por pilar de atuação</p>
+          </div>
+          <div class="chart-canvas-wrapper">
+            <canvas id="chartResultBar"></canvas>
+          </div>
+        </div>
+
+        <!-- Gráfico 3: Doughnut de Criticidade dos 16 Quesitos -->
+        <div class="chart-box-card">
+          <div class="chart-box-header">
+            <h3>3. Distribuição de Conformidade dos 16 Critérios</h3>
+            <p>Proporção de quesitos críticos, moderados e excelentes</p>
+          </div>
+          <div class="chart-canvas-wrapper">
+            <canvas id="chartResultDoughnut"></canvas>
+          </div>
+        </div>
+
+        <!-- Gráfico 4: Comparativo Atual vs. Projetado -->
+        <div class="chart-box-card">
+          <div class="chart-box-header">
+            <h3>4. Evolução: Diagnóstico Atual vs. Meta Projetada</h3>
+            <p>Ganho de resiliência após a execução do plano ODS 13</p>
+          </div>
+          <div class="chart-canvas-wrapper">
+            <canvas id="chartResultEvolution"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Painel 1: Alertas Críticos & Riscos Imediatos -->
+      <section class="diag-section natural-fade" id="sectionCritical">
+        <div class="diag-section-header">
+          <span style="font-size: 1.5rem;">🚨</span>
+          <h3 class="diag-section-title">Alertas Críticos & Riscos Imediatos</h3>
+          <span class="diag-count-pill badge-critico" id="countCritical">0 Alertas</span>
+        </div>
+        <div class="diag-list" id="listCritical"></div>
+      </section>
+
+      <!-- Painel 2: Pontos de Atenção / A Melhorar -->
+      <section class="diag-section natural-fade" id="sectionWarning">
+        <div class="diag-section-header">
+          <span style="font-size: 1.5rem;">⚠️</span>
+          <h3 class="diag-section-title">Pontos de Atenção & Oportunidades de Melhoria</h3>
+          <span class="diag-count-pill badge-moderado" id="countWarning">0 Itens</span>
+        </div>
+        <div class="diag-list" id="listWarning"></div>
+      </section>
+
+      <!-- Painel 3: Pontos Fortes Encontrados -->
+      <section class="diag-section natural-fade" id="sectionSuccess">
+        <div class="diag-section-header">
+          <span style="font-size: 1.5rem;">🌱</span>
+          <h3 class="diag-section-title">Pontos Fortes & Boas Práticas Encontradas</h3>
+          <span class="diag-count-pill badge-excelente" id="countSuccess">0 Pontos</span>
+        </div>
+        <div class="diag-list" id="listSuccess"></div>
+      </section>
+
+      <!-- Painel 4: Matriz Técnica dos 16 Critérios Avaliados -->
+      <section class="diag-section natural-fade">
+        <div class="diag-section-header">
+          <span style="font-size: 1.5rem;">📊</span>
+          <h3 class="diag-section-title">Matriz Técnica de Detalhamento dos 16 Critérios</h3>
+          <span class="diag-count-pill badge-excelente" style="background-color: var(--petrol-100); color: var(--petrol-800);">Laudo Pericial</span>
+        </div>
+        <div class="table-responsive">
+          <table class="tech-matrix-table">
+            <thead>
+              <tr>
+                <th style="width: 40px; text-align: center;">Item</th>
+                <th>Critério & Pilar</th>
+                <th style="text-align: center; width: 110px;">Status</th>
+                <th>Diagnóstico Identificado</th>
+                <th>Diretriz Recomendada</th>
+              </tr>
+            </thead>
+            <tbody id="techMatrixTableBody">
+              <!-- Renderizado dinamicamente via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Painel 5: Plano de Intervenção Prioritária (ODS 13) -->
+      <section class="diag-section natural-fade">
+        <div class="diag-section-header">
+          <span style="font-size: 1.5rem;">📋</span>
+          <h3 class="diag-section-title">Plano de Ação e Intervenções Recomendadas (ODS 13)</h3>
+          <span class="diag-count-pill badge-excelente" style="background-color: var(--primary-100); color: var(--primary-800);">Agenda 2030 ONU</span>
+        </div>
+        <div class="diag-list" id="listActions"></div>
+      </section>
+
+      <!-- Barra de Ações Finais do Laudo -->
+      <div class="results-actions-bar">
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <button class="btn btn-outline" id="btnQuickEditSchool" title="Atualizar informações cadastrais da escola sem reiniciar o questionário">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 20h9"/>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            </svg>
+            Editar Dados da Escola
+          </button>
+          <button class="btn btn-outline" id="btnEditResponses" title="Revisar ou alterar respostas dos 16 quesitos">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            Revisar Respostas
+          </button>
+          <button class="btn btn-outline" id="btnExportSingleJSON">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Exportar JSON
+          </button>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <button class="btn btn-secondary" onclick="window.print()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 6 2 18 2 18 9"/>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+              <rect x="6" y="14" width="12" height="8"/>
+            </svg>
+            Imprimir / Laudo PDF
+          </button>
+          <button class="btn btn-primary" id="btnNewDiagnostic">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Novo Diagnóstico
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ==========================================================================
+       MODAL DE RANKING & COMPARADOR DE LAUDOS LADO A LADO
+       ========================================================================== -->
+  <div class="modal-backdrop" id="rankingModal">
+    <div class="modal-card modal-card-large">
+      <div class="modal-header">
+        <h3>🏆 Ranking de Escolas & Comparador de Laudos (ODS 13)</h3>
+        <button class="modal-close-btn" id="btnCloseRanking">&times;</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Tabela do Ranking de Escolas -->
+        <div style="margin-bottom: 2rem;">
+          <h4 style="font-size: 1rem; font-weight: 800; color: var(--neutral-900); margin-bottom: 0.75rem;">
+            Quadro de Líderes em Resiliência Climática
+          </h4>
+          <div class="table-responsive">
+            <table class="tech-matrix-table">
+              <thead>
+                <tr>
+                  <th style="width: 60px; text-align: center;">Posição</th>
+                  <th>Instituição de Ensino (Pasta)</th>
+                  <th>Localização (UF, Município, Bairro e Rua)</th>
+                  <th>Turno & Modalidade</th>
+                  <th>Data do Último Laudo</th>
+                  <th style="text-align: center;">Índice (Último Laudo)</th>
+                  <th style="text-align: center; width: 100px;">Ação</th>
+                </tr>
+              </thead>
+              <tbody id="rankingTableBody">
+                <!-- Renderizado dinamicamente via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Comparador Lado a Lado de 2 Laudos -->
+        <div style="border-top: 2px solid var(--neutral-200); padding-top: 1.5rem;">
+          <h4 style="font-size: 1rem; font-weight: 800; color: var(--neutral-900); margin-bottom: 0.75rem;">
+            ⚖️ Comparador Pericial Lado a Lado
+          </h4>
+          
+          <div class="comparison-selectors-bar">
+            <div>
+              <label class="form-label" for="compareSearchA">🔍 Pesquisar Instituição 1 (Escola A):</label>
+              <input type="text" id="compareSearchA" class="form-input" placeholder="Digite para filtrar instituição 1..." style="margin-bottom: 0.4rem; padding: 0.45rem 0.75rem; font-size: 0.85rem;" />
+              <select id="compareSelectA" class="form-select" size="3" style="height: auto; font-size: 0.85rem;"></select>
+            </div>
+            <div>
+              <label class="form-label" for="compareSearchB">🔍 Pesquisar Instituição 2 (Escola B):</label>
+              <input type="text" id="compareSearchB" class="form-input" placeholder="Digite para filtrar instituição 2..." style="margin-bottom: 0.4rem; padding: 0.45rem 0.75rem; font-size: 0.85rem;" />
+              <select id="compareSelectB" class="form-select" size="3" style="height: auto; font-size: 0.85rem;"></select>
+            </div>
+          </div>
+
+          <div id="comparisonResultsContainer">
+            <!-- Renderizado dinamicamente via JS -->
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <div></div>
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('rankingModal').classList.remove('open')">
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL DE HISTÓRICO DE LAUDOS COM EXCLUSÃO UNITÁRIA E TOTAL
+       ========================================================================== -->
+  <div class="modal-backdrop" id="historyModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Histórico de Diagnósticos Locais</h3>
+        <button class="modal-close-btn" id="btnCloseHistory">&times;</button>
+      </div>
+      <div class="modal-body" id="historyListContainer">
+        <!-- Renderizado dinamicamente via JS -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger-outline btn-sm" id="btnClearAllHistory">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          Limpar Todo o Histórico
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('historyModal').classList.remove('open')">
+          Fechar
+        </button>
+      </div>
+    </div>
+  <!-- ==========================================================================
+       MODAL DE EDIÇÃO RÁPIDA DE DADOS DA ESCOLA (SEM REINICIAR QUESTIONÁRIO)
+       ========================================================================== -->
+  <div class="modal-backdrop" id="quickEditSchoolModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>✏️ Atualizar Dados da Instituição de Ensino</h3>
+        <button class="modal-close-btn" id="btnCloseQuickEdit">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="quickEditSchoolForm" onsubmit="return false;">
+          <div class="form-group">
+            <label class="form-label" for="qeSchoolName">Nome da Instituição <span class="req">*</span></label>
+            <input type="text" id="qeSchoolName" class="form-input" required />
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="qeEvaluatorName">Nome do Responsável / Avaliador <span class="req">*</span></label>
+              <input type="text" id="qeEvaluatorName" class="form-input" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="qeSchoolShift">Turno e Modalidade <span class="req">*</span></label>
+              <select id="qeSchoolShift" class="form-select" required>
+                <option value="Matutino e Vespertino">Matutino e Vespertino (2 Turnos)</option>
+                <option value="Tempo Integral">Ensino em Tempo Integral</option>
+                <option value="Educação Profissional / Técnico Integrado">Educação Profissional / Ensino Médio Técnico Integrado</option>
+                <option value="Técnico Integrado em Meio Ambiente / Agroecologia">Técnico Integrado em Meio Ambiente / Agroecologia</option>
+                <option value="Noturno (EJA / Técnico Subsequente)">Noturno (EJA / Técnico Subsequente)</option>
+                <option value="Três Turnos (Matutino, Vespertino e Noturno)">Três Turnos (Matutino, Vespertino e Noturno)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="qeSchoolNeighborhood">Bairro / Região</label>
+              <input type="text" id="qeSchoolNeighborhood" class="form-input" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="qeSchoolStreet">Rua / Logradouro</label>
+              <input type="text" id="qeSchoolStreet" class="form-input" />
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" id="btnCancelQuickEdit">Cancelar</button>
+        <button class="btn btn-primary btn-sm" id="btnSaveQuickEdit">Salvar e Atualizar Laudo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Aviso de Informações Pendentes -->
+  <div class="modal-backdrop" id="pendingFieldsModal">
+    <div class="modal-card" style="max-width: 480px;">
+      <div class="modal-header" style="border-bottom: 1.5px solid #fecaca;">
+        <h3 style="color: #dc2626; display: flex; align-items: center; gap: 0.5rem; font-size: 1.1rem; font-weight: 800;">
+          ⚠️ Informações Pendentes
+        </h3>
+        <button class="modal-close-btn" id="btnClosePendingModal">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 1.5rem;">
+        <p style="color: var(--neutral-700); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.5;">
+          Para iniciar o diagnóstico escolar e gerar o laudo pericial, por favor preencha os seguintes campos obrigatórios:
+        </p>
+        <div id="pendingFieldsList" style="background: #fef2f2; border: 1.5px solid #fecaca; border-radius: var(--radius-md); padding: 1rem 1.25rem; color: #991b1b; font-weight: 700; font-size: 0.875rem; line-height: 1.8;">
+          <!-- Itens pendentes inseridos via JS -->
+        </div>
+      </div>
+      <div class="modal-footer" style="padding: 1rem 1.5rem; background: var(--neutral-50);">
+        <button type="button" class="btn btn-primary btn-sm" id="btnOkPendingModal" style="width: 100%; justify-content: center;">
+          Entendi, vou preencher agora
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container de Toasts -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ==========================================================================
+       SCRIPTS MVC (ORGANIZADOS E LIMPOS)
+       ========================================================================== -->
+  <script src="js/services/LocationService.js"></script>
+  <script src="js/models/DiagnosticModel.js"></script>
+  <script src="js/views/ResultsView.js"></script>
+  <script src="js/views/FormView.js"></script>
+  <script src="js/views/RankingView.js"></script>
+  <script src="js/controllers/AppController.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
