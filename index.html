@@ -99,106 +99,219 @@
   <main class="main-container">
 
     <!-- ======================================================================
-         ABA 1: HOME PAGE (PAINEL CENTRAL DE RESUMO & MÓDULOS)
+         ABA 1: HOME PAGE (CONSCIÊNCIA CLIMÁTICA & REFLEXÃO AMBIENTAL)
          ====================================================================== -->
     <section id="tabHome" class="app-tab-pane active">
       
-      <!-- Banner de Boas-Vindas Personalizado -->
-      <div class="home-welcome-banner">
-        <div class="home-welcome-content">
-          <img id="homeUserAvatar" src="assets/favicon.svg" alt="Avatar" class="home-welcome-avatar" />
+      <!-- Top Bar com Saudação do Usuário -->
+      <div class="home-user-greeting-bar">
+        <div class="user-greeting-left">
+          <img id="homeUserAvatar" src="assets/favicon.svg" alt="Avatar" class="home-greeting-avatar" />
           <div>
-            <h1 id="homeUserGreeting">Olá! 👋</h1>
-            <p>Bem-vindo(a) à plataforma pericial do <strong>GestARClimAS</strong>. Realize diagnósticos sustentáveis, gerencie laudos periciais escolares e impulsione a resiliência climática das unidades de ensino.</p>
+            <h3 id="homeUserGreeting">Olá! 👋</h3>
+            <p>Seja bem-vindo(a) à plataforma de resiliência e sustentabilidade escolar.</p>
+          </div>
+        </div>
+        <div class="user-greeting-badge">
+          <span>🌿 Agenda 2030 • ODS 13</span>
+        </div>
+      </div>
+
+      <!-- HERO SECTION PRINCIPAL: PERGUNTAS PROVOCATIVAS & DESIGN MINIMALISTA -->
+      <div class="home-hero-split">
+        <div class="home-hero-content">
+          <div class="hero-tag-pill">
+            <span class="hero-tag-dot"></span>
+            <span>Juntos por um Planeta Mais Verde • ODS 13</span>
+          </div>
+
+          <h1 class="hero-main-title">
+            Sua escola é realmente <span class="text-highlight-green">sustentável?</span>
+          </h1>
+
+          <h2 class="hero-provocative-question">
+            Será que sua escola está fazendo o suficiente pelo planeta?
+          </h2>
+
+          <p class="hero-description-text">
+            Mapeie pontos vulneráveis das instalações, descubra a pegada ecológica da sua comunidade escolar, reduza o desperdício de água e energia, e descubra se sua instituição é uma verdadeira <strong>Escola Verde</strong>.
+          </p>
+
+          <div class="hero-cta-group">
+            <button type="button" class="btn btn-hero-primary" id="btnHeroStartDiagnostic">
+              🚀 Iniciar Diagnóstico Escolar
+            </button>
+            <button type="button" class="btn btn-hero-secondary" id="btnHeroExploreRanking">
+              🏆 Ver Quadro de Escolas
+            </button>
+          </div>
+
+          <!-- Comunidade engajada -->
+          <div class="hero-community-proof">
+            <div class="community-avatars-group">
+              <span class="avatar-circle">👩‍🏫</span>
+              <span class="avatar-circle">👨‍🎓</span>
+              <span class="avatar-circle">🌿</span>
+            </div>
+            <p>Comunidades escolares transformando suas realidades com a <strong>metodologia GestARClimAS</strong>.</p>
+          </div>
+        </div>
+
+        <!-- Coluna Visual da Hero (Split com Imagem Sustentável) -->
+        <div class="home-hero-visual">
+          <div class="hero-image-card">
+            <img src="assets/hero_eco_nature.jpg" alt="Natureza e Escola Sustentável" class="hero-split-image" />
+            <div class="hero-floating-badge top-right">
+              <span class="badge-icon">🌳</span>
+              <div class="badge-text">
+                <strong>Biofilia & Sombra</strong>
+                <small>Refúgio contra o calor</small>
+              </div>
+            </div>
+            <div class="hero-floating-badge bottom-left">
+              <span class="badge-icon">💧</span>
+              <div class="badge-text">
+                <strong>Gestão Hídrica</strong>
+                <small>Captação e conservação</small>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Grade de Estatísticas e KPIs do Avaliador -->
-      <div class="home-kpi-grid">
-        <div class="home-kpi-card">
-          <div class="home-kpi-icon" style="background: var(--primary-50); color: var(--primary-700);">📋</div>
-          <div>
-            <div class="home-kpi-val" id="homeKpiUserCount">0</div>
-            <div class="home-kpi-label">Laudos Emitidos por Você</div>
-          </div>
+      <!-- GRADE DE MÉTRICAS & INDICADORES DE CONSCIÊNCIA (ESTILO DA REFERÊNCIA) -->
+      <div class="home-metrics-grid">
+        <div class="home-metric-card">
+          <div class="metric-val" id="homeKpiSchoolsCount">0</div>
+          <div class="metric-label">Escolas Mapeadas</div>
+          <div class="metric-sub">Instituições cadastradas</div>
         </div>
 
-        <div class="home-kpi-card">
-          <div class="home-kpi-icon" style="background: var(--petrol-50); color: var(--petrol-700);">🏫</div>
-          <div>
-            <div class="home-kpi-val" id="homeKpiSchoolsCount">0</div>
-            <div class="home-kpi-label">Escolas Mapeadas</div>
-          </div>
+        <div class="home-metric-card">
+          <div class="metric-val" id="homeKpiUserCount">0</div>
+          <div class="metric-label">Laudos Emitidos por Você</div>
+          <div class="metric-sub">Auditorias finalizadas</div>
         </div>
 
-        <div class="home-kpi-card">
-          <div class="home-kpi-icon" style="background: var(--amber-50); color: var(--amber-600);">🌿</div>
-          <div>
-            <div class="home-kpi-val" id="homeKpiAvgResilience">0%</div>
-            <div class="home-kpi-label">Média Geral de Resiliência</div>
-          </div>
+        <div class="home-metric-card">
+          <div class="metric-val" id="homeKpiAvgResilience">0%</div>
+          <div class="metric-label">Média de Resiliência</div>
+          <div class="metric-sub">Índice global apurado</div>
         </div>
 
-        <div class="home-kpi-card">
-          <div class="home-kpi-icon" style="background: #ecfdf5; color: #059669;">🏆</div>
-          <div>
-            <div class="home-kpi-val" id="homeKpiLeadersCount">0</div>
-            <div class="home-kpi-label">Laudos em Nível Excelente</div>
+        <div class="home-metric-card">
+          <div class="metric-val" id="homeKpiLeadersCount">0</div>
+          <div class="metric-label">Selo Verde Conquistado</div>
+          <div class="metric-sub">Alta resiliência ecológica</div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO DE REFLEXÕES PROVOCATIVAS: OS 4 PILARES DA ESCOLA VERDE -->
+      <div class="home-provocations-section">
+        <div class="section-heading-center">
+          <span class="section-eyebrow">Consciência & Ação Ambiental</span>
+          <h3 class="section-main-heading">Perguntas que todo comitê escolar deve fazer</h3>
+          <p class="section-sub-heading">Avalie o impacto real das instalações e das rotinas diárias da sua instituição:</p>
+        </div>
+
+        <div class="provocations-cards-grid">
+          <!-- Pilar 1 -->
+          <div class="provocation-card">
+            <div class="provocation-icon-box" style="background: var(--brand-alice-blue); color: var(--brand-stormy-teal);">
+              ⛈️
+            </div>
+            <span class="provocation-pilar-tag">1. Riscos & Chuvas</span>
+            <h4>Sua escola está segura contra temporais e eventos extremos?</h4>
+            <p>Fiações desprotegidas sob umidade e pátios sem drenagem colocam em risco a segurança e a continuidade das aulas.</p>
+          </div>
+
+          <!-- Pilar 2 -->
+          <div class="provocation-card">
+            <div class="provocation-icon-box" style="background: #e0f2fe; color: #0284c7;">
+              💧
+            </div>
+            <span class="provocation-pilar-tag">2. Eficiência Hídrica</span>
+            <h4>Quanta água tratada sua escola pode estar desperdiçando hoje?</h4>
+            <p>Válvulas de descarga com vazamentos e torneiras pingando descartam milhares de litros de água tratada sem reuso pluvial.</p>
+          </div>
+
+          <!-- Pilar 3 -->
+          <div class="provocation-card">
+            <div class="provocation-icon-box" style="background: #ecfdf5; color: #059669;">
+              🌳
+            </div>
+            <span class="provocation-pilar-tag">3. Conforto Bioclimático</span>
+            <h4>O pátio da sua escola é um refúgio fresco ou uma ilha de calor?</h4>
+            <p>A falta de árvores de copa e o solo 100% cimentado elevam a sensação térmica e prejudicam a saúde e o bem-estar dos alunos.</p>
+          </div>
+
+          <!-- Pilar 4 -->
+          <div class="provocation-card">
+            <div class="provocation-icon-box" style="background: #fef3c7; color: #d97706;">
+              ♻️
+            </div>
+            <span class="provocation-pilar-tag">4. Resíduos & ODS 13</span>
+            <h4>O que sua comunidade faz com o lixo e a merenda escolar?</h4>
+            <p>Sobras orgânicas descartadas sem compostagem emitem gases de efeito estufa quando poderiam virar adubo para hortas escolares.</p>
           </div>
         </div>
       </div>
 
-      <!-- Grade dos 4 Módulos / Ações Rápidas -->
-      <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--neutral-900); margin-bottom: 1rem;">
-        Módulos da Plataforma
-      </h3>
-
-      <div class="home-modules-grid">
-        
-        <div class="home-module-card" id="homeCardNovoLaudo">
-          <div class="module-card-icon" style="background: linear-gradient(135deg, var(--primary-500), var(--primary-700));">
-            📋
-          </div>
-          <h4>Novo Diagnóstico Escolar</h4>
-          <p>Execute o questionário pericial de 5 etapas com 16 critérios determinísticos, geolocalização e cálculo da pegada de carbono.</p>
-          <span class="module-card-link">Iniciar Avaliação →</span>
+      <!-- GRADE DE MÓDULOS DE AÇÃO RÁPIDA -->
+      <div class="home-modules-section">
+        <div class="section-heading-left">
+          <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--brand-evergreen); margin-bottom: 0.25rem;">
+            Módulos da Plataforma
+          </h3>
+          <p style="font-size: 0.85rem; color: var(--brand-stormy-teal);">Acesse as ferramentas integradas de diagnóstico, ranking e gestão:</p>
         </div>
 
-        <div class="home-module-card" id="homeCardRanking">
-          <div class="module-card-icon" style="background: linear-gradient(135deg, #0284c7, #0369a1);">
-            🏆
+        <div class="home-modules-grid">
+          
+          <div class="home-module-card" id="homeCardNovoLaudo">
+            <div class="module-card-icon" style="background: linear-gradient(135deg, var(--brand-emerald), var(--brand-stormy-teal));">
+              📋
+            </div>
+            <h4>Novo Diagnóstico Escolar</h4>
+            <p>Execute o questionário pericial de 5 etapas com 16 critérios determinísticos, geolocalização e cálculo da pegada de carbono.</p>
+            <span class="module-card-link">Iniciar Avaliação →</span>
           </div>
-          <h4>Ranking & Comparador</h4>
-          <p>Consulte o quadro de líderes em resiliência climática e realize comparações periciais lado a lado com gráfico radar.</p>
-          <span class="module-card-link">Explorar Ranking →</span>
-        </div>
 
-        <div class="home-module-card" id="homeCardHistorico">
-          <div class="module-card-icon" style="background: linear-gradient(135deg, #7c3aed, #6d28d9);">
-            📁
+          <div class="home-module-card" id="homeCardRanking">
+            <div class="module-card-icon" style="background: linear-gradient(135deg, #0284c7, #0369a1);">
+              🏆
+            </div>
+            <h4>Ranking & Comparador</h4>
+            <p>Consulte o quadro de líderes em resiliência climática e realize comparações periciais lado a lado com gráfico radar.</p>
+            <span class="module-card-link">Explorar Ranking →</span>
           </div>
-          <h4>Histórico & Pastas Escolares</h4>
-          <p>Gerencie pastas organizadas por unidade escolar, visualize laudos emitidos e exporte relatórios técnicos em JSON.</p>
-          <span class="module-card-link">Abrir Pastas →</span>
-        </div>
 
-        <div class="home-module-card" id="homeCardPerfil">
-          <div class="module-card-icon" style="background: linear-gradient(135deg, #059669, #0e7490);">
-            👤
+          <div class="home-module-card" id="homeCardHistorico">
+            <div class="module-card-icon" style="background: linear-gradient(135deg, #7c3aed, #6d28d9);">
+              📁
+            </div>
+            <h4>Histórico & Pastas Escolares</h4>
+            <p>Gerencie pastas organizadas por unidade escolar, visualize laudos emitidos e exporte relatórios técnicos em JSON.</p>
+            <span class="module-card-link">Abrir Pastas →</span>
           </div>
-          <h4>Meu Perfil</h4>
-          <p>Visualize seus dados cadastrais oficiais, altere sua foto de perfil compactada e gerencie o acesso à sua conta.</p>
-          <span class="module-card-link">Gerenciar Conta →</span>
-        </div>
 
+          <div class="home-module-card" id="homeCardPerfil">
+            <div class="module-card-icon" style="background: linear-gradient(135deg, #059669, #0e7490);">
+              👤
+            </div>
+            <h4>Meu Perfil</h4>
+            <p>Visualize seus dados cadastrais oficiais, altere sua foto de perfil compactada e gerencie o acesso à sua conta.</p>
+            <span class="module-card-link">Gerenciar Conta →</span>
+          </div>
+
+        </div>
       </div>
 
-      <!-- Destaque ODS 13 -->
+      <!-- BANNER DE COMPROMISSO ODS 13 -->
       <div class="home-ods-banner">
-        <div class="home-ods-badge">ONU • ODS 13</div>
-        <h3>Compromisso com a Ação Contra a Mudança Global do Clima</h3>
-        <p>O GestARClimAS capacita comunidades escolares a mapear vulnerabilidades, reduzir emissões de CO₂, otimizar o uso da água e construir infraestruturas escolares sustentáveis e resilientes aos eventos climáticos extremos.</p>
+        <div class="home-ods-badge">ONU • ODS 13: AÇÃO CONTRA A MUDANÇA GLOBAL DO CLIMA</div>
+        <h3>Construindo Escolas Verdes, Resilientes e Educadoras</h3>
+        <p>O <strong>GestARClimAS</strong> conecta ciência, dados periciais e educação ambiental para transformar espaços escolares em referências de sustentabilidade comunitária.</p>
       </div>
 
     </section>

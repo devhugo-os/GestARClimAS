@@ -2,7 +2,7 @@
  * ============================================================================
  * GestARClimAS - HomeView.js
  * View: Home Page Central Interativa com Navegação em Módulos,
- * Estatísticas do Usuário e Destaques do ODS 13
+ * Perguntas Provocativas de Conscientização, Estatísticas e Destaques ODS 13
  * ============================================================================
  */
 
@@ -20,14 +20,14 @@ class HomeView {
     const meusLaudos = laudos.filter(l => l.userId === user.uid);
     const pastas = await this.databaseService.obterEscolasAgrupadas();
 
-    // 1. Banner de Boas-Vindas
+    // 1. Saudação do Usuário
     const elAvatar = document.getElementById('homeUserAvatar');
     const elGreeting = document.getElementById('homeUserGreeting');
 
-    if (elAvatar) elAvatar.src = user.fotoBase64;
+    if (elAvatar) elAvatar.src = user.fotoBase64 || 'assets/favicon.svg';
     if (elGreeting) elGreeting.textContent = `Olá, ${user.nome}! 👋`;
 
-    // 2. KPIs do Usuário e Plataforma
+    // 2. Métricas de Impacto e KPIs da Plataforma
     const kpiUserCount = document.getElementById('homeKpiUserCount');
     const kpiSchoolsCount = document.getElementById('homeKpiSchoolsCount');
     const kpiAvgResilience = document.getElementById('homeKpiAvgResilience');
@@ -51,7 +51,18 @@ class HomeView {
       kpiLeadersCount.textContent = excelentes.length;
     }
 
-    // 3. Vinculação dos Cards Rápidos de Ação
+    // 3. Botões de Ação Rápida no Hero
+    const btnHeroStart = document.getElementById('btnHeroStartDiagnostic');
+    const btnHeroRanking = document.getElementById('btnHeroExploreRanking');
+
+    if (btnHeroStart) {
+      btnHeroStart.onclick = () => onNavigateTab && onNavigateTab('diagnostic');
+    }
+    if (btnHeroRanking) {
+      btnHeroRanking.onclick = () => onNavigateTab && onNavigateTab('ranking');
+    }
+
+    // 4. Vinculação dos Cards dos 4 Módulos
     const cardNovoLaudo = document.getElementById('homeCardNovoLaudo');
     const cardRanking = document.getElementById('homeCardRanking');
     const cardHistorico = document.getElementById('homeCardHistorico');
