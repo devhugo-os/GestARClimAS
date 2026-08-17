@@ -103,107 +103,111 @@
          ====================================================================== -->
     <section id="tabHome" class="app-tab-pane active">
       
-      <!-- Top Bar com Saudação do Usuário -->
-      <div class="home-user-greeting-bar">
-        <div class="user-greeting-left">
-          <img id="homeUserAvatar" src="assets/favicon.svg" alt="Avatar" class="home-greeting-avatar" />
-          <div>
-            <h3 id="homeUserGreeting">Olá! 👋</h3>
-            <p>Seja bem-vindo(a) à plataforma de resiliência e sustentabilidade escolar.</p>
-          </div>
-        </div>
-        <div class="user-greeting-badge">
-          <span>🌿 Agenda 2030 • ODS 13</span>
-        </div>
-      </div>
-
-      <!-- HERO SECTION PRINCIPAL: PERGUNTAS PROVOCATIVAS & DESIGN MINIMALISTA -->
-      <div class="home-hero-split">
-        <div class="home-hero-content">
-          <div class="hero-tag-pill">
-            <span class="hero-tag-dot"></span>
-            <span>Juntos por um Planeta Mais Verde • ODS 13</span>
-          </div>
-
-          <h1 class="hero-main-title">
-            Sua escola é realmente <span class="text-highlight-green">sustentável?</span>
-          </h1>
-
-          <h2 class="hero-provocative-question">
-            Será que sua escola está fazendo o suficiente pelo planeta?
-          </h2>
-
-          <p class="hero-description-text">
-            Mapeie pontos vulneráveis das instalações, descubra a pegada ecológica da sua comunidade escolar, reduza o desperdício de água e energia, e descubra se sua instituição é uma verdadeira <strong>Escola Verde</strong>.
-          </p>
-
-          <div class="hero-cta-group">
-            <button type="button" class="btn btn-hero-primary" id="btnHeroStartDiagnostic">
-              🚀 Iniciar Diagnóstico Escolar
-            </button>
-            <button type="button" class="btn btn-hero-secondary" id="btnHeroExploreRanking">
-              🏆 Ver Quadro de Escolas
-            </button>
-          </div>
-
-          <!-- Comunidade engajada -->
-          <div class="hero-community-proof">
-            <div class="community-avatars-group">
-              <span class="avatar-circle">👩‍🏫</span>
-              <span class="avatar-circle">👨‍🎓</span>
-              <span class="avatar-circle">🌿</span>
+      <!-- HERO FULLSCREEN: AERIAL SPLIT FOREST & DROUGHT WITH FLOATING CARDS -->
+      <div class="aeline-hero-fullscreen">
+        
+        <div class="aeline-hero-main-row">
+          
+          <!-- Coluna Esquerda: Textos, Pergunta Provocativa e Ações -->
+          <div class="aeline-hero-left">
+            <div class="aeline-pill-badge">
+              <span class="aeline-pill-dot"></span>
+              <span>TOGETHER FOR A GREENER PLANET • ODS 13</span>
             </div>
-            <p>Comunidades escolares transformando suas realidades com a <strong>metodologia GestARClimAS</strong>.</p>
-          </div>
-        </div>
 
-        <!-- Coluna Visual da Hero (Split com Imagem Sustentável) -->
-        <div class="home-hero-visual">
-          <div class="hero-image-card">
-            <img src="assets/hero_eco_nature.jpg" alt="Natureza e Escola Sustentável" class="hero-split-image" />
-            <div class="hero-floating-badge top-right">
-              <span class="badge-icon">🌳</span>
-              <div class="badge-text">
-                <strong>Biofilia & Sombra</strong>
-                <small>Refúgio contra o calor</small>
+            <h1 class="aeline-hero-title">
+              Save <span class="text-emerald">Nature</span>,<br />
+              Save <span class="text-dark">Tomorrow.</span>
+            </h1>
+
+            <div class="aeline-question-callout">
+              <h2>Sua escola é uma Escola Verde?</h2>
+            </div>
+
+            <p class="aeline-hero-description">
+              Será que sua escola está fazendo o suficiente pelo planeta? Mapeie os riscos climáticos das instalações, descubra a pegada de carbono da sua comunidade e transforme seu espaço em uma verdadeira referência de sustentabilidade.
+            </p>
+
+            <!-- Barra de Ação (Input de Escola + Botão de Participação) -->
+            <div class="aeline-action-bar">
+              <div class="aeline-input-wrapper">
+                <input type="text" id="homeQuickSchoolInput" class="aeline-input" placeholder="Digite o nome da sua escola..." />
+                <button type="button" class="btn-aeline-join" id="btnHeroStartDiagnostic">
+                  Iniciar Diagnóstico →
+                </button>
+              </div>
+
+              <button type="button" class="btn-aeline-watch" id="btnHeroExploreRanking">
+                <span class="play-icon-circle">🏆</span>
+                <span>Ver Quadro de Escolas</span>
+              </button>
+            </div>
+
+            <!-- Social Proof -->
+            <div class="aeline-social-proof">
+              <div class="aeline-avatars">
+                <span class="avatar-face">👩‍🏫</span>
+                <span class="avatar-face">👨‍🎓</span>
+                <span class="avatar-face">🌿</span>
+              </div>
+              <p>Junte-se a <strong>+120 comunidades escolares</strong> ativamente engajadas na mudança.</p>
+            </div>
+          </div>
+
+          <!-- Coluna Direita: 3 Cards Flutuantes de Vidro (Conforme Referência) -->
+          <div class="aeline-floating-cards-column">
+            
+            <div class="aeline-glass-card">
+              <div class="glass-card-thumb thumb-forest">🌲</div>
+              <div class="glass-card-info">
+                <h4>Reflorestamento & Sombra</h4>
+                <p>Plantio de árvores nativas e redução do calor.</p>
               </div>
             </div>
-            <div class="hero-floating-badge bottom-left">
-              <span class="badge-icon">💧</span>
-              <div class="badge-text">
-                <strong>Gestão Hídrica</strong>
-                <small>Captação e conservação</small>
+
+            <div class="aeline-glass-card">
+              <div class="glass-card-thumb thumb-water">💧</div>
+              <div class="glass-card-info">
+                <h4>Eficiência Hídrica</h4>
+                <p>Combate a vazamentos e captação de água de chuva.</p>
               </div>
             </div>
+
+            <div class="aeline-glass-card">
+              <div class="glass-card-thumb thumb-planet">🌍</div>
+              <div class="glass-card-info">
+                <h4>Ação Climática ODS 13</h4>
+                <p>Compostagem, reciclagem e cidadania ecológica.</p>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Grade Inferior de Métricas (Estilo da Imagem) -->
+        <div class="aeline-bottom-metrics-grid">
+          <div class="aeline-metric-card">
+            <div class="metric-big-num">16</div>
+            <div class="metric-small-label">Quesitos Auditados</div>
+          </div>
+
+          <div class="aeline-metric-card">
+            <div class="metric-big-num" id="homeKpiSchoolsCount">120+</div>
+            <div class="metric-small-label">Escolas Mapeadas</div>
+          </div>
+
+          <div class="aeline-metric-card">
+            <div class="metric-big-num" id="homeKpiUserCount">350+</div>
+            <div class="metric-small-label">Laudos Emitidos</div>
+          </div>
+
+          <div class="aeline-metric-card">
+            <div class="metric-big-num" id="homeKpiLeadersCount">100%</div>
+            <div class="metric-small-label">Pelo Planeta (ODS 13)</div>
           </div>
         </div>
-      </div>
 
-      <!-- GRADE DE MÉTRICAS & INDICADORES DE CONSCIÊNCIA (ESTILO DA REFERÊNCIA) -->
-      <div class="home-metrics-grid">
-        <div class="home-metric-card">
-          <div class="metric-val" id="homeKpiSchoolsCount">0</div>
-          <div class="metric-label">Escolas Mapeadas</div>
-          <div class="metric-sub">Instituições cadastradas</div>
-        </div>
-
-        <div class="home-metric-card">
-          <div class="metric-val" id="homeKpiUserCount">0</div>
-          <div class="metric-label">Laudos Emitidos por Você</div>
-          <div class="metric-sub">Auditorias finalizadas</div>
-        </div>
-
-        <div class="home-metric-card">
-          <div class="metric-val" id="homeKpiAvgResilience">0%</div>
-          <div class="metric-label">Média de Resiliência</div>
-          <div class="metric-sub">Índice global apurado</div>
-        </div>
-
-        <div class="home-metric-card">
-          <div class="metric-val" id="homeKpiLeadersCount">0</div>
-          <div class="metric-label">Selo Verde Conquistado</div>
-          <div class="metric-sub">Alta resiliência ecológica</div>
-        </div>
       </div>
 
       <!-- SEÇÃO DE REFLEXÕES PROVOCATIVAS: OS 4 PILARES DA ESCOLA VERDE -->
@@ -222,7 +226,7 @@
             </div>
             <span class="provocation-pilar-tag">1. Riscos & Chuvas</span>
             <h4>Sua escola está segura contra temporais e eventos extremos?</h4>
-            <p>Fiações desprotegidas sob umidade e pátios sem drenagem colocam em risco a segurança e a continuidade das aulas.</p>
+            <p>Fiações desprotegidas sob umidade e pátios sem drenagem colocam em risco a segurança física e a continuidade das aulas.</p>
           </div>
 
           <!-- Pilar 2 -->
@@ -313,7 +317,6 @@
         <h3>Construindo Escolas Verdes, Resilientes e Educadoras</h3>
         <p>O <strong>GestARClimAS</strong> conecta ciência, dados periciais e educação ambiental para transformar espaços escolares em referências de sustentabilidade comunitária.</p>
       </div>
-
     </section>
 
     <!-- ======================================================================
