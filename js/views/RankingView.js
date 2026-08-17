@@ -70,7 +70,7 @@ class RankingView {
       const score = laudo.diagnostico?.scoreGeral || 0;
       const opt = document.createElement('option');
       opt.value = laudo.id;
-      opt.textContent = `🏫 ${laudo.escola.nome || 'Escola'} (${laudo.escola.cidade || 'MA'} - ${laudo.escola.bairro || 'Centro'}) — Score: ${score}% [${laudo.escola.data || 'Data'}]`;
+      opt.textContent = `${laudo.escola.nome || 'Escola'} (${laudo.escola.cidade || 'MA'} - ${laudo.escola.bairro || 'Centro'}) — Score: ${score}% [${laudo.escola.data || 'Data'}]`;
       select.appendChild(opt);
     });
   }
@@ -88,7 +88,7 @@ class RankingView {
       tableBody.innerHTML = `
         <tr>
           <td colspan="7" style="text-align: center; padding: 2.5rem; color: var(--neutral-500); font-size: 0.9rem;">
-            🏫 Nenhuma escola avaliada ainda no sistema.<br/>
+            Nenhuma escola avaliada ainda no sistema.<br/>
             <span style="font-size: 0.8rem; color: var(--neutral-400);">Realize o primeiro diagnóstico escolar para liderar o ranking!</span>
           </td>
         </tr>
@@ -117,15 +117,15 @@ class RankingView {
       const corBadge = score >= 80 ? 'badge-excelente' : (score >= 50 ? 'badge-moderado' : 'badge-critico');
       
       let rankMedal = `#${index + 1}`;
-      if (index === 0) rankMedal = '🥇 1º';
-      else if (index === 1) rankMedal = '🥈 2º';
-      else if (index === 2) rankMedal = '🥉 3º';
+      if (index === 0) rankMedal = '<img src="assets/icons/medal-gold.svg" class="icon-img-sm" alt="1º" /> 1º';
+      else if (index === 1) rankMedal = '<img src="assets/icons/medal-silver.svg" class="icon-img-sm" alt="2º" /> 2º';
+      else if (index === 2) rankMedal = '<img src="assets/icons/medal-bronze.svg" class="icon-img-sm" alt="3º" /> 3º';
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td style="font-weight: 800; font-size: 0.95rem; color: var(--neutral-800); text-align: center;">${rankMedal}</td>
         <td>
-          <div style="font-weight: 700; color: var(--neutral-900); font-size: 0.9rem;">📁 ${esc.nome || pasta.nome}</div>
+          <div style="font-weight: 700; color: var(--neutral-900); font-size: 0.9rem;"><img src="assets/icons/folder.svg" class="icon-img-sm" alt="" /> ${esc.nome || pasta.nome}</div>
           <div style="font-size: 0.75rem; color: var(--neutral-500);">${(pasta.laudos || []).length} laudo(s) arquivado(s) na pasta</div>
         </td>
         <td style="font-size: 0.825rem; color: var(--neutral-700);">
@@ -174,7 +174,7 @@ class RankingView {
     if (!idA || !idB || !(listaLaudos && listaLaudos.length > 0)) {
       containerComparacao.innerHTML = `
         <div class="comparison-empty-placeholder">
-          <div class="empty-placeholder-icon">⚖️</div>
+          <div class="empty-placeholder-icon"><img src="assets/icons/balance.svg" class="icon-img-xl" alt="" /></div>
           <h4>Comparador Pericial Aguardando Seleção</h4>
           <p>
             Selecione a <strong>Instituição 1</strong> e a <strong>Instituição 2</strong> nos campos acima para gerar o comparativo executivo completo, deltas de emissões, radar comparativo e matriz diferencial dos 16 quesitos.
@@ -220,7 +220,7 @@ class RankingView {
     containerComparacao.innerHTML = `
       ${mesmaEscola ? `
         <div class="comparison-evolution-banner">
-          <span style="font-size: 1.2rem;">📈</span>
+          <img src="assets/icons/chart.svg" class="icon-img" alt="" />
           <div>
             <strong>Comparação Evolutiva Temporal da Mesma Instituição:</strong>
             <span>${laudoA.escola.nome} (${laudoA.escola.cidade || 'MA'})</span>
@@ -235,15 +235,15 @@ class RankingView {
           <div class="comparison-hero-tag school-1-tag">Instituição 1</div>
           <h3 class="comparison-hero-title">${laudoA.escola?.nome || 'Instituição 1'}</h3>
           <p class="comparison-hero-location">
-            📍 ${laudoA.escola?.cidade || 'Município'} - ${laudoA.escola?.estado || 'UF'} • ${laudoA.escola?.bairro || 'Centro'}
+            <img src="assets/icons/location.svg" class="icon-img-sm" alt="" /> ${laudoA.escola?.cidade || 'Município'} - ${laudoA.escola?.estado || 'UF'} • ${laudoA.escola?.bairro || 'Centro'}
           </p>
 
           <div class="comparison-score-row">
             <div class="comparison-big-score school-1-score">${scoreA}%</div>
             <div class="comparison-score-details">
               <span class="comparison-badge ${dA.corBadge || 'badge-moderado'}">${dA.classificacao}</span>
-              <span class="comparison-meta-date">📅 Data: ${laudoA.escola?.data || '-'}</span>
-              <span class="comparison-meta-eval">👤 Avaliador: ${laudoA.userName || laudoA.escola?.avaliador || '-'}</span>
+              <span class="comparison-meta-date"><img src="assets/icons/calendar.svg" class="icon-img-sm" alt="" /> Data: ${laudoA.escola?.data || '-'}</span>
+              <span class="comparison-meta-eval"><img src="assets/icons/user.svg" class="icon-img-sm" alt="" /> Avaliador: ${laudoA.userName || laudoA.escola?.avaliador || '-'}</span>
             </div>
           </div>
         </div>
@@ -253,15 +253,15 @@ class RankingView {
           <div class="comparison-hero-tag school-2-tag">Instituição 2</div>
           <h3 class="comparison-hero-title">${laudoB.escola?.nome || 'Instituição 2'}</h3>
           <p class="comparison-hero-location">
-            📍 ${laudoB.escola?.cidade || 'Município'} - ${laudoB.escola?.estado || 'UF'} • ${laudoB.escola?.bairro || 'Centro'}
+            <img src="assets/icons/location.svg" class="icon-img-sm" alt="" /> ${laudoB.escola?.cidade || 'Município'} - ${laudoB.escola?.estado || 'UF'} • ${laudoB.escola?.bairro || 'Centro'}
           </p>
 
           <div class="comparison-score-row">
             <div class="comparison-big-score school-2-score">${scoreB}%</div>
             <div class="comparison-score-details">
               <span class="comparison-badge ${dB.corBadge || 'badge-moderado'}">${dB.classificacao}</span>
-              <span class="comparison-meta-date">📅 Data: ${laudoB.escola?.data || '-'}</span>
-              <span class="comparison-meta-eval">👤 Avaliador: ${laudoB.userName || laudoB.escola?.avaliador || '-'}</span>
+              <span class="comparison-meta-date"><img src="assets/icons/calendar.svg" class="icon-img-sm" alt="" /> Data: ${laudoB.escola?.data || '-'}</span>
+              <span class="comparison-meta-eval"><img src="assets/icons/user.svg" class="icon-img-sm" alt="" /> Avaliador: ${laudoB.userName || laudoB.escola?.avaliador || '-'}</span>
             </div>
           </div>
         </div>
@@ -269,7 +269,7 @@ class RankingView {
 
       <!-- Resumo do Delta Geral de Resiliência -->
       <div class="comparison-delta-banner ${deltaGeral > 0 ? 'win-1' : (deltaGeral < 0 ? 'win-2' : 'draw')}">
-        <div class="delta-banner-icon">${deltaGeral > 0 ? '🏆' : (deltaGeral < 0 ? '🏆' : '⚖️')}</div>
+        <div class="delta-banner-icon">${deltaGeral !== 0 ? '<img src="assets/icons/trophy.svg" class="icon-img-lg" alt="" />' : '<img src="assets/icons/balance.svg" class="icon-img-lg" alt="" />'}</div>
         <div class="delta-banner-text">
           ${deltaGeral > 0 
             ? `<strong>${laudoA.escola.nome}</strong> apresenta <strong>+${deltaGeral} pontos percentuais</strong> a mais de Resiliência Climática que <strong>${laudoB.escola.nome}</strong>.`
@@ -283,7 +283,7 @@ class RankingView {
       <!-- Grade de 4 KPIs Comparativos -->
       <div class="comparison-kpi-grid">
         <div class="comp-kpi-card">
-          <div class="comp-kpi-icon">🌍</div>
+          <div class="comp-kpi-icon"><img src="assets/icons/globe.svg" class="icon-img-lg" alt="" /></div>
           <div class="comp-kpi-info">
             <span class="comp-kpi-label">Pegada de Carbono</span>
             <div class="comp-kpi-values">
@@ -296,7 +296,7 @@ class RankingView {
         </div>
 
         <div class="comp-kpi-card">
-          <div class="comp-kpi-icon">💧</div>
+          <div class="comp-kpi-icon"><img src="assets/icons/water.svg" class="icon-img-lg" alt="" /></div>
           <div class="comp-kpi-info">
             <span class="comp-kpi-label">Economia Hídrica</span>
             <div class="comp-kpi-values">
@@ -309,7 +309,7 @@ class RankingView {
         </div>
 
         <div class="comp-kpi-card">
-          <div class="comp-kpi-icon">🌳</div>
+          <div class="comp-kpi-icon"><img src="assets/icons/tree.svg" class="icon-img-lg" alt="" /></div>
           <div class="comp-kpi-info">
             <span class="comp-kpi-label">Compensação Florestal</span>
             <div class="comp-kpi-values">
@@ -322,7 +322,7 @@ class RankingView {
         </div>
 
         <div class="comp-kpi-card">
-          <div class="comp-kpi-icon">🚨</div>
+          <div class="comp-kpi-icon"><img src="assets/icons/alert.svg" class="icon-img-lg" alt="" /></div>
           <div class="comp-kpi-info">
             <span class="comp-kpi-label">Vulnerabilidades Críticas</span>
             <div class="comp-kpi-values">
@@ -471,11 +471,11 @@ class RankingView {
 
       let vantagem = '';
       if (ptsA > ptsB) {
-        vantagem = `<span class="delta-pill win-1">🟢 Inst. 1 (+${ptsA - ptsB} pts)</span>`;
+        vantagem = `<span class="delta-pill win-1"><img src="assets/icons/status-green.svg" class="icon-img-sm" alt="" /> Inst. 1 (+${ptsA - ptsB} pts)</span>`;
       } else if (ptsB > ptsA) {
-        vantagem = `<span class="delta-pill win-2">🔵 Inst. 2 (+${ptsB - ptsA} pts)</span>`;
+        vantagem = `<span class="delta-pill win-2"><img src="assets/icons/status-blue.svg" class="icon-img-sm" alt="" /> Inst. 2 (+${ptsB - ptsA} pts)</span>`;
       } else {
-        vantagem = `<span class="delta-pill draw">⚪ Empate</span>`;
+        vantagem = `<span class="delta-pill draw">Empate</span>`;
       }
 
       return `

@@ -145,7 +145,7 @@ class AuthView {
             previewBox.innerHTML = `
               <div style="background: #ffffff; border: 1.5px solid var(--primary-400); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 1rem; box-shadow: var(--shadow-sm);">
                 <div style="font-size: 0.78rem; color: var(--primary-900); font-weight: 800; display: flex; align-items: center; justify-content: space-between;">
-                  <span>📬 Mensagem de E-mail Despachada</span>
+                  <span><img src="assets/icons/mail.svg" class="icon-img" alt="" /> Mensagem de E-mail Despachada</span>
                   <span style="background: var(--primary-100); padding: 0.15rem 0.5rem; border-radius: var(--radius-full); font-size: 0.7rem;">Agora</span>
                 </div>
                 <div style="font-size: 0.76rem; color: var(--neutral-600); margin-top: 0.35rem; line-height: 1.35;">
@@ -272,7 +272,7 @@ class AuthView {
           const ok = await window.gestarclimasApp.abrirConfirmacao({
             titulo: 'Sair da Conta',
             mensagem: 'Deseja realmente encerrar sua sessão nesta plataforma?',
-            icone: '🚪',
+            icone: '<img src="assets/icons/logout.svg" class="icon-img-lg" alt="" />',
             btnTexto: 'Sim, Sair da Conta',
             btnClasse: 'btn-secondary'
           });

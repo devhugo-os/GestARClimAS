@@ -41,19 +41,19 @@
       <!-- Navegação Central por Abas da Plataforma (Desktop) -->
       <nav class="nav-tabs-container" id="desktopNavTabs">
         <button class="nav-tab active" data-tab="home" id="navTabHome">
-          🏠 Início
+          <img src="assets/icons/home.svg" class="icon-img" alt="" /> Início
         </button>
         <button class="nav-tab" data-tab="diagnostic" id="navTabDiagnostic">
-          📋 Novo Diagnóstico
+          <img src="assets/icons/clipboard.svg" class="icon-img" alt="" /> Novo Diagnóstico
         </button>
         <button class="nav-tab" data-tab="ranking" id="navTabRanking">
-          🏆 Ranking & Comparador
+          <img src="assets/icons/trophy.svg" class="icon-img" alt="" /> Ranking & Comparador
         </button>
         <button class="nav-tab" data-tab="history" id="navTabHistory">
-          📁 Histórico & Pastas
+          <img src="assets/icons/folder.svg" class="icon-img" alt="" /> Histórico & Pastas
         </button>
         <button class="nav-tab" data-tab="profile" id="navTabProfile">
-          👤 Meu Perfil
+          <img src="assets/icons/user.svg" class="icon-img" alt="" /> Meu Perfil
         </button>
       </nav>
 
@@ -77,14 +77,14 @@
               <div id="userDropdownEmail" style="font-size: 0.75rem; color: var(--neutral-500);">email@escola.edu.br</div>
             </div>
             <button class="user-dropdown-item" onclick="window.gestarclimasApp.navegarParaAba('profile');">
-              👤 Meu Perfil
+              <img src="assets/icons/user.svg" class="icon-img" alt="" /> Meu Perfil
             </button>
             <button class="user-dropdown-item" onclick="window.gestarclimasApp.navegarParaAba('history');">
-              📁 Minhas Avaliações
+              <img src="assets/icons/folder.svg" class="icon-img" alt="" /> Minhas Avaliações
             </button>
             <div class="user-dropdown-divider"></div>
             <button class="user-dropdown-item danger" onclick="window.gestarclimasApp.fazerLogout();">
-              🚪 Sair da Conta
+              <img src="assets/icons/logout.svg" class="icon-img" alt="" /> Sair da Conta
             </button>
           </div>
         </div>
@@ -105,23 +105,23 @@
         <div class="mobile-nav-brand">
           <img src="assets/logo_gestarclimas.jpg" alt="GestARClimAS" class="mobile-drawer-logo" />
         </div>
-        <button class="btn-close-mobile-nav" onclick="window.gestarclimasApp && window.gestarclimasApp.fecharMobileMenu();" aria-label="Fechar menu">✕</button>
+        <button class="btn-close-mobile-nav" onclick="window.gestarclimasApp && window.gestarclimasApp.fecharMobileMenu();" aria-label="Fechar menu">&times;</button>
       </div>
       <nav class="mobile-nav-links">
         <button class="mobile-nav-tab active" data-tab="home" onclick="window.gestarclimasApp.navegarParaAba('home'); window.gestarclimasApp.fecharMobileMenu();">
-          🏠 Início
+          <img src="assets/icons/home.svg" class="icon-img" alt="" /> Início
         </button>
         <button class="mobile-nav-tab" data-tab="diagnostic" onclick="window.gestarclimasApp.navegarParaAba('diagnostic'); window.gestarclimasApp.fecharMobileMenu();">
-          📋 Novo Diagnóstico
+          <img src="assets/icons/clipboard.svg" class="icon-img" alt="" /> Novo Diagnóstico
         </button>
         <button class="mobile-nav-tab" data-tab="ranking" onclick="window.gestarclimasApp.navegarParaAba('ranking'); window.gestarclimasApp.fecharMobileMenu();">
-          🏆 Ranking & Comparador
+          <img src="assets/icons/trophy.svg" class="icon-img" alt="" /> Ranking & Comparador
         </button>
         <button class="mobile-nav-tab" data-tab="history" onclick="window.gestarclimasApp.navegarParaAba('history'); window.gestarclimasApp.fecharMobileMenu();">
-          📁 Histórico & Pastas
+          <img src="assets/icons/folder.svg" class="icon-img" alt="" /> Histórico & Pastas
         </button>
         <button class="mobile-nav-tab" data-tab="profile" onclick="window.gestarclimasApp.navegarParaAba('profile'); window.gestarclimasApp.fecharMobileMenu();">
-          👤 Meu Perfil
+          <img src="assets/icons/user.svg" class="icon-img" alt="" /> Meu Perfil
         </button>
       </nav>
     </div>
@@ -161,11 +161,11 @@
             <!-- Barra de Ação Direta (Sem Campo de Input) -->
             <div class="aeline-action-bar">
               <button type="button" class="btn-aeline-join" id="btnHeroStartDiagnostic">
-                🌱 Iniciar Diagnóstico →
+                <img src="assets/icons/plant.svg" class="icon-img" alt="" /> Iniciar Diagnóstico →
               </button>
 
               <button type="button" class="btn-aeline-watch" id="btnHeroExploreRanking">
-                <span class="play-icon-circle">🏆</span>
+                <img src="assets/icons/trophy.svg" class="icon-img" alt="" />
                 <span>Ver Quadro de Escolas</span>
               </button>
             </div>
@@ -173,9 +173,9 @@
             <!-- Social Proof -->
             <div class="aeline-social-proof">
               <div class="aeline-avatars">
-                <span class="avatar-face">👩‍🏫</span>
-                <span class="avatar-face">👨‍🎓</span>
-                <span class="avatar-face">🌱</span>
+                <img src="assets/icons/avatar-teacher.svg" class="avatar-face" alt="" />
+                <img src="assets/icons/avatar-student.svg" class="avatar-face" alt="" />
+                <img src="assets/icons/avatar-eco.svg" class="avatar-face" alt="" />
               </div>
               <p>Junte-se a <strong>+120 comunidades escolares</strong> ativamente engajadas na mudança.</p>
             </div>
@@ -185,7 +185,7 @@
           <div class="aeline-floating-cards-column">
             
             <div class="aeline-glass-card" onclick="document.querySelector('[data-tab=diagnostic]')?.click()">
-              <div class="glass-card-thumb thumb-forest">🌲</div>
+              <div class="glass-card-thumb thumb-forest"><img src="assets/icons/tree.svg" class="icon-img-lg" alt="" /></div>
               <div class="glass-card-info">
                 <h4>Reflorestamento & Sombra</h4>
                 <p>Plantio de árvores nativas e mitigação de calor.</p>
@@ -193,7 +193,7 @@
             </div>
 
             <div class="aeline-glass-card" onclick="document.querySelector('[data-tab=diagnostic]')?.click()">
-              <div class="glass-card-thumb thumb-water">💧</div>
+              <div class="glass-card-thumb thumb-water"><img src="assets/icons/water.svg" class="icon-img-lg" alt="" /></div>
               <div class="glass-card-info">
                 <h4>Eficiência Hídrica</h4>
                 <p>Combate a vazamentos e captação pluvial.</p>
@@ -201,7 +201,7 @@
             </div>
 
             <div class="aeline-glass-card" onclick="document.querySelector('[data-tab=ranking]')?.click()">
-              <div class="glass-card-thumb thumb-planet">🌍</div>
+              <div class="glass-card-thumb thumb-planet"><img src="assets/icons/globe.svg" class="icon-img-lg" alt="" /></div>
               <div class="glass-card-info">
                 <h4>Educação & Ação Climática</h4>
                 <p>Compostagem, reciclagem e cidadania ecológica.</p>
@@ -308,7 +308,7 @@
             <div class="form-group" id="groupSchoolName">
               <label class="form-label" for="schoolNameSelect">1. Nome da Instituição de Ensino <span class="req">*</span></label>
               <select id="schoolNameSelect" class="form-select">
-                <option value="_NOVA_ESCOLA_" selected>✏️ + Cadastrar Nova Instituição (Digitar nome)...</option>
+                <option value="_NOVA_ESCOLA_" selected>+ Cadastrar Nova Instituição (Digitar nome)...</option>
               </select>
               <div id="customSchoolNameGroup" style="margin-top: 0.5rem;">
                 <input type="text" id="schoolNameInput" class="form-input" placeholder="" required />
@@ -429,7 +429,7 @@
                 <label class="option-card type-critico" data-val="critico">
                   <input type="radio" name="p1" value="critico" />
                   <div class="option-top">
-                    <span class="option-badge badge-critico">🔴 Crítico / Péssimo</span>
+                    <span class="option-badge badge-critico"><span class="status-dot dot-critico"></span>Crítico / Péssimo</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Sim, alaga frequentemente impedindo aulas ou acesso</span>
@@ -437,7 +437,7 @@
                 <label class="option-card type-moderado" data-val="moderado">
                   <input type="radio" name="p1" value="moderado" />
                   <div class="option-top">
-                    <span class="option-badge badge-moderado">🟡 Intermediário</span>
+                    <span class="option-badge badge-moderado"><span class="status-dot dot-moderado"></span>Intermediário</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Alaga parcialmente em chuvas extremas, mas escoa rápido</span>
@@ -445,7 +445,7 @@
                 <label class="option-card type-excelente" data-val="excelente">
                   <input type="radio" name="p1" value="excelente" />
                   <div class="option-top">
-                    <span class="option-badge badge-excelente">🟢 Excelente</span>
+                    <span class="option-badge badge-excelente"><span class="status-dot dot-excelente"></span>Excelente</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Não há histórico de alagamentos; excelente escoamento</span>
@@ -463,7 +463,7 @@
                 <label class="option-card type-critico" data-val="critico">
                   <input type="radio" name="p2" value="critico" />
                   <div class="option-top">
-                    <span class="option-badge badge-critico">🔴 Crítico / Péssimo</span>
+                    <span class="option-badge badge-critico"><span class="status-dot dot-critico"></span>Crítico / Péssimo</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Inexistentes, entupidas ou danificadas, causando goteiras</span>
@@ -471,7 +471,7 @@
                 <label class="option-card type-moderado" data-val="moderado">
                   <input type="radio" name="p2" value="moderado" />
                   <div class="option-top">
-                    <span class="option-badge badge-moderado">🟡 Intermediário</span>
+                    <span class="option-badge badge-moderado"><span class="status-dot dot-moderado"></span>Intermediário</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Parciais ou com manutenção esporádica necessária</span>
@@ -479,7 +479,7 @@
                 <label class="option-card type-excelente" data-val="excelente">
                   <input type="radio" name="p2" value="excelente" />
                   <div class="option-top">
-                    <span class="option-badge badge-excelente">🟢 Excelente</span>
+                    <span class="option-badge badge-excelente"><span class="status-dot dot-excelente"></span>Excelente</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Completas, limpas periodicamente e com canalização eficiente</span>
@@ -497,7 +497,7 @@
                 <label class="option-card type-critico" data-val="critico">
                   <input type="radio" name="p3" value="critico" />
                   <div class="option-top">
-                    <span class="option-badge badge-critico">🔴 Crítico / Péssimo</span>
+                    <span class="option-badge badge-critico"><span class="status-dot dot-critico"></span>Crítico / Péssimo</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Infiltrações graves com mofo disseminado e risco ao forro</span>
@@ -505,7 +505,7 @@
                 <label class="option-card type-moderado" data-val="moderado">
                   <input type="radio" name="p3" value="moderado" />
                   <div class="option-top">
-                    <span class="option-badge badge-moderado">🟡 Intermediário</span>
+                    <span class="option-badge badge-moderado"><span class="status-dot dot-moderado"></span>Intermediário</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Pontos isolados de umidade em processo de reparo</span>
@@ -513,7 +513,7 @@
                 <label class="option-card type-excelente" data-val="excelente">
                   <input type="radio" name="p3" value="excelente" />
                   <div class="option-top">
-                    <span class="option-badge badge-excelente">🟢 Excelente</span>
+                    <span class="option-badge badge-excelente"><span class="status-dot dot-excelente"></span>Excelente</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Telhados impermeabilizados, pintura íntegra e ambientes secos</span>
@@ -531,7 +531,7 @@
                 <label class="option-card type-critico" data-val="critico">
                   <input type="radio" name="p4" value="critico" />
                   <div class="option-top">
-                    <span class="option-badge badge-critico">🔴 Crítico / Péssimo</span>
+                    <span class="option-badge badge-critico"><span class="status-dot dot-critico"></span>Crítico / Péssimo</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Não existe plano nem rotas de fuga sinalizadas</span>
@@ -539,7 +539,7 @@
                 <label class="option-card type-moderado" data-val="moderado">
                   <input type="radio" name="p4" value="moderado" />
                   <div class="option-top">
-                    <span class="option-badge badge-moderado">🟡 Intermediário</span>
+                    <span class="option-badge badge-moderado"><span class="status-dot dot-moderado"></span>Intermediário</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Há orientações informais sem simulações práticas</span>
@@ -547,7 +547,7 @@
                 <label class="option-card type-excelente" data-val="excelente">
                   <input type="radio" name="p4" value="excelente" />
                   <div class="option-top">
-                    <span class="option-badge badge-excelente">🟢 Excelente</span>
+                    <span class="option-badge badge-excelente"><span class="status-dot dot-excelente"></span>Excelente</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Plano formal estruturado com brigada e rotas mapeadas</span>
@@ -588,7 +588,7 @@
                 <label class="option-card type-critico" data-val="critico">
                   <input type="radio" name="p5" value="critico" />
                   <div class="option-top">
-                    <span class="option-badge badge-critico">🔴 Crítico / Péssimo</span>
+                    <span class="option-badge badge-critico"><span class="status-dot dot-critico"></span>Crítico / Péssimo</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Nenhum sistema de captação; 100% dependente da rede</span>
@@ -596,7 +596,7 @@
                 <label class="option-card type-moderado" data-val="moderado">
                   <input type="radio" name="p5" value="moderado" />
                   <div class="option-top">
-                    <span class="option-badge badge-moderado">🟡 Intermediário</span>
+                    <span class="option-badge badge-moderado"><span class="status-dot dot-moderado"></span>Intermediário</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Captação rudimentar em baldes ou sistema em planejamento</span>
@@ -604,7 +604,7 @@
                 <label class="option-card type-excelente" data-val="excelente">
                   <input type="radio" name="p5" value="excelente" />
                   <div class="option-top">
-                    <span class="option-badge badge-excelente">🟢 Excelente</span>
+                    <span class="option-badge badge-excelente"><span class="status-dot dot-excelente"></span>Excelente</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Cisterna dimensionada com filtro para descargas e rega</span>
@@ -622,7 +622,7 @@
                 <label class="option-card type-critico" data-val="critico">
                   <input type="radio" name="p6" value="critico" />
                   <div class="option-top">
-                    <span class="option-badge badge-critico">🔴 Crítico / Péssimo</span>
+                    <span class="option-badge badge-critico"><span class="status-dot dot-critico"></span>Crítico / Péssimo</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Torneiras convencionais sem controle de vazão</span>
@@ -630,7 +630,7 @@
                 <label class="option-card type-moderado" data-val="moderado">
                   <input type="radio" name="p6" value="moderado" />
                   <div class="option-top">
-                    <span class="option-badge badge-moderado">🟡 Intermediário</span>
+                    <span class="option-badge badge-moderado"><span class="status-dot dot-moderado"></span>Intermediário</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Presentes apenas em alguns sanitários</span>
@@ -638,7 +638,7 @@
                 <label class="option-card type-excelente" data-val="excelente">
                   <input type="radio" name="p6" value="excelente" />
                   <div class="option-top">
-                    <span class="option-badge badge-excelente">🟢 Excelente</span>
+                    <span class="option-badge badge-excelente"><span class="status-dot dot-excelente"></span>Excelente</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">100% com fechamento automático e descargas de duplo fluxo</span>
@@ -656,7 +656,7 @@
                 <label class="option-card type-critico" data-val="critico">
                   <input type="radio" name="p7" value="critico" />
                   <div class="option-top">
-                    <span class="option-badge badge-critico">🔴 Crítico / Péssimo</span>
+                    <span class="option-badge badge-critico"><span class="status-dot dot-critico"></span>Crítico / Péssimo</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Vazamentos crônicos gerando grande desperdício de água</span>
@@ -664,7 +664,7 @@
                 <label class="option-card type-moderado" data-val="moderado">
                   <input type="radio" name="p7" value="moderado" />
                   <div class="option-top">
-                    <span class="option-badge badge-moderado">🟡 Intermediário</span>
+                    <span class="option-badge badge-moderado"><span class="status-dot dot-moderado"></span>Intermediário</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Pequenos gotejamentos ocasionais consertados em dias</span>
@@ -672,7 +672,7 @@
                 <label class="option-card type-excelente" data-val="excelente">
                   <input type="radio" name="p7" value="excelente" />
                   <div class="option-top">
-                    <span class="option-badge badge-excelente">🟢 Excelente</span>
+                    <span class="option-badge badge-excelente"><span class="status-dot dot-excelente"></span>Excelente</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Rede hidráulica inspecionada regularmente com zero vazamentos</span>
@@ -690,7 +690,7 @@
                 <label class="option-card type-critico" data-val="critico">
                   <input type="radio" name="p8" value="critico" />
                   <div class="option-top">
-                    <span class="option-badge badge-critico">🔴 Crítico / Péssimo</span>
+                    <span class="option-badge badge-critico"><span class="status-dot dot-critico"></span>Crítico / Péssimo</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Não há controle nem conscientização ativa</span>
@@ -698,7 +698,7 @@
                 <label class="option-card type-moderado" data-val="moderado">
                   <input type="radio" name="p8" value="moderado" />
                   <div class="option-top">
-                    <span class="option-badge badge-moderado">🟡 Intermediário</span>
+                    <span class="option-badge badge-moderado"><span class="status-dot dot-moderado"></span>Intermediário</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Cartazes informativos sem acompanhamento numérico</span>
@@ -706,7 +706,7 @@
                 <label class="option-card type-excelente" data-val="excelente">
                   <input type="radio" name="p8" value="excelente" />
                   <div class="option-top">
-                    <span class="option-badge badge-excelente">🟢 Excelente</span>
+                    <span class="option-badge badge-excelente"><span class="status-dot dot-excelente"></span>Excelente</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Gráfico de consumo visível com comitê estudantil ativo</span>
@@ -747,7 +747,7 @@
                 <label class="option-card type-critico" data-val="critico">
                   <input type="radio" name="p9" value="critico" />
                   <div class="option-top">
-                    <span class="option-badge badge-critico">🔴 Crítico / Péssimo</span>
+                    <span class="option-badge badge-critico"><span class="status-dot dot-critico"></span>Crítico / Péssimo</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Pátio 100% cimentado sem árvores; ilha de calor severa</span>
@@ -755,7 +755,7 @@
                 <label class="option-card type-moderado" data-val="moderado">
                   <input type="radio" name="p9" value="moderado" />
                   <div class="option-top">
-                    <span class="option-badge badge-moderado">🟡 Intermediário</span>
+                    <span class="option-badge badge-moderado"><span class="status-dot dot-moderado"></span>Intermediário</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Poucas mudas ou plantas ornamentais sem sombra expressiva</span>
@@ -763,7 +763,7 @@
                 <label class="option-card type-excelente" data-val="excelente">
                   <input type="radio" name="p9" value="excelente" />
                   <div class="option-top">
-                    <span class="option-badge badge-excelente">🟢 Excelente</span>
+                    <span class="option-badge badge-excelente"><span class="status-dot dot-excelente"></span>Excelente</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Arborização densa com copas amplas e microclima ameno</span>
@@ -781,7 +781,7 @@
                 <label class="option-card type-critico" data-val="critico">
                   <input type="radio" name="p10" value="critico" />
                   <div class="option-top">
-                    <span class="option-badge badge-critico">🔴 Crítico / Péssimo</span>
+                    <span class="option-badge badge-critico"><span class="status-dot dot-critico"></span>Crítico / Péssimo</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Menos de 10% permeável (quase totalmente asfaltado/concretado)</span>
@@ -789,7 +789,7 @@
                 <label class="option-card type-moderado" data-val="moderado">
                   <input type="radio" name="p10" value="moderado" />
                   <div class="option-top">
-                    <span class="option-badge badge-moderado">🟡 Intermediário</span>
+                    <span class="option-badge badge-moderado"><span class="status-dot dot-moderado"></span>Intermediário</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Entre 10% e 30% permeável</span>
@@ -797,7 +797,7 @@
                 <label class="option-card type-excelente" data-val="excelente">
                   <input type="radio" name="p10" value="excelente" />
                   <div class="option-top">
-                    <span class="option-badge badge-excelente">🟢 Excelente</span>
+                    <span class="option-badge badge-excelente"><span class="status-dot dot-excelente"></span>Excelente</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Mais de 30% do solo permeável favorecendo a recarga do lençol</span>
@@ -815,7 +815,7 @@
                 <label class="option-card type-critico" data-val="critico">
                   <input type="radio" name="p11" value="critico" />
                   <div class="option-top">
-                    <span class="option-badge badge-critico">🔴 Crítico / Péssimo</span>
+                    <span class="option-badge badge-critico"><span class="status-dot dot-critico"></span>Crítico / Péssimo</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Não possui horta nem espaço pedagógico verde</span>
@@ -823,7 +823,7 @@
                 <label class="option-card type-moderado" data-val="moderado">
                   <input type="radio" name="p11" value="moderado" />
                   <div class="option-top">
-                    <span class="option-badge badge-moderado">🟡 Intermediário</span>
+                    <span class="option-badge badge-moderado"><span class="status-dot dot-moderado"></span>Intermediário</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Horta desativada ou mantida de forma pontual</span>
@@ -831,7 +831,7 @@
                 <label class="option-card type-excelente" data-val="excelente">
                   <input type="radio" name="p11" value="excelente" />
                   <div class="option-top">
-                    <span class="option-badge badge-excelente">🟢 Excelente</span>
+                    <span class="option-badge badge-excelente"><span class="status-dot dot-excelente"></span>Excelente</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Horta agroecológica produtiva integrada à merenda escolar</span>
@@ -849,7 +849,7 @@
                 <label class="option-card type-critico" data-val="critico">
                   <input type="radio" name="p12" value="critico" />
                   <div class="option-top">
-                    <span class="option-badge badge-critico">🔴 Crítico / Péssimo</span>
+                    <span class="option-badge badge-critico"><span class="status-dot dot-critico"></span>Crítico / Péssimo</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Salas abafadas, janelas pequenas ou expostas ao sol direto</span>
@@ -857,7 +857,7 @@
                 <label class="option-card type-moderado" data-val="moderado">
                   <input type="radio" name="p12" value="moderado" />
                   <div class="option-top">
-                    <span class="option-badge badge-moderado">🟡 Intermediário</span>
+                    <span class="option-badge badge-moderado"><span class="status-dot dot-moderado"></span>Intermediário</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Ventilação aceitável com dependência de ventiladores</span>
@@ -865,7 +865,7 @@
                 <label class="option-card type-excelente" data-val="excelente">
                   <input type="radio" name="p12" value="excelente" />
                   <div class="option-top">
-                    <span class="option-badge badge-excelente">🟢 Excelente</span>
+                    <span class="option-badge badge-excelente"><span class="status-dot dot-excelente"></span>Excelente</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Excelente ventilação cruzada, brises e conforto térmico</span>
@@ -908,7 +908,7 @@
                 <label class="option-card type-critico" data-val="critico">
                   <input type="radio" name="p13" value="critico" />
                   <div class="option-top">
-                    <span class="option-badge badge-critico">🔴 Crítico / Péssimo</span>
+                    <span class="option-badge badge-critico"><span class="status-dot dot-critico"></span>Crítico / Péssimo</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Todo o lixo é misturado e descartado sem separação</span>
@@ -916,7 +916,7 @@
                 <label class="option-card type-moderado" data-val="moderado">
                   <input type="radio" name="p13" value="moderado" />
                   <div class="option-top">
-                    <span class="option-badge badge-moderado">🟡 Intermediário</span>
+                    <span class="option-badge badge-moderado"><span class="status-dot dot-moderado"></span>Intermediário</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Separação de papel/plástico sem coleta seletiva formal</span>
@@ -924,7 +924,7 @@
                 <label class="option-card type-excelente" data-val="excelente">
                   <input type="radio" name="p13" value="excelente" />
                   <div class="option-top">
-                    <span class="option-badge badge-excelente">🟢 Excelente</span>
+                    <span class="option-badge badge-excelente"><span class="status-dot dot-excelente"></span>Excelente</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Ecoponto escolar com pesagem e entrega para cooperativas</span>
@@ -942,7 +942,7 @@
                 <label class="option-card type-critico" data-val="critico">
                   <input type="radio" name="p14" value="critico" />
                   <div class="option-top">
-                    <span class="option-badge badge-critico">🔴 Crítico / Péssimo</span>
+                    <span class="option-badge badge-critico"><span class="status-dot dot-critico"></span>Crítico / Péssimo</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Descartados integralmente no lixo comum / aterro</span>
@@ -950,7 +950,7 @@
                 <label class="option-card type-moderado" data-val="moderado">
                   <input type="radio" name="p14" value="moderado" />
                   <div class="option-top">
-                    <span class="option-badge badge-moderado">🟡 Intermediário</span>
+                    <span class="option-badge badge-moderado"><span class="status-dot dot-moderado"></span>Intermediário</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Composteira pequena ou destinação informal para animais</span>
@@ -958,7 +958,7 @@
                 <label class="option-card type-excelente" data-val="excelente">
                   <input type="radio" name="p14" value="excelente" />
                   <div class="option-top">
-                    <span class="option-badge badge-excelente">🟢 Excelente</span>
+                    <span class="option-badge badge-excelente"><span class="status-dot dot-excelente"></span>Excelente</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Compostagem contínua alimentando a horta e reduzindo emissões de metano</span>
@@ -976,7 +976,7 @@
                 <label class="option-card type-critico" data-val="critico">
                   <input type="radio" name="p15" value="critico" />
                   <div class="option-top">
-                    <span class="option-badge badge-critico">🔴 Crítico / Péssimo</span>
+                    <span class="option-badge badge-critico"><span class="status-dot dot-critico"></span>Crítico / Péssimo</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Uso massivo de copos descartáveis nos bebedouros e eventos</span>
@@ -984,7 +984,7 @@
                 <label class="option-card type-moderado" data-val="moderado">
                   <input type="radio" name="p15" value="moderado" />
                   <div class="option-top">
-                    <span class="option-badge badge-moderado">🟡 Intermediário</span>
+                    <span class="option-badge badge-moderado"><span class="status-dot dot-moderado"></span>Intermediário</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Campanhas esporádicas de conscientização</span>
@@ -992,7 +992,7 @@
                 <label class="option-card type-excelente" data-val="excelente">
                   <input type="radio" name="p15" value="excelente" />
                   <div class="option-top">
-                    <span class="option-badge badge-excelente">🟢 Excelente</span>
+                    <span class="option-badge badge-excelente"><span class="status-dot dot-excelente"></span>Excelente</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Banimento total de descartáveis; uso exclusivo de squeezes</span>
@@ -1010,7 +1010,7 @@
                 <label class="option-card type-critico" data-val="critico">
                   <input type="radio" name="p16" value="critico" />
                   <div class="option-top">
-                    <span class="option-badge badge-critico">🔴 Crítico / Péssimo</span>
+                    <span class="option-badge badge-critico"><span class="status-dot dot-critico"></span>Crítico / Péssimo</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Nenhum projeto curricular sobre sustentabilidade ou clima</span>
@@ -1018,7 +1018,7 @@
                 <label class="option-card type-moderado" data-val="moderado">
                   <input type="radio" name="p16" value="moderado" />
                   <div class="option-top">
-                    <span class="option-badge badge-moderado">🟡 Intermediário</span>
+                    <span class="option-badge badge-moderado"><span class="status-dot dot-moderado"></span>Intermediário</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Atividades pontuais apenas na Semana do Meio Ambiente</span>
@@ -1026,7 +1026,7 @@
                 <label class="option-card type-excelente" data-val="excelente">
                   <input type="radio" name="p16" value="excelente" />
                   <div class="option-top">
-                    <span class="option-badge badge-excelente">🟢 Excelente</span>
+                    <span class="option-badge badge-excelente"><span class="status-dot dot-excelente"></span>Excelente</span>
                     <span class="radio-circle"></span>
                   </div>
                   <span class="option-label-text">Projetos contínuos no PPP com comitê mirim de sustentabilidade</span>
@@ -1038,7 +1038,7 @@
           <div class="form-navigation">
             <button type="button" class="btn btn-secondary btnPrevStep">← Voltar</button>
             <button type="button" class="btn btn-primary" id="btnFinishDiagnostic">
-              Gerar Laudo Pericial Oficial 🏆
+              Gerar Laudo Pericial Oficial <img src="assets/icons/trophy.svg" class="icon-img" alt="" />
             </button>
           </div>
         </div>
@@ -1071,7 +1071,7 @@
 
         <!-- Parecer Técnico Descritivo -->
         <div class="report-status-card" id="repStatusCard">
-          <div class="report-status-icon">📋</div>
+          <div class="report-status-icon"><img src="assets/icons/clipboard.svg" class="icon-img-xl" alt="" /></div>
           <div class="report-status-content">
             <h4>Parecer Técnico da Resiliência Escolar</h4>
             <p id="repStatusDesc">Carregando parecer técnico...</p>
@@ -1081,28 +1081,28 @@
         <!-- Metadados da Unidade Escolar -->
         <div class="report-meta-grid">
           <div class="report-meta-card">
-            <div class="meta-icon">👤</div>
+            <div class="meta-icon"><img src="assets/icons/user.svg" class="icon-img" alt="" /></div>
             <div class="meta-data">
               <span class="meta-label">Avaliador(a) Responsável</span>
               <span class="meta-val" id="repEvaluator">-</span>
             </div>
           </div>
           <div class="report-meta-card">
-            <div class="meta-icon">🏫</div>
+            <div class="meta-icon"><img src="assets/icons/school.svg" class="icon-img" alt="" /></div>
             <div class="meta-data">
               <span class="meta-label">Turno & Atendimento</span>
               <span class="meta-val" id="repShift">-</span>
             </div>
           </div>
           <div class="report-meta-card">
-            <div class="meta-icon">📍</div>
+            <div class="meta-icon"><img src="assets/icons/location.svg" class="icon-img" alt="" /></div>
             <div class="meta-data">
               <span class="meta-label">Endereço Completo</span>
               <span class="meta-val" id="repLocation">-</span>
             </div>
           </div>
           <div class="report-meta-card">
-            <div class="meta-icon">🌿</div>
+            <div class="meta-icon"><img src="assets/icons/plant.svg" class="icon-img" alt="" /></div>
             <div class="meta-data">
               <span class="meta-label">Classificação Ambiental</span>
               <span class="meta-val" id="repClassification">-</span>
@@ -1122,7 +1122,7 @@
             <div class="insight-col-card critical">
               <div class="insight-col-header">
                 <div class="insight-title-wrap">
-                  <span class="insight-icon">🚨</span>
+                  <span class="insight-icon"><img src="assets/icons/alert.svg" class="icon-img" alt="" /></span>
                   <h4>Riscos Críticos Imediatos</h4>
                 </div>
                 <span class="insight-counter critical" id="countCritical">0 Alertas</span>
@@ -1136,7 +1136,7 @@
             <div class="insight-col-card warning">
               <div class="insight-col-header">
                 <div class="insight-title-wrap">
-                  <span class="insight-icon">⚠️</span>
+                  <span class="insight-icon"><img src="assets/icons/alert.svg" class="icon-img" alt="" /></span>
                   <h4>Pontos de Atenção & Ajustes</h4>
                 </div>
                 <span class="insight-counter warning" id="countWarning">0 Itens</span>
@@ -1150,7 +1150,7 @@
             <div class="insight-col-card success">
               <div class="insight-col-header">
                 <div class="insight-title-wrap">
-                  <span class="insight-icon">🌱</span>
+                  <span class="insight-icon"><img src="assets/icons/plant.svg" class="icon-img" alt="" /></span>
                   <h4>Fortalezas & Boas Práticas</h4>
                 </div>
                 <span class="insight-counter success" id="countSuccess">0 Pontos</span>
@@ -1171,7 +1171,7 @@
 
           <div class="impact-kpi-grid">
             <div class="impact-kpi-card carbon">
-              <div class="impact-kpi-icon">🌍</div>
+              <div class="impact-kpi-icon"><img src="assets/icons/globe.svg" class="icon-img-lg" alt="" /></div>
               <div class="impact-kpi-info">
                 <h4>Pegada de Carbono</h4>
                 <div class="val" id="kpiCarbon">0 kg CO₂</div>
@@ -1179,7 +1179,7 @@
               </div>
             </div>
             <div class="impact-kpi-card water">
-              <div class="impact-kpi-icon">💧</div>
+              <div class="impact-kpi-icon"><img src="assets/icons/water.svg" class="icon-img-lg" alt="" /></div>
               <div class="impact-kpi-info">
                 <h4>Economia Hídrica</h4>
                 <div class="val" id="kpiWater">0 m³</div>
@@ -1187,7 +1187,7 @@
               </div>
             </div>
             <div class="impact-kpi-card trees">
-              <div class="impact-kpi-icon">🌳</div>
+              <div class="impact-kpi-icon"><img src="assets/icons/tree.svg" class="icon-img-lg" alt="" /></div>
               <div class="impact-kpi-info">
                 <h4>Compensação Florestal</h4>
                 <div class="val" id="kpiTrees">0 mudas</div>
@@ -1195,7 +1195,7 @@
               </div>
             </div>
             <div class="impact-kpi-card projection">
-              <div class="impact-kpi-icon">📈</div>
+              <div class="impact-kpi-icon"><img src="assets/icons/chart.svg" class="icon-img-lg" alt="" /></div>
               <div class="impact-kpi-info">
                 <h4>Potencial Evolutivo</h4>
                 <div class="val" id="kpiPotential">+0 pts</div>
@@ -1296,18 +1296,18 @@
         <div class="results-actions-bar">
           <div class="actions-left-group">
             <button class="btn btn-outline" id="btnQuickEditSchool">
-              ✏️ Editar Dados da Escola
+              <img src="assets/icons/edit.svg" class="icon-img" alt="" /> Editar Dados da Escola
             </button>
             <button class="btn btn-outline" id="btnEditResponses">
-              🔄 Revisar Respostas
+              <img src="assets/icons/refresh.svg" class="icon-img" alt="" /> Revisar Respostas
             </button>
             <button class="btn btn-outline" id="btnExportSingleJSON">
-              💾 Exportar JSON
+              <img src="assets/icons/save.svg" class="icon-img" alt="" /> Exportar JSON
             </button>
           </div>
           <div class="actions-right-group">
             <button class="btn btn-secondary" onclick="window.print()">
-              🖨️ Imprimir / Laudo PDF
+              <img src="assets/icons/print.svg" class="icon-img" alt="" /> Imprimir / Laudo PDF
             </button>
             <button class="btn btn-primary" id="btnNewDiagnostic">
               + Novo Diagnóstico
@@ -1325,7 +1325,7 @@
     <section id="tabRanking" class="app-tab-pane">
       
       <div class="tab-header-card">
-        <h2>🏆 Ranking de Escolas & Comparador de Laudos</h2>
+        <h2><img src="assets/icons/trophy.svg" class="icon-img-lg" alt="" /> Ranking de Escolas & Comparador de Laudos</h2>
         <p>Quadro de líderes em resiliência climática e comparador técnico pericial lado a lado de unidades escolares.</p>
       </div>
 
@@ -1366,12 +1366,12 @@
         <div class="comparison-selectors-grid">
           <div class="form-group">
             <label class="form-label">Instituição 1</label>
-            <input type="text" id="compareSearchA" class="form-input" placeholder="🔍 Pesquisar instituição 1 por nome, cidade ou bairro..." style="margin-bottom: 0.4rem; font-size: 0.85rem;" />
+            <input type="text" id="compareSearchA" class="form-input" placeholder="Pesquisar instituição 1 por nome, cidade ou bairro..." style="margin-bottom: 0.4rem; font-size: 0.85rem;" />
             <select id="compareSelectA" class="form-select"></select>
           </div>
           <div class="form-group">
             <label class="form-label">Instituição 2</label>
-            <input type="text" id="compareSearchB" class="form-input" placeholder="🔍 Pesquisar instituição 2 por nome, cidade ou bairro..." style="margin-bottom: 0.4rem; font-size: 0.85rem;" />
+            <input type="text" id="compareSearchB" class="form-input" placeholder="Pesquisar instituição 2 por nome, cidade ou bairro..." style="margin-bottom: 0.4rem; font-size: 0.85rem;" />
             <select id="compareSelectB" class="form-select"></select>
           </div>
         </div>
@@ -1390,11 +1390,11 @@
       
       <div class="tab-header-card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div>
-          <h2>📁 Gerenciador de Histórico & Pastas Escolares</h2>
+          <h2><img src="assets/icons/folder.svg" class="icon-img-lg" alt="" /> Gerenciador de Histórico & Pastas Escolares</h2>
           <p>Pastas estruturadas por instituição contendo todas as avaliações e laudos emitidos.</p>
         </div>
         <button class="btn btn-danger-outline btn-sm" id="btnClearAllHistory">
-          🗑️ Apagar Todo Histórico
+          <img src="assets/icons/trash.svg" class="icon-img" alt="" /> Apagar Todo Histórico
         </button>
       </div>
 
@@ -1416,7 +1416,7 @@
           <div class="profile-avatar-wrapper">
             <img id="profileAvatarImg" src="assets/favicon.svg" alt="Avatar" class="profile-avatar-img" />
             <label for="profilePhotoInput" class="profile-avatar-change-btn" title="Trocar foto">
-              📷
+              <img src="assets/icons/camera.svg" class="icon-img" alt="" />
             </label>
             <input type="file" id="profilePhotoInput" accept="image/*" style="display: none;" />
           </div>
@@ -1451,14 +1451,14 @@
 
           <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
             <button type="button" class="btn btn-secondary" id="btnLogoutProfile">
-              🚪 Sair da Conta
+              <img src="assets/icons/logout.svg" class="icon-img" alt="" /> Sair da Conta
             </button>
           </div>
         </div>
 
         <!-- Zona de Perigo: Exclusão de Conta -->
         <div class="profile-danger-zone">
-          <h4>⚠️ Zona de Segurança</h4>
+          <h4><img src="assets/icons/alert.svg" class="icon-img" alt="" /> Zona de Segurança</h4>
           <p>Deseja encerrar permanentemente sua conta nesta plataforma? Esta ação não pode ser desfeita e requer confirmação do seu e-mail.</p>
           <button type="button" class="btn btn-danger-outline btn-sm" id="btnDeleteAccount" style="margin-top: 0.75rem;">
             Excluir Minha Conta Permanentemente
@@ -1477,7 +1477,7 @@
   <div class="modal-backdrop" id="quickEditSchoolModal">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>✏️ Atualizar Dados Cadastrais da Escola</h3>
+        <h3><img src="assets/icons/edit.svg" class="icon-img" alt="" /> Atualizar Dados Cadastrais da Escola</h3>
         <button class="modal-close-btn" id="btnCloseQuickEdit">&times;</button>
       </div>
       <div class="modal-body">
@@ -1538,7 +1538,7 @@
     <div class="modal-card" style="max-width: 440px;">
       <div class="modal-header">
         <h3 style="display: flex; align-items: center; gap: 0.5rem; font-size: 1.1rem; font-weight: 800;">
-          <span id="appConfirmIcon">❓</span>
+          <span id="appConfirmIcon"><img src="assets/icons/info.svg" class="icon-img-xl" alt="" /></span>
           <span id="appConfirmTitle">Confirmação</span>
         </h3>
         <button class="modal-close-btn" id="btnCloseCustomConfirm">&times;</button>
@@ -1562,7 +1562,7 @@
     <div class="modal-card" style="max-width: 480px;">
       <div class="modal-header" style="border-bottom: 1.5px solid #fecaca;">
         <h3 style="color: #dc2626; display: flex; align-items: center; gap: 0.5rem; font-size: 1.1rem; font-weight: 800;">
-          ⚠️ Informações Pendentes
+          <img src="assets/icons/alert.svg" class="icon-img" alt="" /> Informações Pendentes
         </h3>
         <button class="modal-close-btn" id="btnClosePendingModal">&times;</button>
       </div>
@@ -1589,7 +1589,7 @@
     <div class="modal-card" style="max-width: 480px;">
       <div class="modal-header" style="border-bottom: 1.5px solid #fecaca;">
         <h3 style="color: #dc2626; display: flex; align-items: center; gap: 0.5rem; font-size: 1.1rem; font-weight: 800;">
-          ⚠️ Confirmar Exclusão de Conta
+          <img src="assets/icons/alert.svg" class="icon-img" alt="" /> Confirmar Exclusão de Conta
         </h3>
         <button class="modal-close-btn" id="btnCloseDeleteModal">&times;</button>
       </div>

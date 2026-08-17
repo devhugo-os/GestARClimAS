@@ -106,7 +106,7 @@ class AppController {
     const ok = await this.abrirConfirmacao({
       titulo: 'Sair da Plataforma',
       mensagem: 'Deseja realmente encerrar sua sessão no GestARClimAS?',
-      icone: '🚪',
+      icone: '<img src="assets/icons/logout.svg" class="icon-img-lg" alt="" />',
       btnTexto: 'Sim, Sair',
       btnClasse: 'btn-secondary'
     });
@@ -303,7 +303,7 @@ class AppController {
         const ok = await this.abrirConfirmacao({
           titulo: 'Iniciar Novo Diagnóstico',
           mensagem: 'Deseja iniciar um novo diagnóstico pericial? Os campos do formulário serão reiniciados para uma nova avaliação.',
-          icone: '📋',
+          icone: '<img src="assets/icons/clipboard.svg" class="icon-img-lg" alt="" />',
           btnTexto: 'Iniciar Diagnóstico',
           btnClasse: 'btn-primary'
         });
@@ -448,7 +448,7 @@ class AppController {
   /**
    * Sistema Universal de Confirmações e Alertas Estilizados
    */
-  abrirConfirmacao({ titulo = 'Confirmação', mensagem = '', icone = '❓', btnTexto = 'Confirmar', btnClasse = 'btn-primary' }) {
+  abrirConfirmacao({ titulo = 'Confirmação', mensagem = '', icone = '<img src="assets/icons/info.svg" class="icon-img-xl" alt="" />', btnTexto = 'Confirmar', btnClasse = 'btn-primary' }) {
     return new Promise((resolve) => {
       const modal = document.getElementById('appCustomConfirmModal');
       const elIcone = document.getElementById('appConfirmIcon');
@@ -462,7 +462,7 @@ class AppController {
         return;
       }
 
-      if (elIcone) elIcone.textContent = icone;
+      if (elIcone) elIcone.innerHTML = icone;
       if (elTitulo) elTitulo.textContent = titulo;
       if (elMsg) elMsg.innerHTML = mensagem;
       if (btnOk) {
@@ -562,7 +562,7 @@ class AppController {
     if (modal && containerLista) {
       containerLista.innerHTML = campos.map((c, i) => `
         <div style="margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;">
-          <span style="color: #dc2626; font-weight: 800;">${i + 1}. ❌</span> 
+          <span style="color: #dc2626; font-weight: 800;"><img src="assets/icons/alert.svg" class="icon-img-sm" alt="" /> ${i + 1}.</span> 
           <span>${c}</span>
         </div>
       `).join('');
@@ -708,11 +708,11 @@ class AppController {
       cardPasta.innerHTML = `
         <div class="folder-card-header" onclick="this.parentElement.classList.toggle('expanded')">
           <div class="folder-header-info">
-            <div class="folder-icon">📁</div>
+            <div class="folder-icon"><img src="assets/icons/folder.svg" class="icon-img-lg" alt="" /></div>
             <div>
               <h3 class="folder-title">${pasta.nome}</h3>
               <p class="folder-subtitle">
-                📍 ${pasta.cidade} - ${pasta.estado} • ${pasta.bairro || 'Centro'} 
+                <img src="assets/icons/location.svg" class="icon-img-sm" alt="" /> ${pasta.cidade} - ${pasta.estado} • ${pasta.bairro || 'Centro'} 
                 ${pasta.ultimoLaudo?.escola?.inep ? `• INEP: <strong>${pasta.ultimoLaudo.escola.inep}</strong>` : ''}
                 • <strong style="color: var(--primary-700);">${totalLaudos} ${totalLaudos === 1 ? 'laudo arquivado' : 'laudos arquivados'}</strong>
               </p>
@@ -721,7 +721,7 @@ class AppController {
           <div class="folder-header-meta">
             <span class="table-score-pill ${corBadge}">${scoreUltimo}%</span>
             <button class="btn-folder-delete" onclick="event.stopPropagation(); gestarclimasApp.excluirPastaEscola('${pasta.key}')" title="Excluir toda a pasta e laudos">
-              🗑️ Excluir Pasta
+              <img src="assets/icons/trash.svg" class="icon-img-sm" alt="" /> Excluir Pasta
             </button>
             <span class="folder-chevron">▼</span>
           </div>
@@ -738,7 +738,7 @@ class AppController {
                       ${l.diagnostico?.classificacao || 'Laudo Ambiental'} • <span style="color: var(--primary-700);">${l.diagnostico?.scoreGeral || 0}%</span>
                     </div>
                     <div style="font-size: 0.76rem; color: var(--neutral-500); margin-top: 0.15rem;">
-                      📅 ${l.escola?.data || '-'} • 👤 Avaliador: <strong>${l.userName || l.escola?.avaliador || 'Não informado'}</strong> • 🏫 Turno: ${l.escola?.turno || '-'}
+                      <img src="assets/icons/calendar.svg" class="icon-img-sm" alt="" /> ${l.escola?.data || '-'} • <img src="assets/icons/user.svg" class="icon-img-sm" alt="" /> Avaliador: <strong>${l.userName || l.escola?.avaliador || 'Não informado'}</strong> • <img src="assets/icons/school.svg" class="icon-img-sm" alt="" /> Turno: ${l.escola?.turno || '-'}
                     </div>
                   </div>
                 </div>
@@ -790,7 +790,7 @@ class AppController {
     const ok = await this.abrirConfirmacao({
       titulo: 'Excluir Laudo Pericial',
       mensagem: 'Tem certeza de que deseja excluir permanentemente este laudo arquivado?',
-      icone: '🗑️',
+      icone: '<img src="assets/icons/trash.svg" class="icon-img-lg" alt="" />',
       btnTexto: 'Sim, Excluir',
       btnClasse: 'btn-danger'
     });
@@ -813,7 +813,7 @@ class AppController {
     const ok = await this.abrirConfirmacao({
       titulo: 'Excluir Pasta Escolar',
       mensagem: 'Atenção: Todos os laudos periciais e histórico desta unidade escolar serão excluídos permanentemente. Deseja prosseguir?',
-      icone: '⚠️',
+      icone: '<img src="assets/icons/alert.svg" class="icon-img-lg" alt="" />',
       btnTexto: 'Excluir Toda a Pasta',
       btnClasse: 'btn-danger'
     });
@@ -842,7 +842,7 @@ class AppController {
     const ok = await this.abrirConfirmacao({
       titulo: 'Limpar Todo o Histórico',
       mensagem: `Deseja apagar definitivamente todos os <strong>${historico.length} laudos</strong> de todas as escolas cadastradas?`,
-      icone: '⚠️',
+      icone: '<img src="assets/icons/alert.svg" class="icon-img-lg" alt="" />',
       btnTexto: 'Sim, Apagar Tudo',
       btnClasse: 'btn-danger'
     });
@@ -885,9 +885,9 @@ class AppController {
     const toast = document.createElement('div');
     toast.className = `toast-item toast-${tipo}`;
     
-    let icone = 'ℹ️';
-    if (tipo === 'success') icone = '✅';
-    if (tipo === 'error') icone = '⚠️';
+    let icone = '<img src="assets/icons/info.svg" class="icon-img" alt="" />';
+    if (tipo === 'success') icone = '<img src="assets/icons/check.svg" class="icon-img" alt="" />';
+    if (tipo === 'error') icone = '<img src="assets/icons/alert.svg" class="icon-img" alt="" />';
 
     toast.innerHTML = `
       <span style="font-size: 1rem;">${icone}</span>

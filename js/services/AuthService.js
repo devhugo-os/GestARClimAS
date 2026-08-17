@@ -269,7 +269,7 @@ class AuthService {
           'Accept': 'application/json'
         },
         body: JSON.stringify({
-          _subject: '🌿 GestARClimAS - Código de Recuperação de Senha',
+          _subject: 'GestARClimAS - Código de Recuperação de Senha',
           plataforma: 'GestARClimAS - ODS 13',
           destinatario: email,
           codigo_seguranca: codigo,

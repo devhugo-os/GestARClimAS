@@ -52,7 +52,7 @@ class FormView {
       }
     });
 
-    selectEscola.innerHTML = '<option value="_NOVA_ESCOLA_" selected>✏️ + Cadastrar Nova Instituição (Digitar nome)...</option>';
+    selectEscola.innerHTML = '<option value="_NOVA_ESCOLA_" selected>+ Cadastrar Nova Instituição (Digitar nome)...</option>';
 
     escolasMap.forEach((esc) => {
       const opt = document.createElement('option');
@@ -63,7 +63,7 @@ class FormView {
       opt.dataset.bairro = esc.bairro || '';
       opt.dataset.rua = esc.rua || '';
       opt.dataset.turno = esc.turno || '';
-      opt.textContent = `🏫 ${esc.nome} (${esc.cidade || 'MA'} - ${esc.estado || 'MA'})`;
+      opt.textContent = `${esc.nome} (${esc.cidade || 'MA'} - ${esc.estado || 'MA'})`;
       selectEscola.appendChild(opt);
     });
 
@@ -300,7 +300,7 @@ class FormView {
       
       const optOutro = document.createElement('option');
       optOutro.value = '_OUTRO_';
-      optOutro.textContent = '✏️ + Outro Bairro (Digitar manualmente)...';
+      optOutro.textContent = '+ Outro Bairro (Digitar manualmente)...';
       selectBairro.appendChild(optOutro);
 
       let bairroSelecionado = false;
@@ -326,7 +326,7 @@ class FormView {
         selectRua.disabled = true;
       }
     } catch (e) {
-      selectBairro.innerHTML = '<option value="" selected>Selecione o Bairro...</option><option value="_OUTRO_">✏️ + Outro Bairro (Digitar manualmente)...</option><option value="Centro">Centro</option>';
+      selectBairro.innerHTML = '<option value="" selected>Selecione o Bairro...</option><option value="_OUTRO_">+ Outro Bairro (Digitar manualmente)...</option><option value="Centro">Centro</option>';
     }
   }
 
@@ -345,7 +345,7 @@ class FormView {
 
       const optOutraRua = document.createElement('option');
       optOutraRua.value = '_OUTRA_RUA_';
-      optOutraRua.textContent = '✏️ + Outra Rua / Logradouro (Digitar manualmente)...';
+      optOutraRua.textContent = '+ Outra Rua / Logradouro (Digitar manualmente)...';
       selectRua.appendChild(optOutraRua);
 
       let ruaSelecionada = false;
@@ -367,7 +367,7 @@ class FormView {
       }
 
     } catch (e) {
-      selectRua.innerHTML = '<option value="" selected>Selecione a Rua...</option><option value="_OUTRA_RUA_">✏️ + Outra Rua / Logradouro (Digitar manualmente)...</option><option value="Avenida Principal">Avenida Principal</option>';
+      selectRua.innerHTML = '<option value="" selected>Selecione a Rua...</option><option value="_OUTRA_RUA_">+ Outra Rua / Logradouro (Digitar manualmente)...</option><option value="Avenida Principal">Avenida Principal</option>';
     }
   }
 

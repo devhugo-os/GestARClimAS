@@ -108,6 +108,59 @@ body {
   overflow-x: hidden;
 }
 
+/* ==========================================================================
+   ÍCONES VETORIAIS OFICIAIS & STATUS DOTS (SUBSTITUIÇÃO DE EMOJIS)
+   ========================================================================== */
+.icon-img {
+  display: inline-block;
+  width: 1.15em;
+  height: 1.15em;
+  vertical-align: -0.2em;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.icon-img-sm {
+  width: 0.9em;
+  height: 0.9em;
+  vertical-align: -0.12em;
+}
+
+.icon-img-lg {
+  width: 1.6em;
+  height: 1.6em;
+  vertical-align: -0.25em;
+}
+
+.icon-img-xl {
+  width: 2.5em;
+  height: 2.5em;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-right: 0.35rem;
+  vertical-align: middle;
+}
+
+.dot-critico {
+  background-color: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.25);
+}
+
+.dot-moderado {
+  background-color: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25);
+}
+
+.dot-excelente {
+  background-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+}
+
 /* Fundo Iluminado Sutil e Natural */
 body::before {
   content: '';

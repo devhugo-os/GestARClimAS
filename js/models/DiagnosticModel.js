@@ -418,13 +418,13 @@ class DiagnosticModel {
 
     // Regras Combinatórias Especiais
     if (r.p1 === 'critico' && r.p4 === 'critico') {
-      pontosCriticos.unshift("🚨 ALERTA COMBINADO GRAVE: Goteiras e infiltrações atuando diretamente sobre condutores elétricos expostos. Risco iminente de curto-circuito e choque.");
+      pontosCriticos.unshift("ALERTA COMBINADO GRAVE: Goteiras e infiltrações atuando diretamente sobre condutores elétricos expostos. Risco iminente de curto-circuito e choque.");
     }
     if (r.p12 === 'excelente' && r.p14 === 'excelente') {
-      pontosFortes.unshift("🌟 Ciclo Agroecológico Fechado: A escola gera adubo orgânico da própria merenda para nutrir sua horta didática.");
+      pontosFortes.unshift("Ciclo Agroecológico Fechado: A escola gera adubo orgânico da própria merenda para nutrir sua horta didática.");
     }
     if (r.p5 === 'excelente' && r.p6 === 'excelente' && r.p8 === 'excelente') {
-      pontosFortes.push("💧 Gestão Hídrica Avançada: Combinação de consumo controlado sem perdas e captação sustentável de água pluvial.");
+      pontosFortes.push("Gestão Hídrica Avançada: Combinação de consumo controlado sem perdas e captação sustentável de água pluvial.");
     }
 
     // Estimativas de Impacto e Projeções

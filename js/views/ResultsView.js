@@ -41,7 +41,7 @@ class ResultsView {
     const elSchoolMeta = document.getElementById('repSchoolMeta');
     if (elSchoolMeta) {
       const dataFormatada = escola.data || new Date().toLocaleString('pt-BR');
-      elSchoolMeta.textContent = `📍 ${localidadeStr} • 📅 Emitido em ${dataFormatada}`;
+      elSchoolMeta.textContent = `<img src="assets/icons/location.svg" class="icon-img-sm" alt="" /> ${localidadeStr} • <img src="assets/icons/calendar.svg" class="icon-img-sm" alt="" /> Emitido em ${dataFormatada}`;
     }
 
     // 2. Metadados do Laudo
@@ -163,7 +163,7 @@ class ResultsView {
       if (criticos.length === 0) {
         listCrit.innerHTML = `
           <div class="diag-item-card safe">
-            <span class="diag-item-icon">✅</span>
+            <span class="diag-item-icon"><img src="assets/icons/check.svg" class="icon-img" alt="" /></span>
             <div class="diag-item-text">
               <strong>Sem Riscos Críticos Imediatos</strong>
               <p>Nenhuma vulnerabilidade emergencial ou risco físico iminente foi detectado nas instalações inspecionadas.</p>
@@ -174,7 +174,7 @@ class ResultsView {
         criticos.forEach(alert => {
           listCrit.innerHTML += `
             <div class="diag-item-card critical">
-              <span class="diag-item-icon">🚨</span>
+              <span class="diag-item-icon"><img src="assets/icons/alert.svg" class="icon-img" alt="" /></span>
               <div class="diag-item-text">
                 <strong>Alerta de Risco Climático / Físico</strong>
                 <p>${alert}</p>
@@ -191,7 +191,7 @@ class ResultsView {
       if (avisos.length === 0) {
         listWarn.innerHTML = `
           <div class="diag-item-card safe">
-            <span class="diag-item-icon">✨</span>
+            <span class="diag-item-icon"><img src="assets/icons/check.svg" class="icon-img" alt="" /></span>
             <div class="diag-item-text">
               <strong>Eficiência Plena</strong>
               <p>Todos os setores operam em alto padrão técnico de conservação e sustentabilidade.</p>
@@ -202,7 +202,7 @@ class ResultsView {
         avisos.forEach(item => {
           listWarn.innerHTML += `
             <div class="diag-item-card warning">
-              <span class="diag-item-icon">⚠️</span>
+              <span class="diag-item-icon"><img src="assets/icons/alert.svg" class="icon-img" alt="" /></span>
               <div class="diag-item-text">
                 <strong>Oportunidade de Melhoria</strong>
                 <p>${item}</p>
@@ -219,7 +219,7 @@ class ResultsView {
       if (fortes.length === 0) {
         listSucc.innerHTML = `
           <div class="diag-item-card info">
-            <span class="diag-item-icon">ℹ️</span>
+            <span class="diag-item-icon"><img src="assets/icons/info.svg" class="icon-img" alt="" /></span>
             <div class="diag-item-text">
               <strong>Início das Boas Práticas</strong>
               <p>Inicie a execução das ações prioritárias para consolidar as primeiras fortalezas sustentáveis da escola.</p>
@@ -230,7 +230,7 @@ class ResultsView {
         fortes.forEach(item => {
           listSucc.innerHTML += `
             <div class="diag-item-card success">
-              <span class="diag-item-icon">🌱</span>
+              <span class="diag-item-icon"><img src="assets/icons/plant.svg" class="icon-img" alt="" /></span>
               <div class="diag-item-text">
                 <strong>Boa Prática Consolidada</strong>
                 <p>${item}</p>
