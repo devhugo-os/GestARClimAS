@@ -76,6 +76,30 @@ class AppController {
   }
 
   /**
+   * Alterna o menu hamburguer drawer em dispositivos móveis
+   */
+  toggleMobileMenu() {
+    const drawer = document.getElementById('mobileNavDrawer');
+    const overlay = document.getElementById('mobileNavOverlay');
+    const hamburger = document.getElementById('btnHamburgerToggle');
+    if (drawer) drawer.classList.toggle('open');
+    if (overlay) overlay.classList.toggle('open');
+    if (hamburger) hamburger.classList.toggle('open');
+  }
+
+  /**
+   * Fecha o menu hamburguer drawer em dispositivos móveis
+   */
+  fecharMobileMenu() {
+    const drawer = document.getElementById('mobileNavDrawer');
+    const overlay = document.getElementById('mobileNavOverlay');
+    const hamburger = document.getElementById('btnHamburgerToggle');
+    if (drawer) drawer.classList.remove('open');
+    if (overlay) overlay.classList.remove('open');
+    if (hamburger) hamburger.classList.remove('open');
+  }
+
+  /**
    * Realiza logout do usuário autenticado
    */
   async fazerLogout() {
@@ -120,10 +144,13 @@ class AppController {
   navegarParaAba(tabId) {
     this.abaAtiva = tabId;
 
-    // Atualiza botões da Navbar
-    document.querySelectorAll('.nav-tab').forEach(btn => {
+    // Atualiza botões da Navbar (Desktop e Mobile)
+    document.querySelectorAll('.nav-tab, .mobile-nav-tab').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.tab === tabId);
     });
+
+    // Fecha o menu mobile se aberto
+    this.fecharMobileMenu();
 
     // Oculta todas as seções de abas
     document.querySelectorAll('.app-tab-pane, .tab-content').forEach(tab => {
@@ -232,11 +259,17 @@ class AppController {
       };
     }
 
-    document.onclick = (e) => {
+    document.addEventListener('click', (e) => {
       if (menu && toggleBtn && !toggleBtn.contains(e.target) && !menu.contains(e.target)) {
         menu.classList.remove('open');
       }
-    };
+
+      const hamburger = document.getElementById('btnHamburgerToggle');
+      const drawer = document.getElementById('mobileNavDrawer');
+      if (drawer && hamburger && !hamburger.contains(e.target) && !drawer.contains(e.target)) {
+        this.fecharMobileMenu();
+      }
+    });
 
     // Botões de navegação de etapas do formulário (sem listeners duplicados)
     document.querySelectorAll('.btnNextStep').forEach(b => {

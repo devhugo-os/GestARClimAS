@@ -38,8 +38,8 @@
         <img src="assets/logo_gestarclimas.jpg" alt="GestARClimAS" class="brand-nav-logo" />
       </a>
 
-      <!-- Navegação Central por Abas da Plataforma -->
-      <nav class="nav-tabs-container">
+      <!-- Navegação Central por Abas da Plataforma (Desktop) -->
+      <nav class="nav-tabs-container" id="desktopNavTabs">
         <button class="nav-tab active" data-tab="home" id="navTabHome">
           🏠 Início
         </button>
@@ -57,12 +57,12 @@
         </button>
       </nav>
 
-      <!-- Ações do Header & Menu do Usuário Logado (Sem ODS redundante, bem posicionado) -->
+      <!-- Ações do Header & Menu do Usuário Logado -->
       <div class="header-actions">
         
         <!-- Pílula de Perfil do Usuário com Dropdown -->
         <div class="user-profile-menu-container">
-          <div class="user-nav-pill" id="btnUserMenuToggle" onclick="window.gestarclimasApp && window.gestarclimasApp.toggleUserDropdown();">
+          <div class="user-nav-pill" id="btnUserMenuToggle" onclick="window.gestarclimasApp && window.gestarclimasApp.toggleUserDropdown();" title="Menu do Usuário">
             <img id="navUserAvatar" src="assets/favicon.svg" alt="Avatar" class="user-nav-avatar" />
             <div class="user-nav-text">
               <span id="navUserName" class="user-nav-name">Usuário</span>
@@ -89,8 +89,43 @@
           </div>
         </div>
 
+        <!-- Botão Hamburguer para Mobile / Telas Menores -->
+        <button class="btn-hamburger-menu" id="btnHamburgerToggle" aria-label="Abrir menu de navegação" onclick="window.gestarclimasApp && window.gestarclimasApp.toggleMobileMenu();">
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+        </button>
+
       </div>
     </div>
+
+    <!-- Drawer Lateral de Navegação Mobile -->
+    <div class="mobile-nav-drawer" id="mobileNavDrawer">
+      <div class="mobile-nav-header">
+        <div class="mobile-nav-brand">
+          <img src="assets/logo_gestarclimas.png" alt="GestARClimAS" class="mobile-drawer-logo" />
+        </div>
+        <button class="btn-close-mobile-nav" onclick="window.gestarclimasApp && window.gestarclimasApp.fecharMobileMenu();" aria-label="Fechar menu">✕</button>
+      </div>
+      <nav class="mobile-nav-links">
+        <button class="mobile-nav-tab active" data-tab="home" onclick="window.gestarclimasApp.navegarParaAba('home'); window.gestarclimasApp.fecharMobileMenu();">
+          🏠 Início
+        </button>
+        <button class="mobile-nav-tab" data-tab="diagnostic" onclick="window.gestarclimasApp.navegarParaAba('diagnostic'); window.gestarclimasApp.fecharMobileMenu();">
+          📋 Novo Diagnóstico
+        </button>
+        <button class="mobile-nav-tab" data-tab="ranking" onclick="window.gestarclimasApp.navegarParaAba('ranking'); window.gestarclimasApp.fecharMobileMenu();">
+          🏆 Ranking & Comparador
+        </button>
+        <button class="mobile-nav-tab" data-tab="history" onclick="window.gestarclimasApp.navegarParaAba('history'); window.gestarclimasApp.fecharMobileMenu();">
+          📁 Histórico & Pastas
+        </button>
+        <button class="mobile-nav-tab" data-tab="profile" onclick="window.gestarclimasApp.navegarParaAba('profile'); window.gestarclimasApp.fecharMobileMenu();">
+          👤 Meu Perfil
+        </button>
+      </nav>
+    </div>
+    <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="window.gestarclimasApp && window.gestarclimasApp.fecharMobileMenu();"></div>
   </header>
 
   <!-- ==========================================================================
