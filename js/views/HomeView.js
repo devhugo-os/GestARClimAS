@@ -2,7 +2,7 @@
  * ============================================================================
  * GestARClimAS - HomeView.js
  * View: Home Page Central Interativa no Padrão Aeline Fullscreen Hero,
- * Perguntas Provocativas de Conscientização, Estatísticas e Destaques ODS 13
+ * Perguntas Provocativas de Conscientização e Estatísticas Ambientais
  * ============================================================================
  */
 
@@ -36,29 +36,17 @@ class HomeView {
     // 2. Botões de Ação Rápida no Hero
     const btnHeroStart = document.getElementById('btnHeroStartDiagnostic');
     const btnHeroRanking = document.getElementById('btnHeroExploreRanking');
-    const inputQuick = document.getElementById('homeQuickSchoolInput');
 
     if (btnHeroStart) {
       btnHeroStart.onclick = () => {
-        if (inputQuick && inputQuick.value.trim()) {
-          const elSchoolInput = document.getElementById('schoolName');
-          if (elSchoolInput) elSchoolInput.value = inputQuick.value.trim();
-        }
         if (onNavigateTab) onNavigateTab('diagnostic');
       };
     }
 
-    if (inputQuick) {
-      inputQuick.onkeydown = (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          if (btnHeroStart) btnHeroStart.click();
-        }
-      };
-    }
-
     if (btnHeroRanking) {
-      btnHeroRanking.onclick = () => onNavigateTab && onNavigateTab('ranking');
+      btnHeroRanking.onclick = () => {
+        if (onNavigateTab) onNavigateTab('ranking');
+      };
     }
   }
 }

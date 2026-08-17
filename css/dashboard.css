@@ -188,21 +188,21 @@
 }
 
 .btn-aeline-join {
-  background: var(--brand-evergreen) !important;
-  color: #ffffff !important;
+  background: var(--brand-emerald) !important;
+  color: var(--brand-evergreen) !important;
   border: none !important;
-  padding: 0.8rem 1.45rem !important;
-  border-radius: 8px !important;
+  padding: 0.9rem 1.75rem !important;
+  border-radius: var(--radius-md) !important;
   font-weight: 800 !important;
-  font-size: 0.875rem !important;
+  font-size: 0.95rem !important;
   cursor: pointer;
   white-space: nowrap;
   transition: all var(--transition-fast) !important;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  box-shadow: 0 4px 12px rgba(0, 41, 17, 0.3);
+  gap: 0.5rem;
+  box-shadow: 0 4px 14px rgba(77, 212, 133, 0.45);
 }
 
 @media (max-width: 600px) {
@@ -212,9 +212,9 @@
 }
 
 .btn-aeline-join:hover {
-  background: #059669 !important;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(5, 150, 105, 0.4);
+  background: #38b46e !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(56, 180, 110, 0.5);
 }
 
 .btn-aeline-watch {
