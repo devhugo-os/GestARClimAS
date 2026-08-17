@@ -60,25 +60,6 @@ class HomeView {
     if (btnHeroRanking) {
       btnHeroRanking.onclick = () => onNavigateTab && onNavigateTab('ranking');
     }
-
-    // 3. Vinculação dos Cards dos 4 Módulos
-    const cardNovoLaudo = document.getElementById('homeCardNovoLaudo');
-    const cardRanking = document.getElementById('homeCardRanking');
-    const cardHistorico = document.getElementById('homeCardHistorico');
-    const cardPerfil = document.getElementById('homeCardPerfil');
-
-    if (cardNovoLaudo) {
-      cardNovoLaudo.onclick = () => onNavigateTab && onNavigateTab('diagnostic');
-    }
-    if (cardRanking) {
-      cardRanking.onclick = () => onNavigateTab && onNavigateTab('ranking');
-    }
-    if (cardHistorico) {
-      cardHistorico.onclick = () => onNavigateTab && onNavigateTab('history');
-    }
-    if (cardPerfil) {
-      cardPerfil.onclick = () => onNavigateTab && onNavigateTab('profile');
-    }
   }
 }
 
