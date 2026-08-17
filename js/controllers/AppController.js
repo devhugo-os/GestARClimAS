@@ -184,6 +184,18 @@ class AppController {
       btn.onclick = (e) => {
         e.preventDefault();
         const tab = btn.dataset.tab;
+        if (tab === 'diagnostic') {
+          // Se o usuário clicar diretamente na aba de menu "Novo Diagnóstico", restaura o formulário
+          this.isEditing = false;
+          this.formView.resetForm();
+          this.formView.preencherAvaliadorAutenticado();
+          this.resultsView.hide();
+          const stepper = document.getElementById('stepperContainer');
+          const form = document.getElementById('diagnosticForm');
+          if (stepper) stepper.style.display = 'block';
+          if (form) form.style.display = 'block';
+          this.formView.goToStep(0);
+        }
         if (tab) this.navegarParaAba(tab);
       };
     });
@@ -194,7 +206,18 @@ class AppController {
     const cardHist = document.getElementById('homeCardHistorico');
     const cardPerf = document.getElementById('homeCardPerfil');
 
-    if (cardNovo) cardNovo.onclick = () => this.navegarParaAba('diagnostic');
+    if (cardNovo) cardNovo.onclick = () => {
+      this.isEditing = false;
+      this.formView.resetForm();
+      this.formView.preencherAvaliadorAutenticado();
+      this.resultsView.hide();
+      const stepper = document.getElementById('stepperContainer');
+      const form = document.getElementById('diagnosticForm');
+      if (stepper) stepper.style.display = 'block';
+      if (form) form.style.display = 'block';
+      this.formView.goToStep(0);
+      this.navegarParaAba('diagnostic');
+    };
     if (cardRank) cardRank.onclick = () => this.navegarParaAba('ranking');
     if (cardHist) cardHist.onclick = () => this.navegarParaAba('history');
     if (cardPerf) cardPerf.onclick = () => this.navegarParaAba('profile');

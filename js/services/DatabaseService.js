@@ -9,6 +9,8 @@
 class DatabaseService {
   constructor() {
     this.diagnosticsKey = 'gestarclimas_user_diagnostics';
+    this.deletedIdsKey = 'gestarclimas_deleted_diag_ids';
+    this.wipeTimestampKey = 'gestarclimas_history_wipe_time';
     this.firebaseApp = null;
     this.firestoreDb = null;
     this.isFirebaseReady = false;
@@ -51,17 +53,56 @@ class DatabaseService {
     }
   }
 
+  _obterIdsExcluidos() {
+    try {
+      const raw = localStorage.getItem(this.deletedIdsKey);
+      return raw ? new Set(JSON.parse(raw)) : new Set();
+    } catch (e) {
+      return new Set();
+    }
+  }
+
+  _adicionarIdExcluido(id) {
+    if (!id) return;
+    const set = this._obterIdsExcluidos();
+    set.add(id);
+    localStorage.setItem(this.deletedIdsKey, JSON.stringify(Array.from(set)));
+  }
+
+  _obterTimestampLimpeza() {
+    try {
+      const val = localStorage.getItem(this.wipeTimestampKey);
+      return val ? Number(val) : 0;
+    } catch (e) {
+      return 0;
+    }
+  }
+
   /**
-   * Obtém todos os laudos registrados no banco de dados
+   * Obtém todos os laudos registrados no banco de dados com filtragem de exclusões
    */
   async obterTodosLaudos() {
     this._tentarAutoInicializar();
+
+    const idsExcluidos = this._obterIdsExcluidos();
+    const wipeTime = this._obterTimestampLimpeza();
 
     if (this.isFirebaseReady && this.firestoreDb) {
       try {
         const snapshot = await this.firestoreDb.collection('diagnostics').get();
         if (snapshot && !snapshot.empty) {
-          const cloudItems = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          let cloudItems = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          
+          // Filtra itens marcados como excluídos ou anteriores à limpeza total
+          cloudItems = cloudItems.filter(item => {
+            if (idsExcluidos.has(item.id)) return false;
+            if (wipeTime > 0) {
+              const itemTime = new Date(item.createdAt || 0).getTime();
+              if (itemTime <= wipeTime) return false;
+            }
+            return true;
+          });
+
           cloudItems.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
           localStorage.setItem(this.diagnosticsKey, JSON.stringify(cloudItems));
           return cloudItems;
@@ -73,7 +114,18 @@ class DatabaseService {
 
     try {
       const data = localStorage.getItem(this.diagnosticsKey);
-      const items = data ? JSON.parse(data) : [];
+      let items = data ? JSON.parse(data) : [];
+      if (!Array.isArray(items)) items = [];
+      
+      items = items.filter(item => {
+        if (idsExcluidos.has(item.id)) return false;
+        if (wipeTime > 0) {
+          const itemTime = new Date(item.createdAt || 0).getTime();
+          if (itemTime <= wipeTime) return false;
+        }
+        return true;
+      });
+
       items.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
       return items;
     } catch (e) {
@@ -101,13 +153,20 @@ class DatabaseService {
 
     const novoItem = {
       ...laudoData,
-      id: laudoData.id || `DIAG_${Date.now()}`,
+      id: laudoData.id || `DIAG_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
       userId: usuario?.uid || 'anonymous',
       userName: usuario?.nome || laudoData.escola?.avaliador || 'Avaliador',
       userPhoto: usuario?.fotoBase64 || '',
-      createdAt: new Date().toISOString(),
+      createdAt: laudoData.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
+
+    // Remove do conjunto de excluídos se porventura o ID coincidir
+    const idsExcluidos = this._obterIdsExcluidos();
+    if (idsExcluidos.has(novoItem.id)) {
+      idsExcluidos.delete(novoItem.id);
+      localStorage.setItem(this.deletedIdsKey, JSON.stringify(Array.from(idsExcluidos)));
+    }
 
     if (this.isFirebaseReady && this.firestoreDb) {
       try {
@@ -121,6 +180,7 @@ class DatabaseService {
     let todos = [];
     try {
       todos = JSON.parse(localStorage.getItem(this.diagnosticsKey)) || [];
+      if (!Array.isArray(todos)) todos = [];
     } catch (e) {
       todos = [];
     }
@@ -155,6 +215,7 @@ class DatabaseService {
     let todos = [];
     try {
       todos = JSON.parse(localStorage.getItem(this.diagnosticsKey)) || [];
+      if (!Array.isArray(todos)) todos = [];
     } catch (e) {
       todos = [];
     }
@@ -176,17 +237,21 @@ class DatabaseService {
   async excluirLaudo(id) {
     this._tentarAutoInicializar();
 
+    // Marca como excluído localmente para nunca mais ser ressuscitado
+    this._adicionarIdExcluido(id);
+
     if (this.isFirebaseReady && this.firestoreDb) {
       try {
         await this.firestoreDb.collection('diagnostics').doc(id).delete();
       } catch (err) {
-        console.warn('[DatabaseService] Exclusão Firestore:', err.message);
+        console.warn('[DatabaseService] Exclusão Firestore (mantido localmente):', err.message);
       }
     }
 
     let todos = [];
     try {
       todos = JSON.parse(localStorage.getItem(this.diagnosticsKey)) || [];
+      if (!Array.isArray(todos)) todos = [];
     } catch (e) {
       todos = [];
     }
@@ -203,24 +268,35 @@ class DatabaseService {
   async excluirPastaEscola(schoolKey) {
     this._tentarAutoInicializar();
 
+    let todos = [];
+    try {
+      todos = JSON.parse(localStorage.getItem(this.diagnosticsKey)) || [];
+      if (!Array.isArray(todos)) todos = [];
+    } catch (e) {
+      todos = [];
+    }
+
+    const laudosDaPasta = todos.filter(d => {
+      const k = d.schoolKey || `${d.escola?.nome}_${d.escola?.cidade}_${d.escola?.estado}`.toLowerCase().replace(/\s+/g, '_');
+      return k === schoolKey;
+    });
+
+    laudosDaPasta.forEach(l => this._adicionarIdExcluido(l.id));
+
     if (this.isFirebaseReady && this.firestoreDb) {
       try {
         const snapshot = await this.firestoreDb.collection('diagnostics').where('schoolKey', '==', schoolKey).get();
         if (!snapshot.empty) {
           const batch = this.firestoreDb.batch();
-          snapshot.docs.forEach(doc => batch.delete(doc.ref));
+          snapshot.docs.forEach(doc => {
+            this._adicionarIdExcluido(doc.id);
+            batch.delete(doc.ref);
+          });
           await batch.commit();
         }
       } catch (err) {
-        console.warn('[DatabaseService] Exclusão de pasta Firestore:', err.message);
+        console.warn('[DatabaseService] Exclusão de pasta Firestore (mantido localmente):', err.message);
       }
-    }
-
-    let todos = [];
-    try {
-      todos = JSON.parse(localStorage.getItem(this.diagnosticsKey)) || [];
-    } catch (e) {
-      todos = [];
     }
 
     todos = todos.filter(d => {
@@ -232,21 +308,27 @@ class DatabaseService {
   }
 
   /**
-   * Limpa todo o histórico de laudos
+   * Limpa todo o histórico de laudos com proteção contra ressuscitação de dados
    */
   async limparTodoHistorico() {
     this._tentarAutoInicializar();
+
+    // Registra timestamp de corte para ignorar quaisquer registros remotos antigos
+    localStorage.setItem(this.wipeTimestampKey, Date.now().toString());
 
     if (this.isFirebaseReady && this.firestoreDb) {
       try {
         const snapshot = await this.firestoreDb.collection('diagnostics').get();
         if (!snapshot.empty) {
           const batch = this.firestoreDb.batch();
-          snapshot.docs.forEach(doc => batch.delete(doc.ref));
+          snapshot.docs.forEach(doc => {
+            this._adicionarIdExcluido(doc.id);
+            batch.delete(doc.ref);
+          });
           await batch.commit();
         }
       } catch (err) {
-        console.warn('[DatabaseService] Limpeza Firestore:', err.message);
+        console.warn('[DatabaseService] Limpeza Firestore (ignorado devido a regras de segurança do servidor):', err.message);
       }
     }
 

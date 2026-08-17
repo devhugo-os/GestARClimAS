@@ -1010,118 +1010,230 @@
       </form>
 
       <!-- ======================================================================
-           PAINEL DE RESULTADOS & LAUDO PERICIAL OFICIAL (OCULTO INICIALMENTE)
+           PAINEL DE RESULTADOS & LAUDO PERICIAL OFICIAL
            ====================================================================== -->
       <div id="resultsContainer" class="results-view-wrapper" style="display: none;">
         
-        <!-- Header do Laudo -->
+        <!-- Header Executivo do Laudo -->
         <div class="report-header-banner">
-          <div class="report-header-text">
-            <span class="report-type-tag">Laudo Pericial Oficial • GestARClimAS (ODS 13)</span>
-            <h2 id="repSchoolName">Instituição de Ensino</h2>
-            <p id="repSchoolMeta">Localização • Emitido em 16/08/2026</p>
+          <div class="report-header-left">
+            <div class="report-type-badge">
+              <span class="report-badge-dot"></span>
+              <span>Laudo Pericial Oficial • GestARClimAS (ODS 13)</span>
+            </div>
+            <h2 id="repSchoolName" class="report-school-title">Instituição de Ensino</h2>
+            <p id="repSchoolMeta" class="report-school-meta">Localização • Emitido em 16/08/2026</p>
           </div>
-          <div class="report-score-display">
-            <div class="report-score-num" id="repScoreGeral">0%</div>
-            <div class="report-score-badge" id="repScoreBadge">Nível de Resiliência</div>
+          <div class="report-header-right">
+            <div class="report-score-box">
+              <span class="score-box-label">Índice Geral de Resiliência</span>
+              <div class="report-score-num" id="repScoreGeral">0%</div>
+              <div class="report-score-badge" id="repScoreBadge">Nível de Resiliência</div>
+            </div>
           </div>
         </div>
 
-        <!-- Metadados do Laudo -->
+        <!-- Parecer Técnico Descritivo -->
+        <div class="report-status-card" id="repStatusCard">
+          <div class="report-status-icon">📋</div>
+          <div class="report-status-content">
+            <h4>Parecer Técnico da Resiliência Escolar</h4>
+            <p id="repStatusDesc">Carregando parecer técnico...</p>
+          </div>
+        </div>
+
+        <!-- Metadados da Unidade Escolar -->
         <div class="report-meta-grid">
-          <div class="report-meta-item">
-            <span class="meta-label">Avaliador(a) / Técnico(a)</span>
-            <span class="meta-val" id="repEvaluator">-</span>
-          </div>
-          <div class="report-meta-item">
-            <span class="meta-label">Turno & Modalidade</span>
-            <span class="meta-val" id="repShift">-</span>
-          </div>
-          <div class="report-meta-item">
-            <span class="meta-label">Localização Oficial</span>
-            <span class="meta-val" id="repLocation">-</span>
-          </div>
-          <div class="report-meta-item">
-            <span class="meta-label">Classificação Ambiental</span>
-            <span class="meta-val" id="repClassification">-</span>
-          </div>
-        </div>
-
-        <!-- KPIs de Impacto Ecológico -->
-        <div class="impact-kpi-grid">
-          <div class="impact-kpi-card carbon">
-            <div class="impact-kpi-icon">🌍</div>
-            <div class="impact-kpi-info">
-              <h4>Pegada de Carbono</h4>
-              <div class="val" id="kpiCarbon">0 kg CO₂</div>
-              <p>Estimativa per capita anual</p>
+          <div class="report-meta-card">
+            <div class="meta-icon">👤</div>
+            <div class="meta-data">
+              <span class="meta-label">Avaliador(a) Responsável</span>
+              <span class="meta-val" id="repEvaluator">-</span>
             </div>
           </div>
-          <div class="impact-kpi-card water">
-            <div class="impact-kpi-icon">💧</div>
-            <div class="impact-kpi-info">
-              <h4>Economia Hídrica</h4>
-              <div class="val" id="kpiWater">0 m³</div>
-              <p>Potencial mensal de redução</p>
+          <div class="report-meta-card">
+            <div class="meta-icon">🏫</div>
+            <div class="meta-data">
+              <span class="meta-label">Turno & Atendimento</span>
+              <span class="meta-val" id="repShift">-</span>
             </div>
           </div>
-          <div class="impact-kpi-card trees">
-            <div class="impact-kpi-icon">🌳</div>
-            <div class="impact-kpi-info">
-              <h4>Compensação Florestal</h4>
-              <div class="val" id="kpiTrees">0 mudas</div>
-              <p>Para neutralização de emissões</p>
+          <div class="report-meta-card">
+            <div class="meta-icon">📍</div>
+            <div class="meta-data">
+              <span class="meta-label">Endereço Completo</span>
+              <span class="meta-val" id="repLocation">-</span>
             </div>
           </div>
-          <div class="impact-kpi-card projection">
-            <div class="impact-kpi-icon">📈</div>
-            <div class="impact-kpi-info">
-              <h4>Potencial Evolutivo</h4>
-              <div class="val" id="kpiPotential">+0 pts</div>
-              <p>Com plano de ação aplicado</p>
+          <div class="report-meta-card">
+            <div class="meta-icon">🌿</div>
+            <div class="meta-data">
+              <span class="meta-label">Classificação Ambiental</span>
+              <span class="meta-val" id="repClassification">-</span>
             </div>
           </div>
         </div>
 
-        <!-- Grade de Gráficos Integrados -->
-        <div class="report-charts-grid">
-          <div class="report-chart-box">
-            <h4>Radar dos 4 Pilares da Resiliência</h4>
-            <div class="chart-canvas-holder">
-              <canvas id="chartResultRadar"></canvas>
+        <!-- Painel de Alertas Diagnósticos, Atenção e Boas Práticas -->
+        <div class="report-insights-container">
+          <div class="report-section-title-box">
+            <h3>Diagnóstico das Instalações & Governança Climática</h3>
+            <p>Mapeamento de vulnerabilidades estruturais imediatas, itens de manutenção e fortalezas socioambientais.</p>
+          </div>
+
+          <div class="report-insights-grid">
+            <!-- 1. Vulnerabilidades Críticas -->
+            <div class="insight-col-card critical">
+              <div class="insight-col-header">
+                <div class="insight-title-wrap">
+                  <span class="insight-icon">🚨</span>
+                  <h4>Riscos Críticos Imediatos</h4>
+                </div>
+                <span class="insight-counter critical" id="countCritical">0 Alertas</span>
+              </div>
+              <div class="insight-col-body" id="listCritical">
+                <!-- Injetado via JS -->
+              </div>
+            </div>
+
+            <!-- 2. Pontos a Melhorar -->
+            <div class="insight-col-card warning">
+              <div class="insight-col-header">
+                <div class="insight-title-wrap">
+                  <span class="insight-icon">⚠️</span>
+                  <h4>Pontos de Atenção & Ajustes</h4>
+                </div>
+                <span class="insight-counter warning" id="countWarning">0 Itens</span>
+              </div>
+              <div class="insight-col-body" id="listWarning">
+                <!-- Injetado via JS -->
+              </div>
+            </div>
+
+            <!-- 3. Pontos Fortes -->
+            <div class="insight-col-card success">
+              <div class="insight-col-header">
+                <div class="insight-title-wrap">
+                  <span class="insight-icon">🌱</span>
+                  <h4>Fortalezas & Boas Práticas</h4>
+                </div>
+                <span class="insight-counter success" id="countSuccess">0 Pontos</span>
+              </div>
+              <div class="insight-col-body" id="listSuccess">
+                <!-- Injetado via JS -->
+              </div>
             </div>
           </div>
-          <div class="report-chart-box">
-            <h4>Desempenho por Dimensão (%)</h4>
-            <div class="chart-canvas-holder">
-              <canvas id="chartResultBar"></canvas>
+        </div>
+
+        <!-- KPIs de Impacto Ecológico Estimado -->
+        <div class="report-kpi-wrapper">
+          <div class="report-section-title-box">
+            <h3>Indicadores Estimados de Impacto Ecológico</h3>
+            <p>Estimativas periciais de emissões, conservação hídrica e potencial regenerativo.</p>
+          </div>
+
+          <div class="impact-kpi-grid">
+            <div class="impact-kpi-card carbon">
+              <div class="impact-kpi-icon">🌍</div>
+              <div class="impact-kpi-info">
+                <h4>Pegada de Carbono</h4>
+                <div class="val" id="kpiCarbon">0 kg CO₂</div>
+                <p>Estimativa per capita anual</p>
+              </div>
+            </div>
+            <div class="impact-kpi-card water">
+              <div class="impact-kpi-icon">💧</div>
+              <div class="impact-kpi-info">
+                <h4>Economia Hídrica</h4>
+                <div class="val" id="kpiWater">0 m³</div>
+                <p>Potencial mensal de redução</p>
+              </div>
+            </div>
+            <div class="impact-kpi-card trees">
+              <div class="impact-kpi-icon">🌳</div>
+              <div class="impact-kpi-info">
+                <h4>Compensação Florestal</h4>
+                <div class="val" id="kpiTrees">0 mudas</div>
+                <p>Para neutralização de emissões</p>
+              </div>
+            </div>
+            <div class="impact-kpi-card projection">
+              <div class="impact-kpi-icon">📈</div>
+              <div class="impact-kpi-info">
+                <h4>Potencial Evolutivo</h4>
+                <div class="val" id="kpiPotential">+0 pts</div>
+                <p>Com plano de ação aplicado</p>
+              </div>
             </div>
           </div>
-          <div class="report-chart-box">
-            <h4>Distribuição dos 16 Quesitos</h4>
-            <div class="chart-canvas-holder">
-              <canvas id="chartResultDoughnut"></canvas>
-            </div>
+        </div>
+
+        <!-- Grade de 4 Gráficos Analíticos Integrados -->
+        <div class="report-charts-section">
+          <div class="report-section-title-box">
+            <h3>Análise Gráfica & Desempenho Dimensional</h3>
+            <p>Visualizações analíticas interativas dos 4 pilares da sustentabilidade escolar.</p>
           </div>
-          <div class="report-chart-box">
-            <h4>Projeção Temporal de Evolução</h4>
-            <div class="chart-canvas-holder">
-              <canvas id="chartResultEvolution"></canvas>
+
+          <div class="report-charts-grid">
+            <div class="report-chart-box">
+              <div class="chart-box-header">
+                <h4>Radar dos 4 Pilares da Resiliência</h4>
+                <span class="chart-tag">Multidimensional</span>
+              </div>
+              <div class="chart-canvas-holder">
+                <canvas id="chartResultRadar"></canvas>
+              </div>
+            </div>
+
+            <div class="report-chart-box">
+              <div class="chart-box-header">
+                <h4>Desempenho por Dimensão (%)</h4>
+                <span class="chart-tag">Barras</span>
+              </div>
+              <div class="chart-canvas-holder">
+                <canvas id="chartResultBar"></canvas>
+              </div>
+            </div>
+
+            <div class="report-chart-box">
+              <div class="chart-box-header">
+                <h4>Distribuição dos 16 Quesitos</h4>
+                <span class="chart-tag">Criticidade</span>
+              </div>
+              <div class="chart-canvas-holder">
+                <canvas id="chartResultDoughnut"></canvas>
+              </div>
+            </div>
+
+            <div class="report-chart-box">
+              <div class="chart-box-header">
+                <h4>Projeção Temporal de Evolução</h4>
+                <span class="chart-tag">Impacto Pós-Ação</span>
+              </div>
+              <div class="chart-canvas-holder">
+                <canvas id="chartResultEvolution"></canvas>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Matriz Pericial Detalhada dos 16 Quesitos -->
         <div class="report-section">
-          <h3>Matriz Pericial Detalhada dos 16 Quesitos</h3>
+          <div class="report-section-title-box">
+            <h3>Matriz Pericial Detalhada dos 16 Quesitos</h3>
+            <p>Auditoria item a item com pontuação ponderada e orientações técnicas prioritárias.</p>
+          </div>
+
           <div class="table-responsive">
             <table class="tech-matrix-table">
               <thead>
                 <tr>
-                  <th style="width: 50px; text-align: center;">Item</th>
+                  <th style="width: 55px; text-align: center;">Item</th>
                   <th>Dimensão & Indicador Avaliado</th>
-                  <th style="text-align: center; width: 130px;">Status Pericial</th>
-                  <th style="text-align: center; width: 70px;">Pontos</th>
+                  <th style="text-align: center; width: 140px;">Status Pericial</th>
+                  <th style="text-align: center; width: 85px;">Pontos</th>
                   <th>Recomendação Técnica Prioritária</th>
                 </tr>
               </thead>
@@ -1132,17 +1244,21 @@
           </div>
         </div>
 
-        <!-- Plano de Ação e Recomendações -->
+        <!-- Plano Estratégico de Ação ODS 13 -->
         <div class="report-section">
-          <h3>Plano Estratégico de Ação para Resiliência Climática</h3>
+          <div class="report-section-title-box">
+            <h3>Plano Estratégico de Ação para Resiliência Climática</h3>
+            <p>Intervenções prioritárias recomendadas para mitigar riscos, otimizar recursos e obter o Selo Verde.</p>
+          </div>
+
           <div class="action-plan-timeline" id="actionPlanTimeline">
             <!-- Cards de Ações inseridos via JS -->
           </div>
         </div>
 
-        <!-- Ações do Laudo -->
+        <!-- Barra de Ações do Laudo -->
         <div class="results-actions-bar">
-          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <div class="actions-left-group">
             <button class="btn btn-outline" id="btnQuickEditSchool">
               ✏️ Editar Dados da Escola
             </button>
@@ -1153,7 +1269,7 @@
               💾 Exportar JSON
             </button>
           </div>
-          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <div class="actions-right-group">
             <button class="btn btn-secondary" onclick="window.print()">
               🖨️ Imprimir / Laudo PDF
             </button>

@@ -2,7 +2,7 @@
  * ============================================================================
  * GestARClimAS - ResultsView.js
  * View: Tela Final com Laudo Pericial Ampliado, 4 Gráficos Analíticos (Chart.js),
- * Matriz Técnica dos 16 Critérios e Plano de Ação ODS 13
+ * Painel de Alertas Diagnósticos, Matriz Técnica dos 16 Critérios e Plano de Ação ODS 13
  * ============================================================================
  */
 
@@ -20,190 +20,252 @@ class ResultsView {
   }
 
   /**
-   * Renderiza a tela de resultados completa com laudo, múltiplos gráficos e matriz técnica
-   * @param {Object} data Objeto de diagnóstico
+   * Renderiza a tela de resultados completa com laudo executivo, múltiplos gráficos e matriz técnica
+   * @param {Object} data Objeto de diagnóstico contendo { escola, diagnostico }
    */
   renderResults(data) {
-    if (!this.container || !data) return;
+    if (!data) return;
+    this.container = document.getElementById('resultsContainer') || this.container;
+    if (!this.container) return;
 
-    const { escola, diagnostico } = data;
+    const { escola = {}, diagnostico = {} } = data;
 
     // 1. Preenche Cabeçalho Executivo da Escola
-    document.getElementById('resSchoolTitle').textContent = escola.nome || 'Unidade Escolar';
-    
+    const elSchoolName = document.getElementById('repSchoolName');
+    if (elSchoolName) elSchoolName.textContent = escola.nome || 'Instituição de Ensino';
+
     const ruaParte = escola.rua ? `${escola.rua}, ` : '';
     const bairroParte = escola.bairro ? `${escola.bairro} • ` : '';
-    const localidadeStr = `${ruaParte}${bairroParte}${escola.cidade || 'Açailândia'} - ${escola.estado || 'MA'}${escola.cep ? ` (CEP: ${escola.cep})` : ''}`;
-    document.getElementById('resSchoolLocation').textContent = localidadeStr;
-    document.getElementById('resEvaluatorName').textContent = escola.avaliador || 'Comitê Escolar';
-    document.getElementById('resSchoolShift').textContent = escola.turno || 'Matutino e Vespertino';
-    document.getElementById('resDiagnosticDate').textContent = escola.data || new Date().toLocaleString('pt-BR');
-
-    // 2. Score Geral e Gauge Circular
-    const score = diagnostico.scoreGeral;
-    document.getElementById('resScoreNumber').textContent = `${score}%`;
-
-    const badge = document.getElementById('resClassificationBadge');
-    badge.textContent = diagnostico.classificacao;
-    badge.className = `classification-tag ${diagnostico.corBadge}`;
-
-    const descEl = document.getElementById('resStatusDesc');
-    if (descEl) descEl.textContent = diagnostico.descricaoStatus;
-
-    // Animação do Círculo SVG do Gauge
-    const circle = document.getElementById('gaugeCircle');
-    if (circle) {
-      const circumference = 2 * Math.PI * 70;
-      circle.style.strokeDasharray = `${circumference}`;
-      const offset = circumference - (score / 100) * circumference;
-      circle.style.stroke = score >= 80 ? '#10b981' : (score >= 50 ? '#f59e0b' : '#ef4444');
-      setTimeout(() => { circle.style.strokeDashoffset = offset; }, 80);
+    const localidadeStr = `${ruaParte}${bairroParte}${escola.cidade || 'Município'} - ${escola.estado || 'UF'}${escola.cep ? ` (CEP: ${escola.cep})` : ''}`;
+    
+    const elSchoolMeta = document.getElementById('repSchoolMeta');
+    if (elSchoolMeta) {
+      const dataFormatada = escola.data || new Date().toLocaleString('pt-BR');
+      elSchoolMeta.textContent = `📍 ${localidadeStr} • 📅 Emitido em ${dataFormatada}`;
     }
 
-    // 3. Indicadores de Impacto Ecológico Estimado
+    // 2. Metadados do Laudo
+    const elEvaluator = document.getElementById('repEvaluator');
+    if (elEvaluator) elEvaluator.textContent = escola.avaliador || 'Comitê Escolar';
+
+    const elShift = document.getElementById('repShift');
+    if (elShift) elShift.textContent = escola.turno || 'Matutino e Vespertino';
+
+    const elLocation = document.getElementById('repLocation');
+    if (elLocation) elLocation.textContent = localidadeStr;
+
+    const elClassification = document.getElementById('repClassification');
+    if (elClassification) elClassification.textContent = diagnostico.classificacao || 'Resiliência Avaliada';
+
+    // 3. Score Geral e Badge
+    const score = diagnostico.scoreGeral !== undefined ? diagnostico.scoreGeral : 0;
+    const elScoreGeral = document.getElementById('repScoreGeral');
+    if (elScoreGeral) elScoreGeral.textContent = `${score}%`;
+
+    const elScoreBadge = document.getElementById('repScoreBadge');
+    if (elScoreBadge) {
+      elScoreBadge.textContent = diagnostico.classificacao || 'Nível de Resiliência';
+      elScoreBadge.className = `report-score-badge ${diagnostico.corBadge || ''}`;
+      if (score >= 80) {
+        elScoreBadge.style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
+        elScoreBadge.style.color = '#10b981';
+      } else if (score >= 50) {
+        elScoreBadge.style.backgroundColor = 'rgba(245, 158, 11, 0.2)';
+        elScoreBadge.style.color = '#f59e0b';
+      } else {
+        elScoreBadge.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+        elScoreBadge.style.color = '#ef4444';
+      }
+    }
+
+    // 4. Parecer Técnico Descritivo
+    const elDesc = document.getElementById('repStatusDesc');
+    if (elDesc) {
+      elDesc.textContent = diagnostico.descricaoStatus || 'Diagnóstico ambiental emitido com base na ponderação pericial dos 16 critérios da matriz GestARClimAS.';
+    }
+
+    // 5. Alertas Críticos, Pontos a Melhorar e Fortalezas
+    this.renderDiagnosticInsights(diagnostico);
+
+    // 6. Indicadores de Impacto Ecológico Estimado
     const ind = diagnostico.indicadores || {};
-    const elCarbono = document.getElementById('resCarbonoVal');
-    const elAgua = document.getElementById('resAguaVal');
-    const elMudas = document.getElementById('resMudasVal');
-    const elProj = document.getElementById('resScoreProjetadoVal');
+    const elCarbon = document.getElementById('kpiCarbon');
+    if (elCarbon) elCarbon.textContent = `${ind.pegadaCarbonoEstimada !== undefined ? ind.pegadaCarbonoEstimada : 80} kg CO₂`;
 
-    if (elCarbono) elCarbono.textContent = `${ind.pegadaCarbonoEstimada || 80} kg CO₂/aluno`;
-    if (elAgua) elAgua.textContent = `${ind.potencialEconomiaAguaM3 || 25} m³/mês`;
-    if (elMudas) elMudas.textContent = `${ind.mudasRecomendadas || 15} mudas`;
-    if (elProj) elProj.textContent = `${diagnostico.scoreProjetadoPosAcao || 90}%`;
+    const elWater = document.getElementById('kpiWater');
+    if (elWater) elWater.textContent = `${ind.potencialEconomiaAguaM3 !== undefined ? ind.potencialEconomiaAguaM3 : 25} m³`;
 
-    // 4. Renderização dos 4 Gráficos Chart.js
+    const elTrees = document.getElementById('kpiTrees');
+    if (elTrees) elTrees.textContent = `${ind.mudasRecomendadas !== undefined ? ind.mudasRecomendadas : 15} mudas`;
+
+    const elPotential = document.getElementById('kpiPotential');
+    if (elPotential) {
+      const scoreProjetado = diagnostico.scoreProjetadoPosAcao || 90;
+      const ganho = Math.max(0, scoreProjetado - score);
+      elPotential.textContent = `+${ganho} pts (${scoreProjetado}%)`;
+    }
+
+    // 7. Renderização dos 4 Gráficos Chart.js
     this.renderCharts(diagnostico);
-
-    // 5. Alertas Críticos & Riscos Imediatos
-    const listCrit = document.getElementById('listCritical');
-    listCrit.innerHTML = '';
-    document.getElementById('countCritical').textContent = `${diagnostico.pontosCriticos.length} Alertas`;
-    
-    if (diagnostico.pontosCriticos.length === 0) {
-      listCrit.innerHTML = `
-        <div class="diag-item success">
-          <span class="diag-item-icon">✅</span>
-          <div><strong>Sem Riscos Críticos Imediatos:</strong> Nenhuma vulnerabilidade emergencial de perigo iminente foi identificada nas instalações inspecionadas.</div>
-        </div>
-      `;
-    } else {
-      diagnostico.pontosCriticos.forEach(alert => {
-        listCrit.innerHTML += `
-          <div class="diag-item critical">
-            <span class="diag-item-icon">🚨</span>
-            <div><strong>Alerta de Risco:</strong> ${alert}</div>
-          </div>
-        `;
-      });
-    }
-
-    // 6. Pontos a Melhorar
-    const listWarn = document.getElementById('listWarning');
-    listWarn.innerHTML = '';
-    document.getElementById('countWarning').textContent = `${diagnostico.pontosMelhorar.length} Itens`;
-    
-    if (diagnostico.pontosMelhorar.length === 0) {
-      listWarn.innerHTML = `
-        <div class="diag-item success">
-          <span class="diag-item-icon">✨</span>
-          <div>Todos os quesitos de infraestrutura e gestão operam em alto nível de eficiência sustentável.</div>
-        </div>
-      `;
-    } else {
-      diagnostico.pontosMelhorar.forEach(item => {
-        listWarn.innerHTML += `
-          <div class="diag-item warning">
-            <span class="diag-item-icon">⚠️</span>
-            <div>${item}</div>
-          </div>
-        `;
-      });
-    }
-
-    // 7. Pontos Fortes
-    const listSucc = document.getElementById('listSuccess');
-    listSucc.innerHTML = '';
-    document.getElementById('countSuccess').textContent = `${diagnostico.pontosFortes.length} Pontos`;
-    
-    if (diagnostico.pontosFortes.length === 0) {
-      listSucc.innerHTML = `
-        <div class="diag-item warning">
-          <span class="diag-item-icon">ℹ️</span>
-          <div>Inicie as intervenções prioritárias recomendadas para estabelecer as primeiras boas práticas escolares.</div>
-        </div>
-      `;
-    } else {
-      diagnostico.pontosFortes.forEach(item => {
-        listSucc.innerHTML += `
-          <div class="diag-item success">
-            <span class="diag-item-icon">🌱</span>
-            <div>${item}</div>
-          </div>
-        `;
-      });
-    }
 
     // 8. Matriz Técnica dos 16 Critérios Avaliados
     this.renderTechnicalMatrix(diagnostico.detalhamentoQuestoes || []);
 
-    // 9. Plano de Ação Recomendado (ODS 13)
-    const listAct = document.getElementById('listActions');
-    listAct.innerHTML = '';
-    
-    if (diagnostico.recomendacoesAcao.length === 0) {
-      listAct.innerHTML = `
-        <div class="action-card">
-          <div class="action-title">Manutenção Preventiva e Conservação Ativa</div>
-          <div class="action-impact">A escola já opera em nível de Selo Verde. Mantenha os comitês escolares ativos!</div>
-        </div>
-      `;
-    } else {
-      diagnostico.recomendacoesAcao.forEach((rec, idx) => {
-        listAct.innerHTML += `
-          <div class="action-card">
-            <div class="action-top">
-              <span class="action-priority ${rec.prioridade}">${rec.textoPrioridade}</span>
-              <span style="font-size: 0.75rem; color: var(--neutral-400); font-weight: 700;">${rec.pilar || `Ação #${idx + 1}`}</span>
-            </div>
-            <div class="action-title">${rec.titulo}</div>
-            ${rec.descricao ? `<div class="action-desc">${rec.descricao}</div>` : ''}
-            <div class="action-impact">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-              </svg>
-              <span><strong>Impacto Esperado:</strong> ${rec.impacto}</span>
-            </div>
-          </div>
-        `;
+    // 9. Plano de Ação Estratégico ODS 13
+    this.renderActionPlan(diagnostico.recomendacoesAcao || []);
+
+    // 10. Oculta o formulário/stepper e exibe o container do Laudo
+    const stepper = document.getElementById('stepperContainer');
+    const form = document.getElementById('diagnosticForm');
+    if (stepper) stepper.style.display = 'none';
+    if (form) form.style.display = 'none';
+
+    this.container.style.display = 'block';
+    this.container.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /**
+   * Renderiza os cards estruturados de Alertas Críticos, Pontos de Atenção e Fortalezas
+   */
+  renderDiagnosticInsights(diagnostico) {
+    const listCrit = document.getElementById('listCritical');
+    const listWarn = document.getElementById('listWarning');
+    const listSucc = document.getElementById('listSuccess');
+    const countCrit = document.getElementById('countCritical');
+    const countWarn = document.getElementById('countWarning');
+    const countSucc = document.getElementById('countSuccess');
+
+    let criticos = Array.isArray(diagnostico.pontosCriticos) ? [...diagnostico.pontosCriticos] : [];
+    let avisos = Array.isArray(diagnostico.pontosMelhorar) ? [...diagnostico.pontosMelhorar] : [];
+    let fortes = Array.isArray(diagnostico.pontosFortes) ? [...diagnostico.pontosFortes] : [];
+
+    // Fallback pericial: assegura que qualquer quesito respondido como 'critico' seja listado
+    if (diagnostico.detalhamentoQuestoes && Array.isArray(diagnostico.detalhamentoQuestoes)) {
+      diagnostico.detalhamentoQuestoes.forEach(item => {
+        if (item.status === 'critico') {
+          const textoCurto = `${item.titulo}: ${item.obs || item.acao || 'Vulnerabilidade estrutural crítica detectada.'}`;
+          const jaExiste = criticos.some(c => c.toLowerCase().includes((item.titulo || '').toLowerCase().substring(0, 15)));
+          if (!jaExiste) {
+            criticos.push(textoCurto);
+          }
+        }
       });
     }
 
-    // Exibe o container e rola suavemente para o topo
-    document.getElementById('stepperContainer').style.display = 'none';
-    document.getElementById('diagnosticForm').style.display = 'none';
-    this.container.classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (countCrit) countCrit.textContent = `${criticos.length} ${criticos.length === 1 ? 'Alerta' : 'Alertas'}`;
+    if (countWarn) countWarn.textContent = `${avisos.length} ${avisos.length === 1 ? 'Item' : 'Itens'}`;
+    if (countSucc) countSucc.textContent = `${fortes.length} ${fortes.length === 1 ? 'Ponto' : 'Pontos'}`;
+
+    // 1. Alertas Críticos
+    if (listCrit) {
+      listCrit.innerHTML = '';
+      if (criticos.length === 0) {
+        listCrit.innerHTML = `
+          <div class="diag-item-card safe">
+            <span class="diag-item-icon">✅</span>
+            <div class="diag-item-text">
+              <strong>Sem Riscos Críticos Imediatos</strong>
+              <p>Nenhuma vulnerabilidade emergencial ou risco físico iminente foi detectado nas instalações inspecionadas.</p>
+            </div>
+          </div>
+        `;
+      } else {
+        criticos.forEach(alert => {
+          listCrit.innerHTML += `
+            <div class="diag-item-card critical">
+              <span class="diag-item-icon">🚨</span>
+              <div class="diag-item-text">
+                <strong>Alerta de Risco Climático / Físico</strong>
+                <p>${alert}</p>
+              </div>
+            </div>
+          `;
+        });
+      }
+    }
+
+    // 2. Pontos a Melhorar
+    if (listWarn) {
+      listWarn.innerHTML = '';
+      if (avisos.length === 0) {
+        listWarn.innerHTML = `
+          <div class="diag-item-card safe">
+            <span class="diag-item-icon">✨</span>
+            <div class="diag-item-text">
+              <strong>Eficiência Plena</strong>
+              <p>Todos os setores operam em alto padrão técnico de conservação e sustentabilidade.</p>
+            </div>
+          </div>
+        `;
+      } else {
+        avisos.forEach(item => {
+          listWarn.innerHTML += `
+            <div class="diag-item-card warning">
+              <span class="diag-item-icon">⚠️</span>
+              <div class="diag-item-text">
+                <strong>Oportunidade de Melhoria</strong>
+                <p>${item}</p>
+              </div>
+            </div>
+          `;
+        });
+      }
+    }
+
+    // 3. Pontos Fortes
+    if (listSucc) {
+      listSucc.innerHTML = '';
+      if (fortes.length === 0) {
+        listSucc.innerHTML = `
+          <div class="diag-item-card info">
+            <span class="diag-item-icon">ℹ️</span>
+            <div class="diag-item-text">
+              <strong>Início das Boas Práticas</strong>
+              <p>Inicie a execução das ações prioritárias para consolidar as primeiras fortalezas sustentáveis da escola.</p>
+            </div>
+          </div>
+        `;
+      } else {
+        fortes.forEach(item => {
+          listSucc.innerHTML += `
+            <div class="diag-item-card success">
+              <span class="diag-item-icon">🌱</span>
+              <div class="diag-item-text">
+                <strong>Boa Prática Consolidada</strong>
+                <p>${item}</p>
+              </div>
+            </div>
+          `;
+        });
+      }
+    }
   }
 
   /**
    * Renderiza os 4 gráficos analíticos interativos via Chart.js
    */
   renderCharts(diagnostico) {
-    if (typeof Chart === 'undefined') return;
+    if (typeof Chart === 'undefined' || !diagnostico) return;
 
-    const d = diagnostico.dimensoes;
+    const d = diagnostico.dimensoes || {
+      riscosDesastres: { score: 50 },
+      consumoHidrico: { score: 50 },
+      areasVerdes: { score: 50 },
+      residuos: { score: 50 }
+    };
+
     const labels = [
-      'Riscos & Chuvas',
-      'Eficiência Hídrica',
-      'Áreas Verdes & Clima',
-      'Resíduos & ODS 13'
+      '1. Riscos & Chuvas',
+      '2. Eficiência Hídrica',
+      '3. Áreas Verdes & Clima',
+      '4. Resíduos & ODS 13'
     ];
     const scores = [
-      d.riscosDesastres.score,
-      d.consumoHidrico.score,
-      d.areasVerdes.score,
-      d.residuos.score
+      d.riscosDesastres?.score || 0,
+      d.consumoHidrico?.score || 0,
+      d.areasVerdes?.score || 0,
+      d.residuos?.score || 0
     ];
 
     // 1. Radar de Resiliência
@@ -268,7 +330,7 @@ class ResultsView {
             data: scores,
             backgroundColor: cores,
             borderRadius: 6,
-            barThickness: 18
+            barThickness: 20
           }]
         },
         options: {
@@ -367,13 +429,13 @@ class ResultsView {
     if (canvasEvolution) {
       if (this.chartEvolution) this.chartEvolution.destroy();
       const ctx = canvasEvolution.getContext('2d');
-      const scoreAtual = diagnostico.scoreGeral;
+      const scoreAtual = diagnostico.scoreGeral || 0;
       const scoreProjetado = diagnostico.scoreProjetadoPosAcao || 90;
 
       this.chartEvolution = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: ['Diagnóstico Atual', 'Projeção Pós-Intervenções'],
+          labels: ['Diagnóstico Atual', 'Projeção Pós-Ação'],
           datasets: [{
             label: 'Índice de Resiliência (%)',
             data: [scoreAtual, scoreProjetado],
@@ -427,25 +489,71 @@ class ResultsView {
     detalhes.forEach(item => {
       const tr = document.createElement('tr');
       const badgeCls = item.status === 'excelente' ? 'badge-excelente' : (item.status === 'moderado' ? 'badge-moderado' : 'badge-critico');
+      const pontosNum = item.status === 'excelente' ? '10 pts' : (item.status === 'moderado' ? '5 pts' : '0 pts');
       
       tr.innerHTML = `
-        <td style="font-weight: 800; color: var(--neutral-500); width: 40px; text-align: center;">#${item.num}</td>
+        <td style="font-weight: 800; color: var(--neutral-500); width: 55px; text-align: center;">Q${item.num}</td>
         <td>
           <div style="font-weight: 700; color: var(--neutral-900); font-size: 0.875rem;">${item.titulo}</div>
-          <div style="font-size: 0.75rem; color: var(--primary-700); font-weight: 600;">${item.pilar}</div>
+          <div style="font-size: 0.75rem; color: var(--primary-700); font-weight: 600; margin-top: 2px;">${item.pilar}</div>
         </td>
-        <td style="text-align: center;">
+        <td style="text-align: center; width: 140px;">
           <span class="option-badge ${badgeCls}">${item.statusTexto}</span>
         </td>
-        <td style="font-size: 0.825rem; color: var(--neutral-700);">${item.obs}</td>
-        <td style="font-size: 0.825rem; color: var(--petrol-900); font-weight: 600;">${item.acao}</td>
+        <td style="text-align: center; font-weight: 800; font-size: 0.85rem; color: var(--neutral-800); width: 85px;">
+          ${pontosNum}
+        </td>
+        <td style="font-size: 0.825rem; color: var(--petrol-900); font-weight: 600; line-height: 1.4;">${item.acao || item.obs || '-'}</td>
       `;
       tableBody.appendChild(tr);
     });
   }
 
+  /**
+   * Renderiza os cards do Plano de Ação Estratégico
+   */
+  renderActionPlan(recomendacoes) {
+    const container = document.getElementById('actionPlanTimeline');
+    if (!container) return;
+
+    container.innerHTML = '';
+    if (!recomendacoes || recomendacoes.length === 0) {
+      container.innerHTML = `
+        <div class="action-card">
+          <div class="action-title">Manutenção Preventiva e Conservação Ativa</div>
+          <div class="action-impact">A instituição opera em nível exemplar de Resiliência Climática (Selo Verde). Mantenha os comitês escolares e manutenções preventivas ativas!</div>
+        </div>
+      `;
+      return;
+    }
+
+    recomendacoes.forEach((rec, idx) => {
+      const card = document.createElement('div');
+      card.className = 'action-card';
+      card.innerHTML = `
+        <div class="action-top">
+          <span class="action-priority ${rec.prioridade || 'prio-alta'}">${rec.textoPrioridade || 'Prioridade Alta'}</span>
+          <span style="font-size: 0.75rem; color: var(--neutral-500); font-weight: 700;">${rec.pilar || `Ação #${idx + 1}`}</span>
+        </div>
+        <div class="action-title">${rec.titulo}</div>
+        ${rec.descricao ? `<div class="action-desc">${rec.descricao}</div>` : ''}
+        <div class="action-impact">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+          <span><strong>Impacto Esperado:</strong> ${rec.impacto || 'Melhoria na resiliência escolar'}</span>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
   hide() {
-    if (this.container) this.container.classList.remove('active');
+    this.container = document.getElementById('resultsContainer') || this.container;
+    if (this.container) {
+      this.container.style.display = 'none';
+      this.container.classList.remove('active');
+    }
   }
 }
 

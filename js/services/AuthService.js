@@ -61,11 +61,14 @@ class AuthService {
   }
 
   /**
-   * Obtém a lista completa de usuários cadastrados
+   * Obtém a lista completa de usuários cadastrados localmente
    */
   obterUsuarios() {
     try {
-      return JSON.parse(localStorage.getItem(this.storageUsersKey)) || [];
+      const raw = localStorage.getItem(this.storageUsersKey);
+      const lista = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(lista)) return [];
+      return lista;
     } catch (e) {
       return [];
     }
@@ -104,20 +107,32 @@ class AuthService {
         const userCredential = await this.firebaseAuth.signInWithEmailAndPassword(emailLimpo, senhaLimpa);
         const fbUser = userCredential.user;
 
-        const docSnap = await this.firestoreDb.collection('users').doc(fbUser.uid).get();
+        const docSnap = await this.firestoreDb.collection('users').doc(fbUser.uid).get().catch(() => null);
         let dadosUsuario = {
           uid: fbUser.uid,
           nome: fbUser.displayName || 'Usuário',
-          email: fbUser.email,
+          email: fbUser.email || emailLimpo,
           fotoBase64: fbUser.photoURL || this._gerarAvatarPadrao(fbUser.displayName || 'U'),
           createdAt: new Date().toISOString()
         };
 
-        if (docSnap.exists) {
+        if (docSnap && docSnap.exists) {
           dadosUsuario = { ...dadosUsuario, ...docSnap.data(), uid: fbUser.uid };
         } else {
-          await this.firestoreDb.collection('users').doc(fbUser.uid).set(dadosUsuario);
+          try {
+            await this.firestoreDb.collection('users').doc(fbUser.uid).set(dadosUsuario);
+          } catch (err) {}
         }
+
+        // Salva na lista local para acesso offline futuro
+        const usuarios = this.obterUsuarios();
+        const idx = usuarios.findIndex(u => (u.email || '').toLowerCase() === emailLimpo);
+        if (idx === -1) {
+          usuarios.push(dadosUsuario);
+        } else {
+          usuarios[idx] = { ...usuarios[idx], ...dadosUsuario };
+        }
+        localStorage.setItem(this.storageUsersKey, JSON.stringify(usuarios));
 
         this._salvarSessao(dadosUsuario);
         return dadosUsuario;
@@ -131,7 +146,8 @@ class AuthService {
     const senhaHash = await this._gerarHash(senhaLimpa);
     
     const usuario = usuarios.find(u => 
-      u.email === emailLimpo && (u.senhaHash === senhaHash || u.senhaHash === btoa(senhaLimpa))
+      (u.email || '').toLowerCase() === emailLimpo && 
+      (u.senhaHash === senhaHash || u.senhaHash === btoa(senhaLimpa))
     );
 
     if (!usuario) {
@@ -143,7 +159,7 @@ class AuthService {
   }
 
   /**
-   * Realiza cadastro de um novo usuário
+   * Realiza cadastro de um novo usuário com verificação estrita de duplicidade
    */
   async cadastrar({ nome, email, senha, fotoBase64 }) {
     const nomeLimpo = (nome || '').trim();
@@ -158,9 +174,11 @@ class AuthService {
       throw new Error('A senha deve conter no mínimo 6 caracteres.');
     }
 
+    this._inicializarFirebaseSeDisponivel();
+
     // 1. Verificação Estrita de E-mail Duplicado no Armazenamento Local
     const usuarios = this.obterUsuarios();
-    const usuarioJaExisteLocal = usuarios.find(u => (u.email || '').toLowerCase() === emailLimpo);
+    const usuarioJaExisteLocal = usuarios.some(u => (u.email || '').trim().toLowerCase() === emailLimpo);
     if (usuarioJaExisteLocal) {
       throw new Error('Este e-mail já está cadastrado na plataforma. Por favor, faça login ou utilize a recuperação de senha.');
     }
@@ -169,7 +187,7 @@ class AuthService {
     if (this.firestoreDb) {
       try {
         const snap = await this.firestoreDb.collection('users').where('email', '==', emailLimpo).limit(1).get();
-        if (!snap.empty) {
+        if (snap && !snap.empty) {
           throw new Error('Este e-mail já está cadastrado na plataforma. Por favor, faça login ou utilize a recuperação de senha.');
         }
       } catch (e) {
@@ -190,8 +208,23 @@ class AuthService {
           photoURL: avatarFinal.startsWith('data:') ? '' : avatarFinal
         });
       } catch (fbErr) {
-        if (fbErr.code === 'auth/email-already-in-use') {
-          throw new Error('Este e-mail já está cadastrado na plataforma. Por favor, faça login.');
+        const code = fbErr.code || '';
+        const msg = (fbErr.message || '').toLowerCase();
+        if (
+          code === 'auth/email-already-in-use' ||
+          code === 'auth/email-already-exists' ||
+          code === 'auth/credential-already-in-use' ||
+          msg.includes('already in use') ||
+          msg.includes('already-in-use') ||
+          msg.includes('already exists')
+        ) {
+          throw new Error('Este e-mail já está cadastrado na plataforma. Por favor, faça login ou utilize a recuperação de senha.');
+        }
+        if (code === 'auth/weak-password') {
+          throw new Error('A senha informada deve ter pelo menos 6 caracteres.');
+        }
+        if (code === 'auth/invalid-email') {
+          throw new Error('O formato do e-mail informado é inválido.');
         }
         console.warn('[AuthService] Firebase Auth aviso:', fbErr.message);
       }
@@ -215,8 +248,10 @@ class AuthService {
       } catch (err) {}
     }
 
-    usuarios.push(novoUsuario);
-    localStorage.setItem(this.storageUsersKey, JSON.stringify(usuarios));
+    // Salva sem permitir duplicidades no array local
+    const usuariosAtualizados = usuarios.filter(u => (u.email || '').trim().toLowerCase() !== emailLimpo);
+    usuariosAtualizados.push(novoUsuario);
+    localStorage.setItem(this.storageUsersKey, JSON.stringify(usuariosAtualizados));
 
     this._salvarSessao(novoUsuario);
     return novoUsuario;
@@ -254,7 +289,7 @@ class AuthService {
     this._inicializarFirebaseSeDisponivel();
 
     const usuarios = this.obterUsuarios();
-    let usuarioEncontrado = usuarios.find(u => u.email === emailLimpo);
+    let usuarioEncontrado = usuarios.find(u => (u.email || '').toLowerCase() === emailLimpo);
     
     if (!usuarioEncontrado && this.firestoreDb) {
       try {
@@ -360,7 +395,7 @@ class AuthService {
     }
 
     const usuarios = this.obterUsuarios();
-    const idx = usuarios.findIndex(u => u.email === emailLimpo);
+    const idx = usuarios.findIndex(u => (u.email || '').toLowerCase() === emailLimpo);
     if (idx !== -1) {
       usuarios[idx].senhaHash = novaSenhaHash;
       usuarios[idx].updatedAt = new Date().toISOString();

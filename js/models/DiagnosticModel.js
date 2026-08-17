@@ -1,44 +1,39 @@
 /**
  * ============================================================================
  * GestARClimAS - DiagnosticModel.js
- * Model: Motor de Diagnóstico Determinístico Baseado em Múltiplos if / else if / else
- * Avalia de forma aprofundada cada critério, vulnerabilidades e potenciais de melhoria
+ * Modelo Determinístico: Cálculo dos 16 Critérios, Matriz Técnica Ponderada,
+ * 4 Dimensões de Resiliência Climática, Indicadores Ecológicos e Regras Periciais
  * ============================================================================
  */
 
 class DiagnosticModel {
   constructor() {
-    this.pesoQuestoes = {
-      excelente: 10,
-      moderado: 5,
-      critico: 0
-    };
-
     this.metadadosQuestoes = [
-      { id: "p1", num: 1, pilar: "Riscos & Chuvas", titulo: "Fiação elétrica e condutores expostos a umidade" },
-      { id: "p2", num: 2, pilar: "Riscos & Chuvas", titulo: "Corrosão e risco de eletrização em estruturas metálicas" },
-      { id: "p3", num: 3, pilar: "Riscos & Chuvas", titulo: "Drenagem pluvial e histórico de alagamentos no pátio" },
-      { id: "p4", num: 4, pilar: "Riscos & Chuvas", titulo: "Integridade de telhados, calhas e estabilidade de forros" },
-      { id: "p5", num: 5, pilar: "Eficiência Hídrica", titulo: "Estado de conservação das torneiras e registros" },
-      { id: "p6", num: 6, pilar: "Eficiência Hídrica", titulo: "Regulagem de válvulas e descargas sanitárias" },
-      { id: "p7", num: 7, pilar: "Eficiência Hídrica", titulo: "Bebedouros escolares, controle de perdas e drenagem" },
-      { id: "p8", num: 8, pilar: "Eficiência Hídrica", titulo: "Captação e reuso sustentável de água da chuva" },
-      { id: "p9", num: 9, pilar: "Áreas Verdes & Clima", titulo: "Conservação de canteiros e solo permeável" },
-      { id: "p10", num: 10, pilar: "Áreas Verdes & Clima", titulo: "Densidade de árvores de copa e cobertura de sombra" },
-      { id: "p11", num: 11, pilar: "Áreas Verdes & Clima", titulo: "Insolação direta e estresse térmico nas áreas comuns" },
-      { id: "p12", num: 12, pilar: "Áreas Verdes & Clima", titulo: "Horta escolar pedagógica e práticas agroecológicas" },
-      { id: "p13", num: 13, pilar: "Resíduos & ODS 13", titulo: "Coleta seletiva e triagem de materiais recicláveis" },
-      { id: "p14", num: 14, pilar: "Resíduos & ODS 13", titulo: "Destinação e compostagem de resíduos da cozinha/merenda" },
-      { id: "p15", num: 15, pilar: "Resíduos & ODS 13", titulo: "Descarte de resíduos perigosos, pilhas e lâmpadas" },
-      { id: "p16", num: 16, pilar: "Resíduos & ODS 13", titulo: "Projetos contínuos de Educação Climática e Ação ODS 13" }
+      { id: 'p1', num: 1, pilar: '1. Riscos de Desastres', titulo: 'Fiação e Instalações Elétricas em Dias de Chuva' },
+      { id: 'p2', num: 2, pilar: '1. Riscos de Desastres', titulo: 'Corrosão e Aterramento de Estruturas Metálicas' },
+      { id: 'p3', num: 3, pilar: '1. Riscos de Desastres', titulo: 'Drenagem Pluvial, Grelhas e Escoamento do Pátio' },
+      { id: 'p4', num: 4, pilar: '1. Riscos de Desastres', titulo: 'Estanqueidade de Telhados, Calhas e Forros' },
+      { id: 'p5', num: 5, pilar: '2. Eficiência Hídrica', titulo: 'Conservação e Ausência de Vazamentos em Torneiras' },
+      { id: 'p6', num: 6, pilar: '2. Eficiência Hídrica', titulo: 'Eficiência e Válvulas das Descargas Sanitárias' },
+      { id: 'p7', num: 7, pilar: '2. Eficiência Hídrica', titulo: 'Estanqueidade e Drenagem de Bebedouros' },
+      { id: 'p8', num: 8, pilar: '2. Eficiência Hídrica', titulo: 'Captação e Reaproveitamento de Água de Chuva' },
+      { id: 'p9', num: 9, pilar: '3. Áreas Verdes & Clima', titulo: 'Solo Vivo, Canteiros Permeáveis e Jardins' },
+      { id: 'p10', num: 10, pilar: '3. Áreas Verdes & Clima', titulo: 'Densidade Arbórea e Cobertura de Copa' },
+      { id: 'p11', num: 11, pilar: '3. Áreas Verdes & Clima', titulo: 'Mitigação de Ilhas de Calor e Conforto Térmico' },
+      { id: 'p12', num: 12, pilar: '3. Áreas Verdes & Clima', titulo: 'Horta Escolar Agroecológica Pedagógica' },
+      { id: 'p13', num: 13, pilar: '4. Resíduos & ODS 13', titulo: 'Coleta Seletiva e Triagem de Recicláveis' },
+      { id: 'p14', num: 14, pilar: '4. Resíduos & ODS 13', titulo: 'Tratamento de Resíduos Orgânicos e Compostagem' },
+      { id: 'p15', num: 15, pilar: '4. Resíduos & ODS 13', titulo: 'Descarte Seguro de Pilhas, Lâmpadas e Eletrônicos' },
+      { id: 'p16', num: 16, pilar: '4. Resíduos & ODS 13', titulo: 'Projetos Contínuos de Educação Climática (ODS 13)' }
     ];
   }
 
   /**
-   * Calcula o diagnóstico ambiental escolar estritamente determinístico
-   * @param {Object} respostas Objeto com p1 a p16
-   * @param {Object} escola Dados da escola (nome, estado, cidade, bairro, avaliador, turno)
-   * @returns {Object} Laudo detalhado com scores, alertas, pontos a melhorar, pontos fortes e plano de ação
+   * Executa o cálculo determinístico de pontuação, categorização por pilar,
+   * alertas periciais, matriz técnica e plano de ação ODS 13
+   * @param {Object} respostas Respostas { p1: 'critico'|'moderado'|'excelente', ... }
+   * @param {Object} escola Dados cadastrais da escola
+   * @returns {Object} Laudo detalhado completo
    */
   calcularDiagnostico(respostas, escola = {}) {
     const r = respostas || {};
@@ -57,7 +52,7 @@ class DiagnosticModel {
     const scoreDimVerde = Math.round((dimVerdePontos / 40) * 100);
     const scoreDimResiduos = Math.round((dimResiduosPontos / 40) * 100);
 
-    // Contagem de criticidade
+    // Contagem de criticidade dos 16 quesitos
     let countCritico = 0;
     let countModerado = 0;
     let countExcelente = 0;
@@ -100,19 +95,19 @@ class DiagnosticModel {
     const detalhamentoQuestoes = [];
 
     // =========================================================================
-    // REGRAS DETERMINÍSTICAS: PILAR 1 - RISCOS DE DESASTRES E CHUVAS
+    // PILAR 1: RISCOS DE DESASTRES E CHUVAS (P1 - P4)
     // =========================================================================
 
-    // Regra P1: Fiação e Instalações Elétricas
+    // P1: Fiação Elétrica
     if (r.p1 === 'critico') {
-      pontosCriticos.push("Risco Imediato de Choque Elétrico e Curto-Circuito em Períodos Chuvosos: Fiação exposta e sem eletrodutos em paredes úmidas ou sob goteiras.");
+      pontosCriticos.push("Risco Imediato de Choque Elétrico e Curto-Circuito: Fiação exposta e sem conduítes antichama vedados em paredes úmidas ou sob goteiras.");
       recomendacoesAcao.push({
         id: "REC_ELETRICA",
         prioridade: "prio-urgente",
         textoPrioridade: "Urgência Imediata",
         pilar: "Segurança & Clima",
         titulo: "Canalização e Proteção Estanque da Rede Elétrica",
-        descricao: "Isolar cabos expostos, instalar eletrodutos antichama vedados e substituir quadros elétricos oxidados com disjuntores diferenciais residuais (DR).",
+        descricao: "Isolar cabos expostos, instalar eletrodutos antichama vedados e substituir quadros oxidados com disjuntores diferenciais residuais (DR).",
         impacto: "Prevenção de acidentes fatais por choque elétrico e interrupção das aulas em dias de temporal."
       });
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[0], status: 'critico', statusTexto: 'Crítico', pontos: 0, obs: 'Fiação vulnerável exposta a umidade e intempéries.', acao: 'Canalizar em conduítes antichama vedados.' });
@@ -133,9 +128,9 @@ class DiagnosticModel {
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[0], status: 'excelente', statusTexto: 'Excelente', pontos: 10, obs: 'Instalação elétrica protegida e estanque.', acao: 'Manter inspeções semestrais.' });
     }
 
-    // Regra P2: Corrosão e Estruturas Metálicas
+    // P2: Estruturas Metálicas & Corrosão
     if (r.p2 === 'critico') {
-      pontosCriticos.push("Perigo de Colapso Estrutural e Eletrização: Grades, portões, pilares ou corrimãos com corrosão avançada em áreas de trânsito de estudantes.");
+      pontosCriticos.push("Perigo de Colapso e Eletrização em Gradis: Grades, portões, pilares ou corrimãos com corrosão severa em áreas de circulação de alunos.");
       recomendacoesAcao.push({
         id: "REC_METAR",
         prioridade: "prio-alta",
@@ -154,9 +149,9 @@ class DiagnosticModel {
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[1], status: 'excelente', statusTexto: 'Excelente', pontos: 10, obs: 'Estruturas conservadas e devidamente aterradas.', acao: 'Manutenção da película protetora.' });
     }
 
-    // Regra P3: Drenagem e Alagamento de Pátios
+    // P3: Drenagem e Alagamentos
     if (r.p3 === 'critico') {
-      pontosCriticos.push("Vulnerabilidade Hidrogeológica Severa: Pátio e vias de acesso sofrem empoçamentos e alagamentos intensos que invadem salas e criam poças permanentes.");
+      pontosCriticos.push("Vulnerabilidade Hidrogeológica Severa: Pátio e vias sofrem alagamentos intensos que invadem salas e criam poças permanentes com risco de dengue.");
       recomendacoesAcao.push({
         id: "REC_DRENAGEM",
         prioridade: "prio-alta",
@@ -175,7 +170,7 @@ class DiagnosticModel {
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[2], status: 'excelente', statusTexto: 'Excelente', pontos: 10, obs: 'Escoamento superficial rápido e sem retenção.', acao: 'Conservação da permeabilidade do solo.' });
     }
 
-    // Regra P4: Telhados, Calhas e Forros
+    // P4: Telhados, Calhas e Forros
     if (r.p4 === 'critico') {
       pontosCriticos.push("Insegurança em Coberturas Escolares: Goteiras contínuas e risco de colapso de placas de forro encharcadas sobre carteiras e materiais.");
       recomendacoesAcao.push({
@@ -197,41 +192,42 @@ class DiagnosticModel {
     }
 
     // =========================================================================
-    // REGRAS DETERMINÍSTICAS: PILAR 2 - EFICIÊNCIA HÍDRICA & SANEAMENTO
+    // PILAR 2: EFICIÊNCIA HÍDRICA & SANEAMENTO (P5 - P8)
     // =========================================================================
 
-    // Regra P5: Torneiras
+    // P5: Torneiras
     if (r.p5 === 'critico') {
-      pontosMelhorar.push("Desperdício Hídrico em Torneiras: Múltiplos pontos com vazamento e gotejamento ininterrupto.");
+      pontosCriticos.push("Desperdício Hídrico Crítico em Torneiras: Múltiplos pontos com vazamento e gotejamento ininterrupto de água potável.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[4], status: 'critico', statusTexto: 'Crítico', pontos: 0, obs: 'Perda contínua de água limpa por falha de vedação.', acao: 'Troca imediata de carrapetas e registros.' });
     } else if (r.p5 === 'moderado') {
-      pontosMelhorar.push("Torneiras com Leve Gotejamento: Necessária troca preventiva de reparos em banheiros.");
+      pontosMelhorar.push("Torneiras com Leve Gotejamento: Necessária troca preventiva de reparos em banheiros e instalação de bicos arejadores.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[4], status: 'moderado', statusTexto: 'Moderado', pontos: 5, obs: 'Pequenos vazamentos pontuais.', acao: 'Instalação de arejadores de vazão.' });
     } else {
-      pontosFortes.push("Estanqueidade Total em Torneiras: Equipamentos regulados e com bicos arejadores.");
+      pontosFortes.push("Estanqueidade Total em Torneiras: Equipamentos regulados e com bicos arejadores economizadores de água.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[4], status: 'excelente', statusTexto: 'Excelente', pontos: 10, obs: 'Sem perdas hídricas nas torneiras.', acao: 'Manter checagens rotineiras.' });
     }
 
-    // Regra P6: Descargas
+    // P6: Descargas
     if (r.p6 === 'critico') {
-      pontosMelhorar.push("Válvulas de Descarga Travadas: Descarte contínuo de milhares de litros de água tratada nas bacias sanitárias.");
+      pontosCriticos.push("Válvulas de Descarga Travadas / Vazando: Descarte ininterrupto de milhares de litros de água tratada direto no esgoto sanitário.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[5], status: 'critico', statusTexto: 'Crítico', pontos: 0, obs: 'Fluxo constante de água direto no vaso sanitário.', acao: 'Regulagem ou troca do êmbolo da válvula.' });
     } else if (r.p6 === 'moderado') {
-      pontosMelhorar.push("Descargas sem Economizador: Ausência de caixas acopladas de duplo acionamento ecológico.");
+      pontosMelhorar.push("Descargas sem Economizador: Ausência de caixas acopladas de duplo acionamento ecológico ou reguladores de vazão.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[5], status: 'moderado', statusTexto: 'Moderado', pontos: 5, obs: 'Descarga convencional com alto consumo por acionamento.', acao: 'Calibração de tempo de fluxo.' });
     } else {
-      pontosFortes.push("Descargas Sanitárias Eficientes: Válvulas reguladas e acionamento inteligente.");
+      pontosFortes.push("Descargas Sanitárias Eficientes: Válvulas reguladas e acionamento inteligente sem vazamentos.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[5], status: 'excelente', statusTexto: 'Excelente', pontos: 10, obs: 'Excelente controle volumétrico nas descargas.', acao: 'Conservar vedação dos reservatórios.' });
     }
 
-    // Regra P7: Bebedouros
+    // P7: Bebedouros
     if (r.p7 === 'critico') {
-      pontosMelhorar.push("Bebedouros com Perda Hídrica: Escoamento defeituoso criando poças de água potável no pátio.");
+      pontosCriticos.push("Bebedouros com Perda Hídrica e Risco Sanitário: Escoamento defeituoso criando poças de água potável no pátio.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[6], status: 'critico', statusTexto: 'Crítico', pontos: 0, obs: 'Perda contínua de água tratada e poças no piso.', acao: 'Substituição das válvulas de pressão e dreno.' });
     } else if (r.p7 === 'moderado') {
+      pontosMelhorar.push("Bebedouros com Escoamento Lento: Respingos e necessidade de limpeza de sifões e ajustes de bicos.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[6], status: 'moderado', statusTexto: 'Moderado', pontos: 5, obs: 'Respingos e ralo com escoamento lento.', acao: 'Limpeza de sifão e ajuste de bico.' });
     } else {
-      pontosFortes.push("Bebedouros Higiênicos e Econômicos: Drenagem perfeita e sem perdas de água.");
+      pontosFortes.push("Bebedouros Higiênicos e Econômicos: Drenagem perfeita, filtros em dia e ausência total de perdas.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[6], status: 'excelente', statusTexto: 'Excelente', pontos: 10, obs: 'Equipamentos seguros e estanques.', acao: 'Troca periódica de filtros de carvão ativado.' });
     }
 
@@ -243,13 +239,13 @@ class DiagnosticModel {
         pilar: "Eficiência Hídrica",
         titulo: "Mutirão Hidráulico Escolar: Troca de Carrapetas, Vedações e Válvulas",
         descricao: "Substituir reparos de torneiras, instalar bicos arejadores economizadores e regular o fluxo das descargas sanitárias.",
-        impacto: "Economia imediata de até 40% na conta de água escolar e combate ao desperdício do recurso hídrico municipal."
+        impacto: "Economia imediata de até 40% na conta de água escolar e combate ao desperdício hídrico."
       });
     }
 
-    // Regra P8: Aproveitamento de Água de Chuva
+    // P8: Aproveitamento de Água de Chuva
     if (r.p8 === 'critico') {
-      pontosMelhorar.push("Ausência de Aproveitamento Pluvial: Todo o volume de água de chuva coletado nas coberturas é descartado sem reservação para uso não potável.");
+      pontosCriticos.push("Descarte Total de Água de Chuva: 100% da água pluvial de telhados é desperdiçada sem reservação para uso não potável.");
       recomendacoesAcao.push({
         id: "REC_CISTERNA",
         prioridade: "prio-media",
@@ -261,7 +257,7 @@ class DiagnosticModel {
       });
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[7], status: 'critico', statusTexto: 'Crítico', pontos: 0, obs: 'Descarte total da água de chuva.', acao: 'Instalação de bombona/cisterna de reuso.' });
     } else if (r.p8 === 'moderado') {
-      pontosMelhorar.push("Captação Pluvial Improvisada: Existem tambores de reservação, porém sem sistema de vedação e filtragem contra proliferação de mosquitos.");
+      pontosMelhorar.push("Captação Pluvial Improvisada: Existem tambores de reservação, porém sem sistema de vedação e filtragem contra mosquitos.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[7], status: 'moderado', statusTexto: 'Moderado', pontos: 5, obs: 'Reservação simples sem tela mosquiteira.', acao: 'Adequação com filtro de folhas e tampa hermética.' });
     } else {
       pontosFortes.push("Inovação em Captação Pluvial: Cisterna ecológica em funcionamento suprindo demandas de limpeza e irrigação da escola.");
@@ -269,53 +265,60 @@ class DiagnosticModel {
     }
 
     // =========================================================================
-    // REGRAS DETERMINÍSTICAS: PILAR 3 - ÁREAS VERDES, MICROCLIMA E CONFORTO
+    // PILAR 3: ÁREAS VERDES, MICROCLIMA E CONFORTO BIOCLIMÁTICO (P9 - P12)
     // =========================================================================
 
-    // Regra P9: Canteiros
+    // P9: Canteiros e Solo Vivo
     if (r.p9 === 'critico') {
-      pontosMelhorar.push("Solo 100% Mineralizado / Canteiros Abandonados: Pátio totalmente cimentado com retenção extrema de calor e ausência de solo vivo permeável.");
+      pontosCriticos.push("Solo 100% Mineralizado / Canteiros Abandonados: Pátio totalmente cimentado com retenção extrema de calor e ausência de solo vivo permeável.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[8], status: 'critico', statusTexto: 'Crítico', pontos: 0, obs: 'Ausência de solo vivo permeável.', acao: 'Desimpermeabilização de faixas de piso.' });
     } else if (r.p9 === 'moderado') {
+      pontosMelhorar.push("Canteiros com Vegetação Rala: Presença de canteiros, porém com solo compactado demandando adubação e cobertura viva.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[8], status: 'moderado', statusTexto: 'Moderado', pontos: 5, obs: 'Canteiros existentes com cobertura vegetal rala.', acao: 'Adubação orgânica e plantio de forrações.' });
     } else {
       pontosFortes.push("Canteiros Verdes e Solo Permeável Bem Cuidados: Vegetação viva contribuindo para a infiltração de água e redução da poeira.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[8], status: 'excelente', statusTexto: 'Excelente', pontos: 10, obs: 'Jardins vigorosos e solo drenante.', acao: 'Manutenção de cobertura morta no solo.' });
     }
 
-    // Regra P10 e P11: Densidade Arbórea e Ilhas de Calor
+    // P10: Densidade Arbórea
     if (r.p10 === 'critico') {
+      pontosCriticos.push("Déficit Severo de Árvores de Sombra: Ausência de árvores de copa densa no pátio e nas áreas de recreação escolar.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[9], status: 'critico', statusTexto: 'Crítico', pontos: 0, obs: 'Déficit severo de árvores de sombra.', acao: 'Plantio de mudas nativas de copa larga.' });
     } else if (r.p10 === 'moderado') {
+      pontosMelhorar.push("Arborização Jovem em Desenvolvimento: Presença de mudas necessitando de tutoramento, irrigação e adubação orgânica.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[9], status: 'moderado', statusTexto: 'Moderado', pontos: 5, obs: 'Árvores jovens em crescimento.', acao: 'Tutoramento e irrigação das mudas.' });
     } else {
+      pontosFortes.push("Excelente Cobertura de Copa Arbórea: Árvores adultas proporcionando sombra abundante e refúgio bioclimático.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[9], status: 'excelente', statusTexto: 'Excelente', pontos: 10, obs: 'Boa cobertura de copa adulta.', acao: 'Poda de condução e fitossanidade.' });
     }
 
+    // P11: Ilhas de Calor e Conforto Térmico
     if (r.p11 === 'critico') {
+      pontosCriticos.push("Ilha de Calor e Desconforto Térmico Crítico: Pátio superaquecido com radiação solar direta intensa e sensação térmica extrema.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[10], status: 'critico', statusTexto: 'Crítico', pontos: 0, obs: 'Exposição solar excessiva e desconforto térmico.', acao: 'Instalação de sombrites e pergolados verdes.' });
     } else if (r.p11 === 'moderado') {
+      pontosMelhorar.push("Conforto Térmico Mediano: Áreas com sombreamento parcial necessitando de barreiras vegetais e sombrites.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[10], status: 'moderado', statusTexto: 'Moderado', pontos: 5, obs: 'Conforto térmico mediano.', acao: 'Ampliação de barreiras vegetais.' });
     } else {
+      pontosFortes.push("Microclima Agradável e Protegido: Boa circulação de ar, conforto térmico e áreas sombreadas acolhedoras.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[10], status: 'excelente', statusTexto: 'Excelente', pontos: 10, obs: 'Microclima agradável com brisa e sombra.', acao: 'Preservar corredores de ventilação natural.' });
     }
 
     if (r.p10 === 'critico' || r.p11 === 'critico') {
-      pontosCriticos.push("Ilha de Calor Escolar: Pátio superaquecido com ausência de árvores de copa e refúgios frescos.");
       recomendacoesAcao.push({
         id: "REC_ARBORIZACAO_URGENTE",
         prioridade: "prio-alta",
         textoPrioridade: "Ação Climática ODS 13",
         pilar: "Microclima & Biofilia",
-        titulo: "Plantio de árvores nativas e criação de hortas escolares para mitigar ilhas de calor",
-        descricao: "Criar covas adubadas para mudas de crescimento rápido e copas densas, instalando também sombrites provisórios enquanto as árvores crescem.",
+        titulo: "Plantio de árvores nativas e criação de refúgios sombreados contra ilhas de calor",
+        descricao: "Criar covas adubadas para mudas nativas de copa densa e instalar sombrites temporários enquanto as árvores se desenvolvem.",
         impacto: "Redução de até 4°C na temperatura percebida no pátio e melhoria no bem-estar dos estudantes."
       });
     }
 
-    // Regra P12: Horta Escolar Pedagógica
+    // P12: Horta Escolar Pedagógica
     if (r.p12 === 'critico') {
-      pontosMelhorar.push("Ausência de Espaço Agroecológico: A escola não possui horta pedagógica para vivência prática de cultivo com os estudantes.");
+      pontosCriticos.push("Ausência de Espaço Agroecológico: Falta de horta escolar didática para vivência prática de cultivo com os estudantes.");
       recomendacoesAcao.push({
         id: "REC_HORTA",
         prioridade: "prio-educativa",
@@ -327,6 +330,7 @@ class DiagnosticModel {
       });
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[11], status: 'critico', statusTexto: 'Crítico', pontos: 0, obs: 'Sem atividades agroecológicas no currículo.', acao: 'Criar horta didática em caixotes ou solo.' });
     } else if (r.p12 === 'moderado') {
+      pontosMelhorar.push("Horta Escolar com Cultivo Sazonal / Reduzido: Espaço existente demandando revitalização e integração curricular permanente.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[11], status: 'moderado', statusTexto: 'Moderado', pontos: 5, obs: 'Horta com cultivo sazonal reduzido.', acao: 'Integrar a horta aos planos de aula de ciências.' });
     } else {
       pontosFortes.push("Horta Escolar Viva e Produtiva: Atividades agroecológicas ativas integradas à merenda escolar e ao currículo pedagógico.");
@@ -334,12 +338,12 @@ class DiagnosticModel {
     }
 
     // =========================================================================
-    // REGRAS DETERMINÍSTICAS: PILAR 4 - GESTÃO DE RESÍDUOS E SUSTENTABILIDADE
+    // PILAR 4: GESTÃO DE RESÍDUOS E AÇÃO CLIMÁTICA (P13 - P16)
     // =========================================================================
 
-    // Regra P13: Coleta Seletiva
+    // P13: Coleta Seletiva
     if (r.p13 === 'critico') {
-      pontosMelhorar.push("Ausência de Triagem de Recicláveis: Todo o papel, plástico e embalagens da escola são misturados em lixeiras comuns sem destinação para reciclagem.");
+      pontosCriticos.push("Ausência de Triagem de Recicláveis: Todo o papel, plástico e embalagens da escola são descartados no lixo comum sem reciclagem.");
       recomendacoesAcao.push({
         id: "REC_RECICLAGEM",
         prioridade: "prio-educativa",
@@ -351,15 +355,16 @@ class DiagnosticModel {
       });
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[12], status: 'critico', statusTexto: 'Crítico', pontos: 0, obs: 'Descarte indiferenciado de materiais recicláveis.', acao: 'Implantar lixeiras identificadas por cor.' });
     } else if (r.p13 === 'moderado') {
+      pontosMelhorar.push("Coleta Seletiva Parcial: Separação restrita de papéis, necessitando expandir para plásticos e metais do recreio.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[12], status: 'moderado', statusTexto: 'Moderado', pontos: 5, obs: 'Separação parcial de papéis.', acao: 'Ampliar coleta para plásticos e metais no recreio.' });
     } else {
       pontosFortes.push("Cultura de Coleta Seletiva Consolidada: Triagem ativa de recicláveis com destinação correta e coletores identificados.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[12], status: 'excelente', statusTexto: 'Excelente', pontos: 10, obs: 'Triagem e destinação regular de recicláveis.', acao: 'Manter parceria com associações de catadores.' });
     }
 
-    // Regra P14: Resíduos Orgânicos e Compostagem
+    // P14: Resíduos Orgânicos e Compostagem
     if (r.p14 === 'critico') {
-      pontosMelhorar.push("Descarte Total de Matéria Orgânica: Sobras da merenda e cascas são encaminhadas integralmente para o lixo comum sem reaproveitamento biológico.");
+      pontosCriticos.push("Descarte Total de Matéria Orgânica: Sobras da merenda e cascas vão integralmente para o lixo comum sem reaproveitamento biológico.");
       recomendacoesAcao.push({
         id: "REC_COMPOSTEIRA",
         prioridade: "prio-media",
@@ -371,25 +376,28 @@ class DiagnosticModel {
       });
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[13], status: 'critico', statusTexto: 'Crítico', pontos: 0, obs: 'Resíduos da cozinha vão para o aterro municipal.', acao: 'Montar composteira escolar em caixas plásticas.' });
     } else if (r.p14 === 'moderado') {
+      pontosMelhorar.push("Aproveitamento Orgânico Parcial: Doação informal sem estrutura biológica de compostagem escolar.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[13], status: 'moderado', statusTexto: 'Moderado', pontos: 5, obs: 'Aproveitamento parcial para animais.', acao: 'Estruturar compostagem biológica formal.' });
     } else {
-      pontosFortes.push("Excelente gestão de resíduos orgânicos: Transformação das sobras da cozinha e merenda em composto orgânico fértil via compostagem.");
+      pontosFortes.push("Excelente Gestão de Resíduos Orgânicos: Transformação das sobras da merenda em composto fértil via compostagem.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[13], status: 'excelente', statusTexto: 'Excelente', pontos: 10, obs: 'Compostagem escolar ativa gerando húmus.', acao: 'Utilizar o adubo na horta e canteiros da escola.' });
     }
 
-    // Regra P15: Resíduos Perigosos
+    // P15: Resíduos Perigosos / Eletroeletrônicos
     if (r.p15 === 'critico') {
-      pontosMelhorar.push("Descarte Inadequado de Resíduos Perigosos: Pilhas e lâmpadas demandam ponto de recolhimento seguro para evitar contaminação por metais pesados.");
+      pontosCriticos.push("Descarte Inadequado de Resíduos Perigosos: Pilhas e lâmpadas demandam ponto de recolhimento seguro para evitar contaminação ambiental.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[14], status: 'critico', statusTexto: 'Crítico', pontos: 0, obs: 'Ausência de ponto seguro para pilhas e lâmpadas.', acao: 'Criar papa-pilhas e caixa de descarte seguro.' });
     } else if (r.p15 === 'moderado') {
+      pontosMelhorar.push("Armazenamento Temporário de Resíduos Perigosos: Ponto de descarte provisório necessitando envio regular para logística reversa.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[14], status: 'moderado', statusTexto: 'Moderado', pontos: 5, obs: 'Armazenamento temporário seguro.', acao: 'Encaminhar periodicamente para postos de logística reversa.' });
     } else {
       pontosFortes.push("Logística Reversa Ativa: Destinação certificada de materiais eletroeletrônicos e componentes perigosos.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[14], status: 'excelente', statusTexto: 'Excelente', pontos: 10, obs: 'Ponto de coleta de pilhas e lâmpadas ativo.', acao: 'Promover campanhas com as famílias dos alunos.' });
     }
 
-    // Regra P16: Projetos ODS 13
+    // P16: Projetos ODS 13
     if (r.p16 === 'critico') {
+      pontosCriticos.push("Ausência de Projetos de Educação Climática: Inexistência de comitê ou ações pedagógicas continuadas voltadas ao ODS 13 da ONU.");
       recomendacoesAcao.push({
         id: "REC_COMITE_CLIMA",
         prioridade: "prio-educativa",
@@ -401,18 +409,19 @@ class DiagnosticModel {
       });
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[15], status: 'critico', statusTexto: 'Crítico', pontos: 0, obs: 'Sem projetos contínuos de clima e meio ambiente.', acao: 'Integrar a temática do ODS 13 nas disciplinas.' });
     } else if (r.p16 === 'moderado') {
+      pontosMelhorar.push("Ações Ambientais Pontuais: Atividades comemorativas no Dia do Meio Ambiente sem continuidade anual.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[15], status: 'moderado', statusTexto: 'Moderado', pontos: 5, obs: 'Ações pontuais no Dia do Meio Ambiente.', acao: 'Tornar os projetos ambientais interdisciplinares e contínuos.' });
     } else {
-      pontosFortes.push("Liderança em Ação Climática: Programa contínuo de Educação Ambiental alinhado ao ODS 13 da ONU envolvendo toda a comunidade escolar.");
+      pontosFortes.push("Liderança em Ação Climática ODS 13: Programa contínuo de Educação Ambiental alinhado à ONU envolvendo toda a comunidade.");
       detalhamentoQuestoes.push({ ...this.metadadosQuestoes[15], status: 'excelente', statusTexto: 'Excelente', pontos: 10, obs: 'Comitê e práticas permanentes de sustentabilidade.', acao: 'Compartilhar boas práticas com outras escolas da rede.' });
     }
 
     // Regras Combinatórias Especiais
     if (r.p1 === 'critico' && r.p4 === 'critico') {
-      pontosCriticos.unshift("🚨 ALERTA COMBINADO CRÍTICO: Goteiras e infiltrações atuando diretamente sobre condutores elétricos expostos. Risco iminente de princípio de incêndio e choques graves.");
+      pontosCriticos.unshift("🚨 ALERTA COMBINADO GRAVE: Goteiras e infiltrações atuando diretamente sobre condutores elétricos expostos. Risco iminente de curto-circuito e choque.");
     }
     if (r.p12 === 'excelente' && r.p14 === 'excelente') {
-      pontosFortes.unshift("🌟 Ciclo Agroecológico Perfeito: A escola fecha o ciclo da matéria orgânica, gerando adubo da própria merenda para nutrir sua horta didática.");
+      pontosFortes.unshift("🌟 Ciclo Agroecológico Fechado: A escola gera adubo orgânico da própria merenda para nutrir sua horta didática.");
     }
     if (r.p5 === 'excelente' && r.p6 === 'excelente' && r.p8 === 'excelente') {
       pontosFortes.push("💧 Gestão Hídrica Avançada: Combinação de consumo controlado sem perdas e captação sustentável de água pluvial.");

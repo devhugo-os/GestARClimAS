@@ -392,6 +392,13 @@ class FormView {
 
     if (!btnBuscarCep || !inputCep) return;
 
+    inputCep.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        btnBuscarCep.click();
+      }
+    });
+
     btnBuscarCep.addEventListener('click', async () => {
       const cep = inputCep.value.replace(/\D/g, '');
       if (cep.length !== 8) {
