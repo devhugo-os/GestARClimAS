@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>GestARClimAS - Autenticação & Acesso</title>
+  
+  <!-- Favicon Oficial GestARClimAS -->
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  
+  <!-- Meta tags institucionais e SEO -->
+  <meta name="description" content="Sistema de Autenticação - GestARClimAS: Gestão da Pegada Ecológica Escolar & ODS 13." />
+  <meta name="author" content="Projeto GestARClimAS" />
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Estilos da Aplicação -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body class="auth-page-body">
+
+  <div class="auth-page-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <img src="assets/logo_gestarclimas.jpg" alt="GestARClimAS" class="auth-logo-img" />
+        <p class="auth-subtitle">Gestão da Pegada Ecológica Escolar & ODS 13</p>
+      </div>
+
+      <!-- Abas de Alternância: Entrar vs Criar Conta -->
+      <div class="auth-tabs" id="authTabsHeader">
+        <button type="button" class="auth-tab-btn active" id="authTabLogin">Entrar</button>
+        <button type="button" class="auth-tab-btn" id="authTabRegister">Criar Conta</button>
+      </div>
+
+      <!-- 1. FORMULÁRIO DE LOGIN -->
+      <div id="boxAuthLogin" class="auth-form-box">
+        <form id="formAuthLogin">
+          <div class="form-group">
+            <label class="form-label" for="loginEmail">E-mail Institucional ou Pessoal <span class="req">*</span></label>
+            <input type="email" id="loginEmail" class="form-input" placeholder="" required autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <label class="form-label" for="loginPassword" style="margin-bottom: 0;">Senha <span class="req">*</span></label>
+              <a href="#" id="linkForgotPassword" class="auth-link" style="font-size: 0.8rem;">Esqueceu a senha?</a>
+            </div>
+            <input type="password" id="loginPassword" class="form-input" placeholder="" required autocomplete="current-password" />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.85rem; margin-top: 0.5rem;">
+            Acessar Plataforma
+          </button>
+        </form>
+      </div>
+
+      <!-- 2. FORMULÁRIO DE CADASTRO (APENAS DADOS BÁSICOS) -->
+      <div id="boxAuthRegister" class="auth-form-box" style="display: none;">
+        <form id="formAuthRegister">
+          
+          <!-- Upload de Foto de Perfil -->
+          <div class="auth-photo-section">
+            <div class="auth-photo-wrapper">
+              <img id="regPhotoPreview" src="assets/favicon.svg" alt="Foto de Perfil" class="auth-photo-preview" />
+              <label for="regPhotoInput" class="auth-photo-btn" title="Selecionar foto">
+                📷
+              </label>
+              <input type="file" id="regPhotoInput" accept="image/*" style="display: none;" />
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 0.85rem; font-weight: 700; color: var(--neutral-800);">Foto de Perfil (Opcional)</div>
+              <div style="font-size: 0.75rem; color: var(--neutral-500);">Clique no ícone da câmera para escolher sua foto.</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="regName">Nome Completo <span class="req">*</span></label>
+            <input type="text" id="regName" class="form-input" placeholder="" required autocomplete="name" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="regEmail">E-mail <span class="req">*</span></label>
+            <input type="email" id="regEmail" class="form-input" placeholder="" required autocomplete="email" />
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="regPassword">Senha <span class="req">*</span></label>
+              <input type="password" id="regPassword" class="form-input" placeholder="" minlength="6" required autocomplete="new-password" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="regPasswordConfirm">Confirmar Senha <span class="req">*</span></label>
+              <input type="password" id="regPasswordConfirm" class="form-input" placeholder="" minlength="6" required autocomplete="new-password" />
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.85rem; margin-top: 0.5rem;">
+            Concluir Cadastro & Acessar
+          </button>
+        </form>
+      </div>
+
+      <!-- 3. FORMULÁRIO DE ESQUECI A SENHA (SOLICITAR CÓDIGO POR E-MAIL) -->
+      <div id="boxAuthForgot" class="auth-form-box" style="display: none;">
+        <h4 style="font-size: 1rem; font-weight: 800; color: var(--neutral-900); margin-bottom: 0.5rem;">Recuperar Acesso</h4>
+        <p style="font-size: 0.825rem; color: var(--neutral-600); margin-bottom: 1.25rem; line-height: 1.4;">
+          Informe o e-mail cadastrado. Um código de segurança de 6 dígitos será despachado para a sua caixa de entrada.
+        </p>
+        <form id="formAuthForgot">
+          <div class="form-group">
+            <label class="form-label" for="forgotEmail">E-mail Cadastrado <span class="req">*</span></label>
+            <input type="email" id="forgotEmail" class="form-input" placeholder="" required autocomplete="email" />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.8rem;">
+            Enviar Código para meu E-mail
+          </button>
+          <div style="text-align: center; margin-top: 1rem;">
+            <a href="#" id="linkBackToLogin" class="auth-link" style="font-size: 0.825rem;">← Voltar para o Login</a>
+          </div>
+        </form>
+      </div>
+
+      <!-- 4. FORMULÁRIO DE REDEFINIÇÃO DE SENHA COM CÓDIGO DO E-MAIL -->
+      <div id="boxAuthReset" class="auth-form-box" style="display: none;">
+        <div style="background: var(--primary-50); border: 1px solid var(--primary-200); border-radius: var(--radius-md); padding: 0.75rem 1rem; margin-bottom: 1.25rem;">
+          <div style="font-weight: 800; font-size: 0.85rem; color: var(--primary-900); display: flex; align-items: center; gap: 0.35rem;">
+            <span>📩</span> Código de Segurança Despachado
+          </div>
+          <p style="font-size: 0.78rem; color: var(--primary-800); margin-top: 0.25rem; line-height: 1.35;">
+            Um código de verificação foi enviado para <strong id="resetTargetEmailDisplay" style="color: var(--primary-950);"></strong>. Verifique sua caixa de entrada e spam.
+          </p>
+        </div>
+
+        <!-- Notificação de Despacho de E-mail em Tempo Real -->
+        <div id="resetSimulatedInbox" style="display: none;"></div>
+
+        <form id="formAuthReset">
+          <div class="form-group">
+            <label class="form-label" for="resetCode">Código de Verificação (6 Dígitos do E-mail) <span class="req">*</span></label>
+            <input type="text" id="resetCode" class="form-input" placeholder="000000" maxlength="6" pattern="\d{6}" required style="font-weight: 800; letter-spacing: 0.25em; text-align: center; font-size: 1.2rem;" autocomplete="one-time-code" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="resetNewPassword">Nova Senha <span class="req">*</span></label>
+            <input type="password" id="resetNewPassword" class="form-input" placeholder="" minlength="6" required autocomplete="new-password" />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.8rem;">
+            Validar Código & Alterar Senha
+          </button>
+          <div style="text-align: center; margin-top: 1rem;">
+            <a href="#" id="linkBackToLoginFromReset" class="auth-link" style="font-size: 0.825rem;">← Cancelar e Fazer Login</a>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Container de Toasts -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Firebase SDK Oficial & Configuração do Projeto -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="js/config/firebase-config.js"></script>
+
+  <!-- Scripts da Aplicação -->
+  <script src="js/services/AuthService.js"></script>
+  <script src="js/views/AuthView.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const authService = new AuthService();
+
+      // Se já estiver logado, redireciona diretamente para o index.html
+      if (authService.estaAutenticado()) {
+        window.location.replace('index.html');
+        return;
+      }
+
+      // Função simples de exibição de toast na página de login
+      window.gestarclimasApp = {
+        showToast: (message, type = 'info') => {
+          const container = document.getElementById('toastContainer');
+          if (!container) return;
+          const toast = document.createElement('div');
+          toast.className = `toast toast-${type}`;
+          toast.innerHTML = `
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            </svg>
+            <span>${message}</span>
+          `;
+          container.appendChild(toast);
+          setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(10px)';
+            setTimeout(() => toast.remove(), 300);
+          }, 3500);
+        }
+      };
+
+      const authView = new AuthView(authService);
+      authView.init((user) => {
+        window.location.replace('index.html');
+      });
+    });
+  </script>
+</body>
+</html>
