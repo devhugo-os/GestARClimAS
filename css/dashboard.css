@@ -880,17 +880,26 @@
 /* Gráficos do Laudo */
 .report-charts-section {
   margin-bottom: 2rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .report-charts-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 @media (max-width: 850px) {
   .report-charts-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 }
 
@@ -903,6 +912,10 @@
   display: flex;
   flex-direction: column;
   transition: box-shadow var(--transition-fast);
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .report-chart-box:hover {
@@ -916,6 +929,7 @@
   margin-bottom: 1rem;
   padding-bottom: 0.6rem;
   border-bottom: 1px solid var(--neutral-100);
+  gap: 0.5rem;
 }
 
 .chart-box-header h4 {
@@ -932,13 +946,25 @@
   padding: 0.2rem 0.55rem;
   border-radius: var(--radius-full);
   border: 1px solid var(--primary-200);
+  flex-shrink: 0;
 }
 
 .chart-canvas-holder {
   position: relative;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   height: 260px;
   flex: 1;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.chart-canvas-holder canvas {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  display: block;
 }
 
 /* Tabela Técnica */
@@ -1399,6 +1425,17 @@
   height: 380px;
   position: relative;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.chart-compare-canvas-holder canvas {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  display: block;
 }
 
 .comp-mini-bar-track {
@@ -2053,5 +2090,143 @@
     border: 1px solid #cbd5e1 !important;
     box-shadow: none !important;
     page-break-inside: avoid;
+  }
+}
+
+/* ==========================================================================
+   10. RESPONSIVIDADE ULTRA-COMPACTA & ZERO OVERFLOW LATERAL
+   ========================================================================== */
+@media (max-width: 900px) {
+  .report-charts-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+  }
+  .report-meta-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.75rem !important;
+  }
+  .report-insights-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .action-plan-timeline {
+    grid-template-columns: 1fr !important;
+  }
+  .comparison-hero-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .comparison-selectors-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .comparison-kpi-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .report-header-banner {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 1.25rem 1rem !important;
+    gap: 1.25rem !important;
+  }
+
+  .report-score-box {
+    min-width: 0 !important;
+    width: 100% !important;
+    padding: 1rem 1.25rem !important;
+  }
+
+  .report-school-title {
+    font-size: 1.35rem !important;
+    line-height: 1.25 !important;
+    word-break: break-word !important;
+  }
+
+  .report-school-meta {
+    font-size: 0.8rem !important;
+    line-height: 1.45 !important;
+    word-break: break-word !important;
+  }
+
+  .report-meta-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.65rem !important;
+  }
+
+  .report-meta-card {
+    padding: 0.75rem 1rem !important;
+  }
+
+  .chart-canvas-holder {
+    height: 220px !important;
+  }
+
+  .chart-compare-canvas-holder {
+    height: 250px !important;
+  }
+
+  .results-actions-bar {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    align-items: stretch !important;
+  }
+
+  .actions-left-group,
+  .actions-right-group {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 0.5rem !important;
+  }
+
+  .actions-left-group .btn,
+  .actions-right-group .btn {
+    width: 100% !important;
+  }
+
+  .ranking-table-container,
+  .comparison-table-wrapper,
+  .table-responsive {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    display: block !important;
+    box-sizing: border-box !important;
+  }
+
+  .tech-matrix-table,
+  .ranking-table,
+  .comparison-table {
+    min-width: 540px !important;
+  }
+
+  .stepper-card {
+    padding: 0.85rem 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .stepper-nav {
+    display: flex !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 0.5rem !important;
+    padding-bottom: 0.35rem !important;
+  }
+
+  .stepper-step {
+    flex-shrink: 0 !important;
+    font-size: 0.75rem !important;
+  }
+
+  .question-card,
+  .question-block {
+    padding: 1.15rem 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .card-section,
+  .tab-header-card {
+    padding: 1.15rem 1rem !important;
+    margin-bottom: 1rem !important;
   }
 }

@@ -84,9 +84,13 @@ class AppController {
     const drawer = document.getElementById('mobileNavDrawer');
     const overlay = document.getElementById('mobileNavOverlay');
     const hamburger = document.getElementById('btnHamburgerToggle');
-    if (drawer) drawer.classList.toggle('open');
-    if (overlay) overlay.classList.toggle('open');
-    if (hamburger) hamburger.classList.toggle('open');
+    const willOpen = drawer && !drawer.classList.contains('open');
+
+    if (drawer) drawer.classList.toggle('open', willOpen);
+    if (overlay) overlay.classList.toggle('open', willOpen);
+    if (hamburger) hamburger.classList.toggle('open', willOpen);
+
+    document.body.style.overflow = willOpen ? 'hidden' : '';
   }
 
   /**
@@ -99,6 +103,7 @@ class AppController {
     if (drawer) drawer.classList.remove('open');
     if (overlay) overlay.classList.remove('open');
     if (hamburger) hamburger.classList.remove('open');
+    document.body.style.overflow = '';
   }
 
   /**

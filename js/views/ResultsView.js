@@ -273,20 +273,26 @@ class ResultsView {
       residuos: { score: 50 }
     };
 
+    const s0 = d.riscosDesastres?.score || 0;
+    const s1 = d.consumoHidrico?.score || 0;
+    const s2 = d.areasVerdes?.score || 0;
+    const s3 = d.residuos?.score || 0;
+
     const labels = [
       '1. Riscos & Chuvas',
       '2. Eficiência Hídrica',
       '3. Áreas Verdes & Clima',
       '4. Resíduos & ODS 13'
     ];
-    const scores = [
-      d.riscosDesastres?.score || 0,
-      d.consumoHidrico?.score || 0,
-      d.areasVerdes?.score || 0,
-      d.residuos?.score || 0
+    const radarLabels = [
+      ['1. Riscos & Chuvas', `${s0}%`],
+      ['2. Eficiência Hídrica', `${s1}%`],
+      ['3. Áreas Verdes & Clima', `${s2}%`],
+      ['4. Resíduos & ODS 13', `${s3}%`]
     ];
+    const scores = [s0, s1, s2, s3];
 
-    // 1. Radar de Resiliência
+    // 1. Radar dos 4 Pilares da Resiliência (Transparência Máxima & Visualização Cristalina)
     const canvasRadar = document.getElementById('chartResultRadar');
     if (canvasRadar) {
       if (this.chartRadar) this.chartRadar.destroy();
@@ -294,17 +300,21 @@ class ResultsView {
       this.chartRadar = new Chart(ctx, {
         type: 'radar',
         data: {
-          labels: labels,
+          labels: radarLabels,
           datasets: [{
-            label: 'Resiliência (%)',
+            label: 'Resiliência Alcançada',
             data: scores,
-            backgroundColor: 'rgba(16, 185, 129, 0.25)',
+            backgroundColor: 'rgba(16, 185, 129, 0.24)',
             borderColor: '#059669',
+            borderWidth: 3,
             pointBackgroundColor: '#047857',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: '#059669',
-            borderWidth: 2.5
+            pointBorderColor: '#ffffff',
+            pointBorderWidth: 2.5,
+            pointRadius: 6,
+            pointHoverRadius: 9,
+            pointHoverBackgroundColor: '#10b981',
+            pointHoverBorderColor: '#ffffff',
+            fill: true
           }]
         },
         options: {
@@ -312,23 +322,49 @@ class ResultsView {
           maintainAspectRatio: false,
           scales: {
             r: {
-              angleLines: { color: 'rgba(203, 213, 225, 0.6)' },
-              grid: { color: 'rgba(203, 213, 225, 0.6)' },
-              pointLabels: {
-                font: { family: 'Plus Jakarta Sans', size: 11, weight: '700' },
-                color: '#334155'
+              min: 0,
+              max: 100,
+              angleLines: {
+                color: 'rgba(148, 163, 184, 0.4)',
+                lineWidth: 1.5
               },
-              suggestedMin: 0,
-              suggestedMax: 100,
+              grid: {
+                color: 'rgba(148, 163, 184, 0.3)',
+                lineWidth: 1
+              },
+              pointLabels: {
+                font: { family: "'Plus Jakarta Sans', sans-serif", size: 11.5, weight: '800' },
+                color: '#0f172a',
+                padding: 6
+              },
               ticks: {
-                backdropColor: 'transparent',
                 stepSize: 25,
-                font: { size: 9 },
+                display: true,
+                font: { family: "'Plus Jakarta Sans', sans-serif", size: 9, weight: '700' },
+                color: '#475569',
+                backdropColor: 'rgba(255, 255, 255, 0.85)',
+                backdropPadding: 3,
                 callback: (v) => `${v}%`
               }
             }
           },
-          plugins: { legend: { display: false } }
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(15, 23, 42, 0.94)',
+              titleFont: { family: "'Plus Jakarta Sans', sans-serif", size: 12, weight: '800' },
+              bodyFont: { family: "'Plus Jakarta Sans', sans-serif", size: 12, weight: '600' },
+              padding: 10,
+              cornerRadius: 8,
+              callbacks: {
+                title: (items) => {
+                  const item = items[0];
+                  return Array.isArray(item.label) ? item.label[0] : item.label;
+                },
+                label: (ctx) => ` Resiliência do Pilar: ${ctx.raw}%`
+              }
+            }
+          }
         }
       });
     }

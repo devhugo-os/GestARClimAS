@@ -29,6 +29,7 @@ class FormView {
     this.bindCustomInputsListener();
     this.bindCepSearchListener();
     this.setupProgressiveUnlock();
+    this.setupRealTimeValidation();
   }
 
   /**
@@ -511,11 +512,50 @@ class FormView {
           else if (radio.value === 'excelente') card.classList.add('type-excelente');
 
           const block = card.closest('.question-block');
-          if (block) block.classList.add('has-answered');
+          if (block) {
+            block.classList.add('has-answered');
+            block.style.borderColor = '';
+          }
 
           if (callback) callback(groupName, radio.value);
         }
       });
+    });
+  }
+
+  /**
+   * Remove imediatamente o status vermelho (.error) assim que o usuário preenche/digita qualquer campo
+   */
+  setupRealTimeValidation() {
+    const fields = [
+      'schoolNameInput',
+      'schoolNameSelect',
+      'schoolInep',
+      'schoolState',
+      'schoolCity',
+      'schoolNeighborhood',
+      'customNeighborhoodInput',
+      'schoolStreet',
+      'customStreetInput',
+      'evaluatorName',
+      'schoolShift'
+    ];
+
+    fields.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        ['input', 'change', 'blur', 'keyup'].forEach(evt => {
+          el.addEventListener(evt, () => {
+            if (el.tagName === 'SELECT') {
+              if (el.value && el.value !== '') {
+                el.classList.remove('error');
+              }
+            } else if (el.value && el.value.trim().length > 0) {
+              el.classList.remove('error');
+            }
+          });
+        });
+      }
     });
   }
 
@@ -638,11 +678,11 @@ class FormView {
         if (inputNome) inputNome.classList.remove('error');
       }
 
-      // 2. Código INEP da Escola (8 Dígitos Numéricos Obrigatório)
-      const inepVal = (inputInep?.value || '').replace(/\D/g, '');
-      if (!inputInep || inepVal.length !== 8) {
+      // 2. Código INEP da Escola
+      const inepVal = (inputInep?.value || '').trim();
+      if (!inputInep || !inepVal) {
         if (inputInep) inputInep.classList.add('error');
-        pendentes.push('Código INEP da Escola (8 dígitos numéricos)');
+        pendentes.push('Código INEP da Escola');
       } else {
         if (inputInep) inputInep.classList.remove('error');
       }
