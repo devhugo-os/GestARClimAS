@@ -703,13 +703,41 @@ body::before {
   align-items: center;
   text-align: center;
   gap: 0.4rem;
-  cursor: pointer;
-  opacity: 0.5;
+  cursor: default;
+  opacity: 0.45;
   transition: all var(--transition-fast);
+  user-select: none;
 }
 
-.step-item.active { opacity: 1; }
-.step-item.completed { opacity: 0.9; }
+.step-item.is-clickable {
+  cursor: pointer;
+  opacity: 0.85;
+}
+
+.step-item.is-clickable:hover {
+  opacity: 1;
+}
+
+.step-item.is-clickable:hover .step-bubble {
+  transform: translateY(-2px);
+  border-color: var(--primary-500);
+  box-shadow: var(--shadow-sm);
+}
+
+.step-item.is-locked {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.step-item.active { 
+  opacity: 1; 
+  cursor: pointer;
+}
+
+.step-item.completed { 
+  opacity: 0.95; 
+  cursor: pointer;
+}
 
 .step-bubble {
   width: 32px;

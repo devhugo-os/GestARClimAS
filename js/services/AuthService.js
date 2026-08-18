@@ -1,42 +1,48 @@
 /**
  * ============================================================================
  * GestARClimAS - AuthService.js
- * Serviço de Autenticação e Gestão de Usuários
- * Integração Direta com Firebase Auth & Firestore + Disparo Real de E-mail de Recuperação
+ * Serviço de Autenticação e Gestão de Usuários 100% em Nuvem (Firebase Auth & Firestore)
+ * Projeto: projetogeo-1337f
  * ============================================================================
  */
 
 class AuthService {
   constructor() {
-    this.storageUsersKey = 'gestarclimas_auth_users';
-    this.storageSessionKey = 'gestarclimas_auth_session';
-    this.storageRecoveryKey = 'gestarclimas_auth_recovery_token';
+    this.sessionKey = 'gestarclimas_firebase_session';
     this.currentUser = null;
-
     this.firebaseAuth = null;
     this.firestoreDb = null;
 
-    this._inicializarFirebaseSeDisponivel();
-    this._inicializarSessao();
+    this._inicializarFirebase();
+    this._restaurarSessao();
+    this._ouvirEstadoAutenticacao();
   }
 
-  _inicializarFirebaseSeDisponivel() {
+  /**
+   * Inicializa instâncias do Firebase Auth e Firestore SDK
+   */
+  _inicializarFirebase() {
     try {
-      if (typeof firebase !== 'undefined' && firebase.apps?.length) {
-        this.firebaseAuth = firebase.auth();
-        this.firestoreDb = firebase.firestore();
+      if (typeof firebase !== 'undefined') {
+        if (!firebase.apps?.length && typeof window !== 'undefined' && window.GEST_FIREBASE_CONFIG) {
+          firebase.initializeApp(window.GEST_FIREBASE_CONFIG);
+        }
+        if (firebase.apps?.length) {
+          this.firebaseAuth = firebase.auth();
+          this.firestoreDb = firebase.firestore();
+        }
       }
     } catch (e) {
-      console.warn('[AuthService] Firebase indisponível:', e);
+      console.warn('[AuthService] Falha ao inicializar Firebase:', e);
     }
   }
 
   /**
-   * Inicializa a sessão a partir do armazenamento local
+   * Restaura sessão ativa em memória a partir de sessionStorage
    */
-  _inicializarSessao() {
+  _restaurarSessao() {
     try {
-      const sessao = localStorage.getItem(this.storageSessionKey);
+      const sessao = sessionStorage.getItem(this.sessionKey);
       if (sessao) {
         this.currentUser = JSON.parse(sessao);
       }
@@ -46,7 +52,70 @@ class AuthService {
   }
 
   /**
-   * Gera Hash Criptográfico Seguro SHA-256
+   * Monitora alterações de autenticação em tempo real no Firebase
+   */
+  _ouvirEstadoAutenticacao() {
+    if (!this.firebaseAuth) return;
+    try {
+      this.firebaseAuth.onAuthStateChanged(async (fbUser) => {
+        if (fbUser) {
+          if (!this.currentUser || this.currentUser.uid !== fbUser.uid) {
+            await this._sincronizarUsuarioFirestore(fbUser);
+          }
+        } else {
+          this.currentUser = null;
+          sessionStorage.removeItem(this.sessionKey);
+        }
+      });
+    } catch (e) {
+      console.warn('[AuthService] Erro ao monitorar authState:', e);
+    }
+  }
+
+  /**
+   * Sincroniza dados cadastrais do Firestore para o estado local
+   */
+  async _sincronizarUsuarioFirestore(fbUser) {
+    if (!fbUser || !this.firestoreDb) return null;
+
+    try {
+      const docSnap = await this.firestoreDb.collection('users').doc(fbUser.uid).get();
+      let dados = {
+        uid: fbUser.uid,
+        nome: fbUser.displayName || 'Avaliador Escolar',
+        email: fbUser.email ? fbUser.email.toLowerCase() : '',
+        fotoBase64: fbUser.photoURL || this._gerarAvatarPadrao(fbUser.displayName || 'A'),
+        role: 'avaliador',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      if (docSnap && docSnap.exists) {
+        dados = { ...dados, ...docSnap.data(), uid: fbUser.uid };
+      } else {
+        const checksum = await this._gerarHash(`${dados.uid}_${dados.email}_GESTARCLIMAS_SECURE`);
+        dados._securityChecksum = checksum;
+        await this.firestoreDb.collection('users').doc(fbUser.uid).set(dados);
+      }
+
+      this._salvarSessao(dados);
+      return dados;
+    } catch (err) {
+      console.warn('[AuthService] Sincronização Firestore:', err);
+      const fallback = {
+        uid: fbUser.uid,
+        nome: fbUser.displayName || 'Avaliador Escolar',
+        email: fbUser.email ? fbUser.email.toLowerCase() : '',
+        fotoBase64: fbUser.photoURL || this._gerarAvatarPadrao(fbUser.displayName || 'A'),
+        role: 'avaliador'
+      };
+      this._salvarSessao(fallback);
+      return fallback;
+    }
+  }
+
+  /**
+   * Gera Hash Criptográfico Seguro SHA-256 para integridade e validação
    */
   async _gerarHash(texto) {
     try {
@@ -56,110 +125,153 @@ class AuthService {
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     } catch (e) {
-      return btoa(texto);
+      return btoa(unescape(encodeURIComponent(texto)));
     }
   }
 
   /**
-   * Obtém a lista completa de usuários cadastrados localmente
+   * Aguarda a inicialização do Firebase Auth para checagem precisa de sessão ativa
    */
-  obterUsuarios() {
-    try {
-      const raw = localStorage.getItem(this.storageUsersKey);
-      const lista = raw ? JSON.parse(raw) : [];
-      if (!Array.isArray(lista)) return [];
-      return lista;
-    } catch (e) {
-      return [];
+  async garantirAutenticacaoPronta() {
+    this._inicializarFirebase();
+    if (this.currentUser && this.currentUser.uid) {
+      return this.currentUser;
     }
+    if (!this.firebaseAuth) {
+      return this.currentUser;
+    }
+    return new Promise((resolve) => {
+      let finalizado = false;
+      const unsubscribe = this.firebaseAuth.onAuthStateChanged(async (fbUser) => {
+        if (finalizado) return;
+        finalizado = true;
+        unsubscribe();
+        if (fbUser) {
+          const user = await this._sincronizarUsuarioFirestore(fbUser);
+          resolve(user);
+        } else {
+          resolve(null);
+        }
+      });
+      // Timeout de segurança (1.5 segundos)
+      setTimeout(() => {
+        if (!finalizado) {
+          finalizado = true;
+          unsubscribe();
+          resolve(this.currentUser);
+        }
+      }, 1500);
+    });
   }
 
   /**
    * Retorna os dados do usuário atualmente autenticado
    */
   obterUsuarioAtual() {
-    return this.currentUser;
+    if (this.currentUser) return this.currentUser;
+    if (this.firebaseAuth?.currentUser) {
+      const u = this.firebaseAuth.currentUser;
+      return {
+        uid: u.uid,
+        nome: u.displayName || 'Avaliador',
+        email: u.email || '',
+        fotoBase64: u.photoURL || this._gerarAvatarPadrao(u.displayName || 'A')
+      };
+    }
+    return null;
   }
 
   /**
-   * Verifica se há um usuário ativo logado
+   * Verifica se há um usuário ativo logado no Firebase
    */
   estaAutenticado() {
     return !!this.currentUser && !!this.currentUser.uid;
   }
 
   /**
-   * Realiza login por e-mail e senha
+   * Realiza autenticação segura via Google OAuth (Login e Cadastro Unificado)
+   */
+  async loginComGoogle() {
+    this._inicializarFirebase();
+
+    if (!this.firebaseAuth || !this.firestoreDb) {
+      throw new Error('Serviço Firebase indisponível. Verifique sua conexão com a internet.');
+    }
+
+    try {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
+      
+      const result = await this.firebaseAuth.signInWithPopup(provider);
+      const fbUser = result.user;
+
+      const dadosUsuario = await this._sincronizarUsuarioFirestore(fbUser);
+      return dadosUsuario;
+    } catch (err) {
+      console.error('[AuthService] Erro ao autenticar com Google:', err);
+      const code = err.code || '';
+      if (code === 'auth/popup-closed-by-user') {
+        throw new Error('A janela de login do Google foi fechada antes da conclusão.');
+      }
+      if (code === 'auth/cancelled-popup-request') {
+        throw new Error('Solicitação de popup cancelada.');
+      }
+      if (code === 'auth/popup-blocked') {
+        throw new Error('O popup de login foi bloqueado pelo seu navegador. Por favor, autorize popups para este site.');
+      }
+      throw new Error(err.message || 'Falha ao autenticar com sua conta Google.');
+    }
+  }
+
+  /**
+   * Realiza login exclusivamente via Firebase Auth & Firestore
    */
   async login(email, senha) {
     const emailLimpo = (email || '').trim().toLowerCase();
     const senhaLimpa = (senha || '').trim();
 
     if (!emailLimpo || !senhaLimpa) {
-      throw new Error('Por favor, informe seu e-mail e senha.');
+      throw new Error('Por favor, informe seu e-mail e senha cadastrados.');
     }
 
-    this._inicializarFirebaseSeDisponivel();
+    this._inicializarFirebase();
 
-    // 1. Tentativa de Login via Firebase Auth & Firestore
-    if (this.firebaseAuth && this.firestoreDb) {
-      try {
-        const userCredential = await this.firebaseAuth.signInWithEmailAndPassword(emailLimpo, senhaLimpa);
-        const fbUser = userCredential.user;
+    if (!this.firebaseAuth) {
+      throw new Error('Serviço do Firebase não inicializado. Verifique sua conexão à internet.');
+    }
 
-        const docSnap = await this.firestoreDb.collection('users').doc(fbUser.uid).get().catch(() => null);
-        let dadosUsuario = {
-          uid: fbUser.uid,
-          nome: fbUser.displayName || 'Usuário',
-          email: fbUser.email || emailLimpo,
-          fotoBase64: fbUser.photoURL || this._gerarAvatarPadrao(fbUser.displayName || 'U'),
-          createdAt: new Date().toISOString()
-        };
+    try {
+      const userCredential = await this.firebaseAuth.signInWithEmailAndPassword(emailLimpo, senhaLimpa);
+      const fbUser = userCredential.user;
 
-        if (docSnap && docSnap.exists) {
-          dadosUsuario = { ...dadosUsuario, ...docSnap.data(), uid: fbUser.uid };
-        } else {
-          try {
-            await this.firestoreDb.collection('users').doc(fbUser.uid).set(dadosUsuario);
-          } catch (err) {}
-        }
-
-        // Salva na lista local para acesso offline futuro
-        const usuarios = this.obterUsuarios();
-        const idx = usuarios.findIndex(u => (u.email || '').toLowerCase() === emailLimpo);
-        if (idx === -1) {
-          usuarios.push(dadosUsuario);
-        } else {
-          usuarios[idx] = { ...usuarios[idx], ...dadosUsuario };
-        }
-        localStorage.setItem(this.storageUsersKey, JSON.stringify(usuarios));
-
-        this._salvarSessao(dadosUsuario);
-        return dadosUsuario;
-      } catch (fbErr) {
-        console.warn('[AuthService] Tentativa Firebase login:', fbErr.message);
+      const dadosUsuario = await this._sincronizarUsuarioFirestore(fbUser);
+      return dadosUsuario;
+    } catch (fbErr) {
+      console.error('[AuthService] Erro ao autenticar no Firebase:', fbErr);
+      const code = fbErr.code || '';
+      if (
+        code === 'auth/user-not-found' ||
+        code === 'auth/wrong-password' ||
+        code === 'auth/invalid-credential' ||
+        code === 'auth/invalid-login-credentials'
+      ) {
+        throw new Error('E-mail ou senha incorretos no Firebase.');
       }
+      if (code === 'auth/invalid-email') {
+        throw new Error('O formato do e-mail informado é inválido.');
+      }
+      if (code === 'auth/user-disabled') {
+        throw new Error('Esta conta de usuário foi desativada no Firebase.');
+      }
+      if (code === 'auth/too-many-requests') {
+        throw new Error('Acesso bloqueado temporariamente por excesso de tentativas. Tente novamente mais tarde.');
+      }
+      throw new Error(fbErr.message || 'Falha na autenticação via Firebase.');
     }
-
-    // 2. Fallback / Base Local
-    const usuarios = this.obterUsuarios();
-    const senhaHash = await this._gerarHash(senhaLimpa);
-    
-    const usuario = usuarios.find(u => 
-      (u.email || '').toLowerCase() === emailLimpo && 
-      (u.senhaHash === senhaHash || u.senhaHash === btoa(senhaLimpa))
-    );
-
-    if (!usuario) {
-      throw new Error('E-mail ou senha incorretos.');
-    }
-
-    this._salvarSessao(usuario);
-    return usuario;
   }
 
   /**
-   * Realiza cadastro de um novo usuário com verificação estrita de duplicidade
+   * Realiza cadastro de novo usuário no Firebase Auth e registra perfil no Firestore
    */
   async cadastrar({ nome, email, senha, fotoBase64 }) {
     const nomeLimpo = (nome || '').trim();
@@ -174,268 +286,104 @@ class AuthService {
       throw new Error('A senha deve conter no mínimo 6 caracteres.');
     }
 
-    this._inicializarFirebaseSeDisponivel();
+    this._inicializarFirebase();
 
-    // 1. Verificação Estrita de E-mail Duplicado no Armazenamento Local
-    const usuarios = this.obterUsuarios();
-    const usuarioJaExisteLocal = usuarios.some(u => (u.email || '').trim().toLowerCase() === emailLimpo);
-    if (usuarioJaExisteLocal) {
-      throw new Error('Este e-mail já está cadastrado na plataforma. Por favor, faça login ou utilize a recuperação de senha.');
+    if (!this.firebaseAuth || !this.firestoreDb) {
+      throw new Error('Serviço Firebase indisponível. Verifique sua conexão à internet.');
     }
 
-    // 2. Verificação Estrita de E-mail Duplicado no Firestore
-    if (this.firestoreDb) {
-      try {
-        const snap = await this.firestoreDb.collection('users').where('email', '==', emailLimpo).limit(1).get();
-        if (snap && !snap.empty) {
-          throw new Error('Este e-mail já está cadastrado na plataforma. Por favor, faça login ou utilize a recuperação de senha.');
-        }
-      } catch (e) {
-        if (e.message && e.message.includes('já está cadastrado')) throw e;
-      }
-    }
-
-    let uid = `USER_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
     const avatarFinal = fotoBase64 || this._gerarAvatarPadrao(nomeLimpo);
 
-    // 3. Cadastro via Firebase Auth
-    if (this.firebaseAuth) {
+    try {
+      // 1. Cria usuário no Firebase Authentication
+      const userCredential = await this.firebaseAuth.createUserWithEmailAndPassword(emailLimpo, senhaLimpa);
+      const fbUser = userCredential.user;
+
+      // 2. Atualiza perfil no Firebase Auth
       try {
-        const userCredential = await this.firebaseAuth.createUserWithEmailAndPassword(emailLimpo, senhaLimpa);
-        uid = userCredential.user.uid;
-        await userCredential.user.updateProfile({
+        await fbUser.updateProfile({
           displayName: nomeLimpo,
           photoURL: avatarFinal.startsWith('data:') ? '' : avatarFinal
         });
-      } catch (fbErr) {
-        const code = fbErr.code || '';
-        const msg = (fbErr.message || '').toLowerCase();
-        if (
-          code === 'auth/email-already-in-use' ||
-          code === 'auth/email-already-exists' ||
-          code === 'auth/credential-already-in-use' ||
-          msg.includes('already in use') ||
-          msg.includes('already-in-use') ||
-          msg.includes('already exists')
-        ) {
-          throw new Error('Este e-mail já está cadastrado na plataforma. Por favor, faça login ou utilize a recuperação de senha.');
-        }
-        if (code === 'auth/weak-password') {
-          throw new Error('A senha informada deve ter pelo menos 6 caracteres.');
-        }
-        if (code === 'auth/invalid-email') {
-          throw new Error('O formato do e-mail informado é inválido.');
-        }
-        console.warn('[AuthService] Firebase Auth aviso:', fbErr.message);
+      } catch (e) {}
+
+      // 3. Gera hash de integridade criptográfico SHA-256
+      const checksum = await this._gerarHash(`${fbUser.uid}_${emailLimpo}_GESTARCLIMAS_SECURE`);
+
+      // 4. Salva documento organizado no Firestore users/{uid}
+      const novoUsuarioFirestore = {
+        uid: fbUser.uid,
+        nome: nomeLimpo,
+        email: emailLimpo,
+        fotoBase64: avatarFinal,
+        role: 'avaliador',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        _securityChecksum: checksum
+      };
+
+      await this.firestoreDb.collection('users').doc(fbUser.uid).set(novoUsuarioFirestore);
+
+      this._salvarSessao(novoUsuarioFirestore);
+      return novoUsuarioFirestore;
+    } catch (fbErr) {
+      console.error('[AuthService] Erro ao cadastrar no Firebase:', fbErr);
+      const code = fbErr.code || '';
+      if (
+        code === 'auth/email-already-in-use' ||
+        code === 'auth/email-already-exists' ||
+        code === 'auth/credential-already-in-use'
+      ) {
+        throw new Error('Este e-mail já está cadastrado na plataforma Firebase. Por favor, faça login com sua senha.');
       }
+      if (code === 'auth/weak-password') {
+        throw new Error('A senha informada deve ter pelo menos 6 caracteres.');
+      }
+      if (code === 'auth/invalid-email') {
+        throw new Error('O formato do e-mail informado é inválido.');
+      }
+      throw new Error(fbErr.message || 'Falha ao registrar novo usuário no Firebase.');
     }
-
-    const senhaHash = await this._gerarHash(senhaLimpa);
-
-    const novoUsuario = {
-      uid,
-      nome: nomeLimpo,
-      email: emailLimpo,
-      senhaHash,
-      fotoBase64: avatarFinal,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-
-    if (this.firestoreDb) {
-      try {
-        await this.firestoreDb.collection('users').doc(uid).set(novoUsuario);
-      } catch (err) {}
-    }
-
-    // Salva sem permitir duplicidades no array local
-    const usuariosAtualizados = usuarios.filter(u => (u.email || '').trim().toLowerCase() !== emailLimpo);
-    usuariosAtualizados.push(novoUsuario);
-    localStorage.setItem(this.storageUsersKey, JSON.stringify(usuariosAtualizados));
-
-    this._salvarSessao(novoUsuario);
-    return novoUsuario;
   }
 
   /**
-   * Dispara o envio real de e-mail com o código de 6 dígitos
-   */
-  async _dispararEmailRecuperacao(email, codigo) {
-    try {
-      fetch('https://formsubmit.co/ajax/' + encodeURIComponent(email), {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          _subject: 'GestARClimAS - Código de Recuperação de Senha',
-          plataforma: 'GestARClimAS - ODS 13',
-          destinatario: email,
-          codigo_seguranca: codigo,
-          mensagem: `Seu código de segurança de 6 dígitos para redefinição de senha na plataforma GestARClimAS é: ${codigo}. Validade: 15 minutos.`
-        })
-      }).catch(() => {});
-    } catch (e) {}
-  }
-
-  /**
-   * Solicita envio de código de 6 dígitos para recuperação de senha
-   */
-  async solicitarCodigoRecuperacao(email) {
-    const emailLimpo = (email || '').trim().toLowerCase();
-    if (!emailLimpo) throw new Error('Informe seu e-mail cadastrado.');
-
-    this._inicializarFirebaseSeDisponivel();
-
-    const usuarios = this.obterUsuarios();
-    let usuarioEncontrado = usuarios.find(u => (u.email || '').toLowerCase() === emailLimpo);
-    
-    if (!usuarioEncontrado && this.firestoreDb) {
-      try {
-        const snap = await this.firestoreDb.collection('users').where('email', '==', emailLimpo).limit(1).get();
-        if (!snap.empty) {
-          usuarioEncontrado = snap.docs[0].data();
-        }
-      } catch (e) {}
-    }
-
-    if (!usuarioEncontrado) {
-      throw new Error('Nenhuma conta encontrada com este e-mail.');
-    }
-
-    // Gera código numérico de 6 dígitos
-    const codigo = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiracao = Date.now() + 15 * 60 * 1000; // 15 minutos
-
-    const codigoHash = await this._gerarHash(`${emailLimpo}_${codigo}_SALT_GESTARCLIMAS`);
-
-    const recoveryData = {
-      email: emailLimpo,
-      codigoHash,
-      expiracao,
-      createdAt: new Date().toISOString()
-    };
-
-    if (this.firestoreDb) {
-      try {
-        await this.firestoreDb.collection('password_resets').doc(emailLimpo.replace(/[^a-zA-Z0-9]/g, '_')).set(recoveryData);
-      } catch (e) {}
-    }
-
-    localStorage.setItem(this.storageRecoveryKey, JSON.stringify(recoveryData));
-
-    // Dispara envio por e-mail
-    await this._dispararEmailRecuperacao(emailLimpo, codigo);
-
-    return {
-      sucesso: true,
-      email: emailLimpo,
-      codigoEnviado: codigo
-    };
-  }
-
-  /**
-   * Redefine a senha utilizando o código de validação criptografado
-   */
-  async redefinirSenha(email, codigo, novaSenha) {
-    const emailLimpo = (email || '').trim().toLowerCase();
-    const codigoLimpo = (codigo || '').trim();
-    const novaSenhaLimpa = (novaSenha || '').trim();
-
-    if (!emailLimpo || !codigoLimpo || !novaSenhaLimpa) {
-      throw new Error('Preencha o e-mail, o código de validação e a nova senha.');
-    }
-
-    if (novaSenhaLimpa.length < 6) {
-      throw new Error('A nova senha deve ter no mínimo 6 caracteres.');
-    }
-
-    this._inicializarFirebaseSeDisponivel();
-
-    let recoveryData = null;
-    if (this.firestoreDb) {
-      try {
-        const snap = await this.firestoreDb.collection('password_resets').doc(emailLimpo.replace(/[^a-zA-Z0-9]/g, '_')).get();
-        if (snap.exists) recoveryData = snap.data();
-      } catch (e) {}
-    }
-
-    if (!recoveryData) {
-      try {
-        recoveryData = JSON.parse(localStorage.getItem(this.storageRecoveryKey));
-      } catch (e) {}
-    }
-
-    if (!recoveryData || recoveryData.email !== emailLimpo) {
-      throw new Error('Nenhuma solicitação de recuperação ativa para este e-mail.');
-    }
-
-    if (Date.now() > recoveryData.expiracao) {
-      throw new Error('O código de validação expirou (limite de 15 minutos). Solicite um novo código.');
-    }
-
-    const hashInserido = await this._gerarHash(`${emailLimpo}_${codigoLimpo}_SALT_GESTARCLIMAS`);
-    if (hashInserido !== recoveryData.codigoHash) {
-      throw new Error('Código de verificação incorreto. Verifique o código enviado ao seu e-mail.');
-    }
-
-    const novaSenhaHash = await this._gerarHash(novaSenhaLimpa);
-
-    if (this.firestoreDb) {
-      try {
-        const snap = await this.firestoreDb.collection('users').where('email', '==', emailLimpo).limit(1).get();
-        if (!snap.empty) {
-          await snap.docs[0].ref.update({
-            senhaHash: novaSenhaHash,
-            updatedAt: new Date().toISOString()
-          });
-        }
-      } catch (e) {}
-    }
-
-    const usuarios = this.obterUsuarios();
-    const idx = usuarios.findIndex(u => (u.email || '').toLowerCase() === emailLimpo);
-    if (idx !== -1) {
-      usuarios[idx].senhaHash = novaSenhaHash;
-      usuarios[idx].updatedAt = new Date().toISOString();
-      localStorage.setItem(this.storageUsersKey, JSON.stringify(usuarios));
-    }
-
-    localStorage.removeItem(this.storageRecoveryKey);
-    return true;
-  }
-
-  /**
-   * Atualiza as informações do perfil do usuário logado
+   * Atualiza as informações do perfil no Firebase Auth e no Firestore
    */
   async atualizarPerfil({ nome, fotoBase64 }) {
-    if (!this.currentUser) throw new Error('Nenhum usuário logado.');
+    if (!this.currentUser || !this.currentUser.uid) {
+      throw new Error('Nenhum usuário autenticado no sistema.');
+    }
 
-    this._inicializarFirebaseSeDisponivel();
+    this._inicializarFirebase();
     const uid = this.currentUser.uid;
 
     if (nome) this.currentUser.nome = nome.trim();
     if (fotoBase64) this.currentUser.fotoBase64 = fotoBase64;
     this.currentUser.updatedAt = new Date().toISOString();
 
+    // Atualiza Firestore
     if (this.firestoreDb && uid) {
       try {
+        const checksum = await this._gerarHash(`${uid}_${this.currentUser.email}_${this.currentUser.nome}_GESTARCLIMAS_SECURE`);
         await this.firestoreDb.collection('users').doc(uid).set({
           nome: this.currentUser.nome,
           fotoBase64: this.currentUser.fotoBase64,
-          updatedAt: this.currentUser.updatedAt
+          updatedAt: this.currentUser.updatedAt,
+          _securityChecksum: checksum
         }, { merge: true });
-      } catch (e) {}
+      } catch (e) {
+        console.warn('[AuthService] Atualização de perfil no Firestore:', e);
+      }
     }
 
-    const usuarios = this.obterUsuarios();
-    const idx = usuarios.findIndex(u => u.uid === uid);
-    if (idx !== -1) {
-      if (nome) usuarios[idx].nome = nome.trim();
-      if (fotoBase64) usuarios[idx].fotoBase64 = fotoBase64;
-      usuarios[idx].updatedAt = new Date().toISOString();
-      localStorage.setItem(this.storageUsersKey, JSON.stringify(usuarios));
+    // Atualiza Firebase Auth
+    if (this.firebaseAuth?.currentUser) {
+      try {
+        await this.firebaseAuth.currentUser.updateProfile({
+          displayName: this.currentUser.nome,
+          photoURL: this.currentUser.fotoBase64.startsWith('data:') ? '' : this.currentUser.fotoBase64
+        });
+      } catch (e) {}
     }
 
     this._salvarSessao(this.currentUser);
@@ -443,36 +391,38 @@ class AuthService {
   }
 
   /**
-   * Exclui a conta do usuário logado
+   * Exclui a conta do usuário no Firestore e no Firebase Auth
    */
   async excluirConta() {
-    if (!this.currentUser) throw new Error('Nenhum usuário logado.');
+    if (!this.currentUser || !this.currentUser.uid) {
+      throw new Error('Nenhum usuário logado para exclusão.');
+    }
 
-    this._inicializarFirebaseSeDisponivel();
+    this._inicializarFirebase();
     const uid = this.currentUser.uid;
 
     if (this.firestoreDb && uid) {
       try {
         await this.firestoreDb.collection('users').doc(uid).delete();
-      } catch (e) {}
+      } catch (e) {
+        console.warn('[AuthService] Erro ao deletar documento de usuário no Firestore:', e);
+      }
     }
 
     if (this.firebaseAuth && this.firebaseAuth.currentUser) {
       try {
         await this.firebaseAuth.currentUser.delete();
-      } catch (e) {}
+      } catch (e) {
+        console.warn('[AuthService] Erro ao deletar conta no Firebase Auth:', e);
+      }
     }
 
-    let usuarios = this.obterUsuarios();
-    usuarios = usuarios.filter(u => u.uid !== uid);
-    localStorage.setItem(this.storageUsersKey, JSON.stringify(usuarios));
-
-    this.logout();
+    await this.logout();
     return true;
   }
 
   /**
-   * Compacta uma imagem para Base64 com tamanho reduzido (~8 KB)
+   * Compacta uma imagem para Base64 otimizada (~8 KB)
    */
   compactarImagemBase64(file) {
     return new Promise((resolve, reject) => {
@@ -532,24 +482,31 @@ class AuthService {
       nome: usuario.nome,
       email: usuario.email,
       fotoBase64: usuario.fotoBase64,
+      role: usuario.role || 'avaliador',
       createdAt: usuario.createdAt
     };
-    localStorage.setItem(this.storageSessionKey, JSON.stringify(this.currentUser));
+    sessionStorage.setItem(this.sessionKey, JSON.stringify(this.currentUser));
   }
 
-  logout() {
-    this._inicializarFirebaseSeDisponivel();
+  async logout() {
+    this._inicializarFirebase();
     if (this.firebaseAuth) {
       try {
-        this.firebaseAuth.signOut();
+        await this.firebaseAuth.signOut();
       } catch (e) {}
     }
     this.currentUser = null;
-    localStorage.removeItem(this.storageSessionKey);
+    sessionStorage.removeItem(this.sessionKey);
+    // Limpa quaisquer restos legados de localStorage
+    try {
+      localStorage.removeItem('gestarclimas_auth_users');
+      localStorage.removeItem('gestarclimas_auth_session');
+      localStorage.removeItem('gestarclimas_auth_recovery_token');
+    } catch (e) {}
   }
 
   _gerarAvatarPadrao(nome) {
-    const iniciais = (nome || 'U')
+    const iniciais = (nome || 'A')
       .split(' ')
       .slice(0, 2)
       .map(p => p[0])

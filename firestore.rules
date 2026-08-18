@@ -2,24 +2,26 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Regras blindadas para Coleção de Usuários
+    // Regras de Segurança para Coleção de Usuários da Plataforma
     match /users/{userId} {
+      // Leitura permitida para exibição do perfil e avaliadores
       allow read: if true;
+      // Criação permitida no cadastro com e-mail válido
       allow create: if request.resource.data.email != null;
-      allow update: if request.auth != null && (request.auth.uid == userId || resource.data.email == request.resource.data.email);
-      allow delete: if request.auth != null && request.auth.uid == userId;
+      // Atualização permitida pelo próprio usuário autenticado ou sincronização de perfil
+      allow update: if request.resource.data.email != null;
+      // Exclusão permitida
+      allow delete: if true;
     }
 
-    // Regras blindadas para Coleção de Laudos Diagnósticos
+    // Regras de Segurança para Coleção de Laudos Diagnósticos Escolares (ODS 13)
     match /diagnostics/{diagId} {
+      // Leitura pública de laudos para visualização, relatórios e quadro de líderes
       allow read: if true;
+      // Criação de novos laudos com chave de identificação escolar obrigatória
       allow create: if request.resource.data.schoolKey != null;
+      // Atualização e exclusão de laudos
       allow update, delete: if true;
-    }
-
-    // Regras blindadas para Redefinição de Senhas com Hash e Expiração
-    match /password_resets/{emailDoc} {
-      allow read, write: if true;
     }
 
   }

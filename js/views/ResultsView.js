@@ -28,7 +28,25 @@ class ResultsView {
     this.container = document.getElementById('resultsContainer') || this.container;
     if (!this.container) return;
 
-    const { escola = {}, diagnostico = {} } = data;
+    let { escola = {}, diagnostico = {} } = data;
+
+    // Auto-reidratação pericial completa: Se o laudo foi salvo de forma simplificada, recalcula a matriz dos 16 quesitos
+    if (!diagnostico.detalhamentoQuestoes || !Array.isArray(diagnostico.detalhamentoQuestoes) || diagnostico.detalhamentoQuestoes.length === 0) {
+      if (typeof DiagnosticModel !== 'undefined') {
+        const model = new DiagnosticModel();
+        const fullDiag = model.calcularDiagnostico(diagnostico.respostas || {}, escola);
+        diagnostico = {
+          ...fullDiag,
+          ...diagnostico,
+          detalhamentoQuestoes: fullDiag.detalhamentoQuestoes,
+          recomendacoesAcao: fullDiag.recomendacoesAcao,
+          pontosCriticos: fullDiag.pontosCriticos,
+          pontosMelhorar: fullDiag.pontosMelhorar,
+          pontosFortes: fullDiag.pontosFortes,
+          indicadores: fullDiag.indicadores
+        };
+      }
+    }
 
     // 1. Preenche Cabeçalho Executivo da Escola
     const elSchoolName = document.getElementById('repSchoolName');
@@ -41,7 +59,7 @@ class ResultsView {
     const elSchoolMeta = document.getElementById('repSchoolMeta');
     if (elSchoolMeta) {
       const dataFormatada = escola.data || new Date().toLocaleString('pt-BR');
-      elSchoolMeta.textContent = `<img src="assets/icons/location.svg" class="icon-img-sm" alt="" /> ${localidadeStr} • <img src="assets/icons/calendar.svg" class="icon-img-sm" alt="" /> Emitido em ${dataFormatada}`;
+      elSchoolMeta.innerHTML = `<img src="assets/icons/location.svg" class="icon-img-sm" alt="" /> ${localidadeStr} • <img src="assets/icons/calendar.svg" class="icon-img-sm" alt="" /> Emitido em ${dataFormatada}`;
     }
 
     // 2. Metadados do Laudo
@@ -546,6 +564,14 @@ class ResultsView {
       `;
       container.appendChild(card);
     });
+  }
+
+  hide() {
+    this.container = document.getElementById('resultsContainer') || this.container;
+    if (this.container) {
+      this.container.style.display = 'none';
+      this.container.classList.remove('active');
+    }
   }
 
   hide() {

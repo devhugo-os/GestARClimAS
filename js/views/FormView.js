@@ -10,19 +10,21 @@ class FormView {
     this.currentStep = 0;
     this.totalSteps = 5;
     this.locationService = new LocationService();
+    this.databaseService = new DatabaseService();
     this.stepTitles = [
       "Etapa 1 de 5: Identificação da Unidade Escolar",
       "Etapa 2 de 5: Riscos de Desastres e Período Chuvoso",
       "Etapa 3 de 5: Consumo Hídrico e Eficiência",
-      "Etapa 4 de 5: Áreas Verdes, Microclima e Conforto",
+      "Etapa 4 de 4: Áreas Verdes, Microclima e Conforto",
       "Etapa 5 de 5: Gestão de Resíduos e Sustentabilidade"
     ];
   }
 
   async init(onOptionSelectCallback) {
     this.bindOptionCards(onOptionSelectCallback);
+    this.bindStepperClicks();
     this.updateStepperUI();
-    this.setupSchoolDatabaseSelector();
+    await this.setupSchoolDatabaseSelector();
     await this.setupLocationSelectors();
     this.bindCustomInputsListener();
     this.bindCepSearchListener();
@@ -30,9 +32,9 @@ class FormView {
   }
 
   /**
-   * Popula o banco de dados dinâmico de escolas no Campo 1 a partir dos laudos salvos
+   * Popula o banco de dados dinâmico de escolas no Campo 1 a partir dos laudos do Firestore
    */
-  setupSchoolDatabaseSelector() {
+  async setupSchoolDatabaseSelector() {
     const selectEscola = document.getElementById('schoolNameSelect');
     const inputCustom = document.getElementById('schoolNameInput');
     const customGroup = document.getElementById('customSchoolNameGroup');
@@ -41,8 +43,10 @@ class FormView {
 
     let historico = [];
     try {
-      historico = JSON.parse(localStorage.getItem('gestarclimas_user_diagnostics')) || [];
-    } catch (e) {}
+      historico = await this.databaseService.obterTodosLaudos();
+    } catch (e) {
+      historico = [];
+    }
 
     const escolasMap = new Map();
     historico.forEach(item => {
@@ -113,7 +117,19 @@ class FormView {
             await this.carregarRuas(cid, bai, rua);
           }
 
-          if (selectTurno && tur) selectTurno.value = tur;
+          if (selectTurno && tur) {
+            const found = Array.from(selectTurno.options).some(o => o.value === tur);
+            const shiftCustomGroup = document.getElementById('customSchoolShiftGroup');
+            const shiftCustomInput = document.getElementById('schoolShiftCustom');
+            if (found) {
+              selectTurno.value = tur;
+              if (shiftCustomGroup) shiftCustomGroup.style.display = 'none';
+            } else {
+              selectTurno.value = 'Outro';
+              if (shiftCustomGroup) shiftCustomGroup.style.display = 'block';
+              if (shiftCustomInput) shiftCustomInput.value = tur;
+            }
+          }
 
           this.desbloquearTodosCampos();
         }
@@ -384,6 +400,22 @@ class FormView {
         }
       });
     }
+
+    const selectTurno = document.getElementById('schoolShift');
+    const customGroupTurno = document.getElementById('customSchoolShiftGroup');
+    const customInputTurno = document.getElementById('schoolShiftCustom');
+    if (selectTurno) {
+      selectTurno.addEventListener('change', () => {
+        if (selectTurno.value === 'Outro') {
+          if (customGroupTurno) customGroupTurno.style.display = 'block';
+          if (customInputTurno) {
+            customInputTurno.focus();
+          }
+        } else {
+          if (customGroupTurno) customGroupTurno.style.display = 'none';
+        }
+      });
+    }
   }
 
   bindCepSearchListener() {
@@ -487,6 +519,48 @@ class FormView {
     });
   }
 
+  /**
+   * Navegação direta ao clicar nos tópicos do Stepper (Identificação, Riscos, Água, Verde, Resíduos)
+   * Se a etapa clicada estiver bloqueada por pendências anteriores, não responde nada.
+   * Se o laudo estiver em exibição, não permite alterar sem que revise respostas.
+   */
+  bindStepperClicks() {
+    const steps = document.querySelectorAll('.step-item');
+    steps.forEach((stepEl) => {
+      stepEl.addEventListener('click', () => {
+        const targetStep = parseInt(stepEl.dataset.step, 10);
+        if (isNaN(targetStep) || targetStep === this.currentStep) return;
+
+        // Se o formulário estiver oculto (ex: laudo em exibição), não responde nada
+        const form = document.getElementById('diagnosticForm');
+        if (form && (form.style.display === 'none' || getComputedStyle(form).display === 'none')) {
+          return;
+        }
+
+        // Se for etapa anterior, permite livremente
+        if (targetStep < this.currentStep) {
+          this.goToStep(targetStep);
+          return;
+        }
+
+        // Se for etapa futura, valida se todas as etapas anteriores estão preenchidas
+        let podeAvancar = true;
+        for (let s = 0; s < targetStep; s++) {
+          const val = this.validateStep(s);
+          if (!val.isValid) {
+            podeAvancar = false;
+            break;
+          }
+        }
+
+        // Se estiver bloqueada por falta de preenchimento, não responde nada
+        if (podeAvancar) {
+          this.goToStep(targetStep);
+        }
+      });
+    });
+  }
+
   updateStepperUI() {
     const percent = Math.round((this.currentStep / (this.totalSteps - 1)) * 100);
     const fill = document.getElementById('progressBarFill');
@@ -497,12 +571,37 @@ class FormView {
     if (label) label.textContent = `${percent}% Concluído`;
     if (title) title.textContent = this.stepTitles[this.currentStep] || '';
 
+    // Determina acessibilidade de cada etapa
+    let etapaAnteriorInvalida = false;
     document.querySelectorAll('.step-item').forEach((item, index) => {
-      item.classList.remove('active', 'completed');
+      item.classList.remove('active', 'completed', 'is-locked', 'is-clickable');
       if (index === this.currentStep) {
-        item.classList.add('active');
+        item.classList.add('active', 'is-clickable');
+        item.style.cursor = 'pointer';
       } else if (index < this.currentStep) {
-        item.classList.add('completed');
+        item.classList.add('completed', 'is-clickable');
+        item.style.cursor = 'pointer';
+      } else {
+        if (!etapaAnteriorInvalida) {
+          let valida = true;
+          for (let s = 0; s < index; s++) {
+            if (!this.validateStep(s).isValid) {
+              valida = false;
+              break;
+            }
+          }
+          if (valida) {
+            item.classList.add('is-clickable');
+            item.style.cursor = 'pointer';
+          } else {
+            etapaAnteriorInvalida = true;
+            item.classList.add('is-locked');
+            item.style.cursor = 'default';
+          }
+        } else {
+          item.classList.add('is-locked');
+          item.style.cursor = 'default';
+        }
       }
     });
   }
@@ -684,7 +783,13 @@ class FormView {
       bairro: bairroFinal,
       rua: ruaFinal,
       avaliador: (document.getElementById('evaluatorName')?.value || '').trim(),
-      turno: document.getElementById('schoolShift')?.value || '',
+      turno: (() => {
+        const sel = document.getElementById('schoolShift');
+        if (sel?.value === 'Outro') {
+          return (document.getElementById('schoolShiftCustom')?.value || '').trim() || 'Outro';
+        }
+        return sel?.value || 'Matutino e Vespertino';
+      })(),
       data: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
     };
 
@@ -710,7 +815,21 @@ class FormView {
       if (document.getElementById('schoolInep')) document.getElementById('schoolInep').value = data.escola.inep || '';
       if (document.getElementById('schoolCep')) document.getElementById('schoolCep').value = data.escola.cep || '';
       if (document.getElementById('evaluatorName')) document.getElementById('evaluatorName').value = data.escola.avaliador || '';
-      if (document.getElementById('schoolShift')) document.getElementById('schoolShift').value = data.escola.turno || '';
+      
+      const shiftSel = document.getElementById('schoolShift');
+      const shiftCustomGroup = document.getElementById('customSchoolShiftGroup');
+      const shiftCustomInput = document.getElementById('schoolShiftCustom');
+      if (shiftSel && data.escola.turno) {
+        const found = Array.from(shiftSel.options).some(o => o.value === data.escola.turno);
+        if (found) {
+          shiftSel.value = data.escola.turno;
+          if (shiftCustomGroup) shiftCustomGroup.style.display = 'none';
+        } else {
+          shiftSel.value = 'Outro';
+          if (shiftCustomGroup) shiftCustomGroup.style.display = 'block';
+          if (shiftCustomInput) shiftCustomInput.value = data.escola.turno;
+        }
+      }
       
       if (document.getElementById('schoolState') && data.escola.estado) {
         document.getElementById('schoolState').value = data.escola.estado;

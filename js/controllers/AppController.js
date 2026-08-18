@@ -24,7 +24,8 @@ class AppController {
   }
 
   async init() {
-    // 1. Verificação de Autenticação Obrigatória
+    // 1. Verificação de Autenticação Obrigatória no Firebase
+    await this.authService.garantirAutenticacaoPronta();
     if (!this.authService.estaAutenticado()) {
       window.location.replace('login.html');
       return;
@@ -58,6 +59,7 @@ class AppController {
     this.setupCustomConfirmEvents();
     this.setupPendingModalEvents();
     this.setupDeleteAccountModalEvents();
+    this.setupReportNavigationEvents();
     this.bindGlobalEvents();
 
     // 3. Renderiza a aba inicial (Home Page)
@@ -179,8 +181,20 @@ class AppController {
     // Ações específicas ao abrir cada aba
     if (tabId === 'home') {
       this.homeView.renderHome((destTab) => this.navegarParaAba(destTab));
+    } else if (tabId === 'diagnostic') {
+      const stepper = document.getElementById('stepperContainer');
+      const form = document.getElementById('diagnosticForm');
+      if (stepper) stepper.style.display = 'block';
+      if (form) form.style.display = 'block';
+      this.formView.updateStepperUI();
     } else if (tabId === 'history') {
-      this.renderHistoryTab();
+      const mainView = document.getElementById('historyMainView');
+      const results = document.getElementById('resultsContainer');
+      if (mainView && !this._abrindoLaudoAgora) {
+        mainView.style.display = 'block';
+        if (results) results.style.display = 'none';
+        this.renderHistoryTab();
+      }
     } else if (tabId === 'ranking') {
       this.databaseService.obterEscolasAgrupadas().then(escolas => {
         this.databaseService.obterTodosLaudos().then(todos => {
@@ -399,6 +413,29 @@ class AppController {
     if (btnCancel) btnCancel.onclick = fechar;
   }
 
+  setupReportNavigationEvents() {
+    const btnBack = document.getElementById('btnBackFromReport');
+    if (btnBack) {
+      btnBack.onclick = () => this.voltarDoLaudo();
+    }
+  }
+
+  voltarDoLaudo() {
+    const results = document.getElementById('resultsContainer');
+    if (results) results.style.display = 'none';
+
+    if (this.origemLaudo === 'ranking') {
+      this.navegarParaAba('ranking');
+    } else if (this.origemLaudo === 'home') {
+      this.navegarParaAba('home');
+    } else {
+      const mainView = document.getElementById('historyMainView');
+      if (mainView) mainView.style.display = 'block';
+      this.navegarParaAba('history');
+      this.renderHistoryTab();
+    }
+  }
+
   /**
    * Modal Especial de Exclusão de Conta com Confirmação Obrigatória por Digitação do E-mail
    */
@@ -605,15 +642,24 @@ class AppController {
 
     this.formView.setFormData(this.ultimoDiagnostico);
     this.resultsView.hide();
-    document.getElementById('stepperContainer').style.display = 'block';
-    document.getElementById('diagnosticForm').style.display = 'block';
-    this.formView.goToStep(1);
+
+    const results = document.getElementById('resultsContainer');
+    if (results) results.style.display = 'none';
+
     this.navegarParaAba('diagnostic');
+    const stepper = document.getElementById('stepperContainer');
+    const form = document.getElementById('diagnosticForm');
+    if (stepper) stepper.style.display = 'block';
+    if (form) form.style.display = 'block';
+    this.formView.goToStep(0);
 
     this.showToast('Modo de revisão ativo. Altere as respostas e clique em Gerar Laudo para reprocessar.', 'info');
   }
 
   async processarDiagnostico() {
+    if (this.isProcessingDiagnostic) return;
+    const btnFinish = document.getElementById('btnFinishDiagnostic');
+
     const validacao = this.formView.validateStep(4);
     if (!validacao.isValid) {
       this.exibirAvisoPendencias(
@@ -624,56 +670,71 @@ class AppController {
       return;
     }
 
-    const { escola, respostas } = this.formView.getFormData();
-    const currentUser = this.authService.obterUsuarioAtual();
+    try {
+      this.isProcessingDiagnostic = true;
+      if (btnFinish) {
+        btnFinish.disabled = true;
+        btnFinish.style.opacity = '0.7';
+      }
 
-    if (currentUser) {
-      escola.avaliador = currentUser.nome;
+      const { escola, respostas } = this.formView.getFormData();
+      const currentUser = this.authService.obterUsuarioAtual();
+
+      if (!escola.avaliador && currentUser) {
+        escola.avaliador = currentUser.nome;
+      }
+
+      // Calcula o diagnóstico ambiental determinístico
+      const resultado = this.diagnosticModel.calcularDiagnostico(respostas, escola);
+
+      let mudancasRevisao = [];
+      if (this.isEditing && this.snapshotOriginal) {
+        try {
+          const snap = JSON.parse(this.snapshotOriginal);
+          mudancasRevisao = this.diagnosticModel.detectarDiferencasRevisao(snap.respostas, respostas);
+        } catch (e) {}
+      }
+
+      const schoolKey = this.databaseService.gerarSchoolKey(escola.nome, escola.cidade, escola.estado);
+
+      const laudoCompleto = {
+        id: (this.isEditing && this.ultimoDiagnostico) ? this.ultimoDiagnostico.id : `DIAG_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+        schoolKey,
+        userId: currentUser?.uid || 'anonymous',
+        userName: currentUser?.nome || escola.avaliador,
+        userPhoto: currentUser?.fotoBase64 || '',
+        escola,
+        respostas,
+        diagnostico: resultado,
+        mudancasRevisao,
+        createdAt: (this.isEditing && this.ultimoDiagnostico) ? this.ultimoDiagnostico.createdAt : new Date().toISOString()
+      };
+
+      // Salva ou atualiza no Firestore
+      if (this.isEditing && this.ultimoDiagnostico) {
+        await this.databaseService.atualizarLaudo(laudoCompleto);
+        this.showToast('Laudo pericial reprocessado e atualizado com sucesso!', 'success');
+      } else {
+        await this.databaseService.salvarLaudo(laudoCompleto, currentUser);
+        this.showToast('Diagnóstico concluído! Laudo pericial oficial gerado com sucesso.', 'success');
+      }
+
+      this.ultimoDiagnostico = laudoCompleto;
+      this.isEditing = false;
+      this.formView.setupSchoolDatabaseSelector();
+
+      // Renderiza laudo completo sobrepondo a aba de Histórico
+      this.abrirLaudo(laudoCompleto, 'diagnostic');
+    } catch (err) {
+      console.error('[AppController] Erro ao processar diagnóstico:', err);
+      this.showToast('Erro ao gravar o laudo no Firestore. Verifique sua conexão.', 'error');
+    } finally {
+      this.isProcessingDiagnostic = false;
+      if (btnFinish) {
+        btnFinish.disabled = false;
+        btnFinish.style.opacity = '1';
+      }
     }
-
-    // Calcula o diagnóstico ambiental determinístico
-    const resultado = this.diagnosticModel.calcularDiagnostico(respostas, escola);
-
-    let mudancasRevisao = [];
-    if (this.isEditing && this.snapshotOriginal) {
-      try {
-        const snap = JSON.parse(this.snapshotOriginal);
-        mudancasRevisao = this.diagnosticModel.detectarDiferencasRevisao(snap.respostas, respostas);
-      } catch (e) {}
-    }
-
-    const schoolKey = `${escola.nome}_${escola.cidade}_${escola.estado}`.toLowerCase().replace(/\s+/g, '_');
-
-    const laudoCompleto = {
-      id: (this.isEditing && this.ultimoDiagnostico) ? this.ultimoDiagnostico.id : `DIAG_${Date.now()}`,
-      schoolKey,
-      userId: currentUser?.uid || 'anonymous',
-      userName: currentUser?.nome || escola.avaliador,
-      userPhoto: currentUser?.fotoBase64 || '',
-      escola,
-      respostas,
-      diagnostico: resultado,
-      mudancasRevisao,
-      createdAt: (this.isEditing && this.ultimoDiagnostico) ? this.ultimoDiagnostico.createdAt : new Date().toISOString()
-    };
-
-    // Salva ou atualiza no Firestore e no cache local
-    if (this.isEditing && this.ultimoDiagnostico) {
-      await this.databaseService.atualizarLaudo(laudoCompleto);
-      this.showToast('Laudo pericial reprocessado e atualizado com sucesso!', 'success');
-    } else {
-      await this.databaseService.salvarLaudo(laudoCompleto, currentUser);
-      this.showToast('Diagnóstico concluído! Laudo pericial oficial gerado com sucesso.', 'success');
-    }
-
-    this.ultimoDiagnostico = laudoCompleto;
-    this.formView.setupSchoolDatabaseSelector();
-
-    // Renderiza laudo completo
-    document.getElementById('stepperContainer').style.display = 'none';
-    document.getElementById('diagnosticForm').style.display = 'none';
-    this.resultsView.renderResults(laudoCompleto);
-    this.navegarParaAba('diagnostic');
   }
 
   /**
@@ -764,14 +825,53 @@ class AppController {
     });
   }
 
+  /**
+   * Abre o laudo pericial oficial sobrepondo a aba de Histórico (sem desviar para a aba de criar novo diagnóstico)
+   * @param {Object} item Objeto do diagnóstico
+   * @param {'history'|'ranking'|'home'|'diagnostic'} origem Contexto de onde foi aberto
+   */
+  abrirLaudo(item, origem = 'history') {
+    if (!item) return;
+    this.ultimoDiagnostico = item;
+    this.origemLaudo = origem;
+    this._abrindoLaudoAgora = true;
+
+    // Ativa a aba de Histórico na navegação
+    this.navegarParaAba('history');
+    this._abrindoLaudoAgora = false;
+
+    // Oculta a listagem de pastas do histórico e exibe o laudo pericial oficial sobreposto
+    const mainView = document.getElementById('historyMainView');
+    const results = document.getElementById('resultsContainer');
+    if (mainView) mainView.style.display = 'none';
+    if (results) results.style.display = 'block';
+
+    const backBar = document.getElementById('resultsBackBar');
+    const backText = document.getElementById('btnBackFromReportText');
+    if (backBar) {
+      backBar.style.display = 'block';
+      if (origem === 'ranking') {
+        if (backText) backText.textContent = '← Voltar ao Ranking de Escolas';
+      } else if (origem === 'home') {
+        if (backText) backText.textContent = '← Voltar à Página Inicial';
+      } else if (origem === 'diagnostic') {
+        if (backText) backText.textContent = '← Ver Todas as Pastas do Histórico';
+      } else {
+        if (backText) backText.textContent = '← Voltar às Pastas do Histórico';
+      }
+    }
+
+    // Renderiza matriz dos 16 quesitos, gráficos e parecer pericial
+    this.resultsView.renderResults(item);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   async carregarDoHistorico(id) {
     const historico = await this.databaseService.obterTodosLaudos();
     const item = historico.find(h => h.id === id);
     if (item) {
-      this.ultimoDiagnostico = item;
-      this.navegarParaAba('diagnostic');
-      this.resultsView.renderResults(item);
-      this.showToast(`Laudo de "${item.escola.nome}" aberto!`, 'success');
+      this.abrirLaudo(item, 'history');
+      this.showToast(`Laudo de "${item.escola.nome}" carregado!`, 'success');
     }
   }
 
@@ -779,10 +879,8 @@ class AppController {
     const historico = await this.databaseService.obterTodosLaudos();
     const item = historico.find(h => h.id === id);
     if (item) {
-      this.ultimoDiagnostico = item;
-      this.navegarParaAba('diagnostic');
-      this.resultsView.renderResults(item);
-      this.showToast(`Laudo de "${item.escola.nome}" aberto!`, 'success');
+      this.abrirLaudo(item, 'ranking');
+      this.showToast(`Laudo de "${item.escola.nome}" carregado!`, 'success');
     }
   }
 

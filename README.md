@@ -8,11 +8,9 @@ Plataforma Web Pericial para Avaliação da Resiliência Climática, Gestão Hí
 1. [Visão Geral e Metodologia Técnica](#-visão-geral-e-metodologia-técnica)
 2. [Novidades & Funcionalidades Principais](#-novidades--funcionalidades-principais)
 3. [Estrutura do Repositório](#-estrutura-do-repositório)
-4. [Regras de Segurança & Proteção de Dados (Hardening)](#-regras-de-segurança--proteção-de-dados-hardening)
-5. [Regras de Segurança do Banco de Dados (Firebase Firestore Rules)](#-regras-de-segurança-do-banco-de-dados-firebase-firestore-rules)
-6. [Guia de Integração com o Firebase SDK](#-guia-de-integração-com-o-firebase-sdk)
-7. [Sistema de Recuperação de Senha](#-sistema-de-recuperação-de-senha--envio-de-e-mails)
-8. [Como Executar Localmente](#-como-executar-localmente)
+4. [Arquitetura 100% Firebase Cloud (Auth & Firestore)](#-arquitetura-100-firebase-cloud-auth--firestore)
+5. [Regras de Segurança do Banco de Dados (Firestore Rules)](#-regras-de-segurança-do-banco-de-dados-firestore-rules)
+6. [Como Executar Localmente](#-como-executar-localmente)
 
 ---
 
@@ -33,39 +31,34 @@ O cálculo determinístico gera pontuações objetivas (0 a 100%), classificando
 
 ## 🚀 Novidades & Funcionalidades Principais
 
-### 1. Laudo Pericial Oficial Executivo
-- **Hero Banner Institucional:** Destaque para o nome da escola, endereço completo oficial, data de emissão, gauge de pontuação geral e badge colorido de classificação ambiental.
-- **Parecer Técnico Descritivo:** Parecer pericial contextualizado gerado automaticamente pelas respostas da auditoria.
-- **Painel de Diagnóstico em 3 Colunas Estruturadas:**
-  - 🚨 **Riscos Críticos Imediatos:** Detalhamento de vulnerabilidades graves em todos os 16 quesitos (P1 a P16).
-  - ⚠️ **Pontos de Atenção & Manutenção:** Mapeamento de oportunidades de melhoria preventiva.
-  - 🌱 **Fortalezas & Boas Práticas:** Reconhecimento das práticas consolidadas e estruturas eficientes.
-- **4 KPIs de Impacto Ecológico Estimado:** Pegada de Carbono anual per capita (kg CO₂), Potencial de Economia Hídrica (m³/mês), Mudas para Compensação Florestal e Potencial Evolutivo pós-ações.
-- **4 Gráficos Analíticos Integrados (Chart.js):**
-  1. *Radar Multidimensional dos 4 Pilares da Resiliência*;
-  2. *Desempenho por Dimensão (%)* em barras horizontais;
-  3. *Distribuição dos 16 Quesitos* por criticidade em gráfico de rosca (Doughnut);
-  4. *Projeção de Resiliência Atual vs. Pós-Ação*.
-- **Matriz Técnica Pericial:** Auditoria item a item com badges de pontuação (*Excelente: 10 pts*, *Moderado: 5 pts*, *Crítico: 0 pts*) e orientações técnicas prioritárias.
-- **Plano Estratégico de Ação ODS 13:** Cards de intervenções com tags de prioridade (*Urgente*, *Alta*, *Média*, *Educativa*) e impacto estimado.
-- **Barra de Ferramentas:** Ações para edição rápida dos dados da escola, revisão de respostas, exportação em JSON e impressão formatada para laudo em PDF.
+### 1. Autenticação Cloud Híbrida & Segura (Firebase Auth)
+- **Login com Google (OAuth 2.0)** e **E-mail/Senha**: Acesso rápido com pop-up Google ou credenciais seguras.
+- **Persistência 100% em Nuvem**: Eliminação total de armazenamento local volátil (`localStorage`), garantindo segurança, integridade e portabilidade.
+- **Gestão de Perfil & Nome Completo**: Edição direta do Nome Completo do usuário na aba *Meu Perfil*, com sincronização em tempo real no Firebase Auth e Firestore.
 
-### 2. Quadro de Líderes & Comparador Lado a Lado
-- **Ranking das Escolas:** Tabela de líderes ordenada pelo score do laudo mais recente de cada pasta escolar.
-- **Comparador Lado a Lado:** Seleção de duas unidades escolares ou avaliações temporais da mesma instituição:
-  - Hero cards comparativos com notas e avaliadores;
-  - Banner dinâmico com cálculo do delta de resiliência ($\Delta \text{ Score}$);
-  - Grade com 4 indicadores ecológicos comparativos;
-  - Radar comparativo sobreposto em tempo real;
-  - Tabela com mini barras de progresso por dimensão;
-  - Matriz diferencial dos 16 quesitos com indicação de vantagem técnica pericial.
+### 2. Turnos & Modalidades Escolares Personalizadas
+- Suporte amplo e flexível a turnos de atendimento escolar:
+  - **Somente Matutino (1 Turno)**
+  - **Somente Vespertino (1 Turno)**
+  - **Matutino e Vespertino (2 Turnos)**
+  - **Ensino em Tempo Integral**
+  - **Noturno (EJA / Técnico Subsequente)**
+  - **Três Turnos (Matutino, Vespertino e Noturno)**
+  - **Educação Profissional / Técnico Integrado**
+  - **Técnico Integrado em Meio Ambiente / Agroecologia**
+  - **Outro (Personalizado com campo aberto)**
 
-### 3. Histórico Estruturado em Pastas Escolares
-- Pastas organizadas por instituição de ensino com contagem de laudos, datas de emissão, pontuações arquivadas e botão para exclusão individual ou limpeza completa.
+### 3. Visualizador de Laudos sem Perda de Contexto
+- **Modal de Laudo Pericial Completo**: Ao clicar em "Abrir Laudo" ou "Ver Laudo" no *Histórico* ou *Ranking*, o laudo pericial é renderizado em um modal executivo dedicado, sem desviar da aba ativa e mantendo o histórico de navegação intacto.
+- **Auto-Reidratação da Matriz dos 16 Quesitos**: Renderização completa da auditoria dos 16 quesitos técnicos, notas, status pericial, 4 gráficos analíticos (Radar, Barras por Pilar, Rosca de Criticidade e Evolução) e Plano de Ação ODS 13.
 
-### 4. Gestão de Contas, Perfil e Segurança
-- Autenticação com controle de duplicação, upload de avatar com compactação em canvas, recuperação de senha com código seguro de 6 dígitos e exclusão de conta protegida por digitação obrigatória do e-mail cadastrado.
-- Busca automática de CEP com preenchimento de endereço via tecla `Enter` ou botão de busca.
+### 4. Gestão e Design Aprimorado do Histórico
+- Pastas estruturadas por escola com contagem de laudos, badges de pontuação e novos botões estilizados para exclusão segura de pastas e laudos individuais.
+- Modal de confirmação estilizado e seguro para exclusão de unidades e limpeza de histórico.
+
+### 5. Quadro de Líderes & Comparador Lado a Lado
+- **Ranking das Escolas**: Tabela de líderes ordenada pelo score do laudo mais recente de cada instituição.
+- **Comparador Lado a Lado**: Seleção de duas unidades escolares ou avaliações temporais com sobreposição de radar, cálculo de $\Delta \text{ Score}$ e matriz diferencial.
 
 ---
 
@@ -75,47 +68,54 @@ O cálculo determinístico gera pontuações objetivas (0 a 100%), classificando
 Projeto GestARClimAS/
 ├── assets/
 │   ├── favicon.svg              # Favicon vetorial oficial da marca
+│   ├── icons/                   # Pacote de ícones SVG do Design System
 │   └── logo_gestarclimas.jpg    # Identidade visual oficial
 ├── css/
 │   ├── main.css                 # Design System, variáveis CSS, tipografia, navbar e base
-│   └── dashboard.css            # Estilização das abas, laudo, gráficos, histórico, ranking e comparador
+│   └── dashboard.css            # Estilização das abas, laudo, gráficos, histórico, ranking e modais
 ├── js/
 │   ├── config/
 │   │   └── firebase-config.js   # Configuração e inicialização do Firebase SDK
 │   ├── models/
 │   │   └── DiagnosticModel.js   # Motor determinístico de cálculo de scores e matriz técnica
 │   ├── services/
-│   │   ├── AuthService.js       # Autenticação, hash SHA-256 e controle de sessão
-│   │   ├── DatabaseService.js   # Persistência híbrida (Cache local + Driver Firebase Firestore)
+│   │   ├── AuthService.js       # Autenticação Firebase (Google & E-mail), controle de sessão
+│   │   ├── DatabaseService.js   # Persistência direta no Firebase Firestore
 │   │   └── LocationService.js   # Integração com APIs geográficas oficiais (IBGE / BrasilAPI)
 │   ├── views/
-│   │   ├── AuthView.js          # Controle de Login, Cadastro, Recuperação e Perfil
+│   │   ├── AuthView.js          # Controle de Login, Cadastro e Edição de Perfil
 │   │   ├── FormView.js          # Formulário de diagnóstico multi-step e validações
 │   │   ├── HomeView.js          # Painel central da Home Page e KPIs
 │   │   ├── RankingView.js       # Quadro de Líderes e Comparador Pericial Avançado
-│   │   └── ResultsView.js       # Renderização do Laudo Pericial, gráficos Chart.js e exportações
+│   │   └── ResultsView.js       # Renderização do Laudo Pericial, gráficos Chart.js e modais
 │   ├── controllers/
-│   │   └── AppController.js     # Controlador central, navegação de abas e modais
+│   │   └── AppController.js     # Controlador central, roteamento de abas e modais
 │   └── app.js                   # Ponto de entrada da aplicação
+├── scripts/
+│   ├── reset_database.js        # Script Node.js administrativo para reset seguro do banco
+│   └── test_firebase_integration.js # Script de validação e integridade
 ├── index.html                   # Painel Principal Autenticado (Home, Diagnóstico, Ranking, Histórico, Perfil)
-├── login.html                   # Portal de Autenticação Segura (Login, Cadastro e Recuperação)
+├── login.html                   # Portal de Autenticação Segura (Google & E-mail/Senha)
+├── firebase.json                # Configuração do Firebase CLI Hosting e Firestore
 ├── firestore.rules              # Regras oficiais de segurança do Firestore
 └── README.md                    # Documentação técnica e guia da plataforma
 ```
 
 ---
 
-## 🛡️ Regras de Segurança & Proteção de Dados (Hardening)
+## 🛡️ Arquitetura 100% Firebase Cloud (Auth & Firestore)
 
-1. **Criptografia e Armazenamento Seguro**: Senhas e tokens são processados com hashing criptográfico **SHA-256** com *salt* exclusivo (`crypto.subtle.digest('SHA-256')`).
-2. **Confirmação Estrita para Exclusões**: A exclusão definitiva de conta exige digitação expressa do e-mail cadastrado. A limpeza de laudos utiliza tombstones locais para evitar re-sincronizações indesejadas.
-3. **Sanitização contra XSS**: Tratamento e normalização rigorosa de entradas textuais antes da inserção na árvore DOM ou no banco de dados.
+1. **Autenticação**: Gerenciada pelo Firebase Authentication com provedores Google e Password.
+2. **Coleções Firestore**:
+   - `users/{uid}`: Perfis de usuários com metadados e checksum de integridade.
+   - `diagnostics/{id}`: Todos os laudos periciais com matriz completa dos 16 quesitos, indicadores e plano de ação.
+3. **Segurança Criptográfica**: Checksum SHA-256 aplicado para garantir integridade e auditoria de alterações.
 
 ---
 
-## 🔒 Regras de Segurança do Banco de Dados (Firebase Firestore Rules)
+## 🔒 Regras de Segurança do Banco de Dados (Firestore Rules)
 
-O arquivo [`firestore.rules`](file:///c:/Users/20241INF0005/Downloads/Projeto%20GestARClimAS/firestore.rules) define as permissões da nuvem:
+As regras de produção protegem os dados por usuário autenticado:
 
 ```javascript
 rules_version = '2';
@@ -140,42 +140,21 @@ service cloud.firestore {
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
     }
-
-    match /password_resets/{resetId} {
-      allow read, write: if false;
-    }
   }
 }
 ```
 
 ---
 
-## 🔌 Configuração e Integração do Firebase SDK
-
-A configuração oficial do projeto **`projetogeo-1337f`** está centralizada em [`js/config/firebase-config.js`](file:///c:/Users/20241INF0005/Downloads/Projeto%20GestARClimAS/js/config/firebase-config.js):
-- **Autenticação Cloud**: Firebase Auth compatível e coleção `users`.
-- **Diagnósticos e Laudos**: Coleção `diagnostics` com persistência offline e cache sincronizado.
-- **Recuperação de Senha**: Coleção `password_resets` com hashing e expiração automática de 15 minutos.
-
----
-
-## ✉️ Sistema de Recuperação de Senha & Envio de E-mails
-
-A plataforma oferece recuperação com código numérico de 6 dígitos:
-1. **Em Desenvolvimento / Local**: O código com hash SHA-256 é registrado com expiração de 15 minutos e auditado no console administrativo.
-2. **Em Produção**: Conectável via Firebase Cloud Functions com transportador SMTP (`nodemailer`) para envio automático à caixa de entrada do usuário.
-
----
-
 ## 💻 Como Executar Localmente
 
-Como a aplicação é estruturada em padrões web nativos (HTML5, Vanilla JS e CSS3), execute diretamente com o servidor local:
+Como a aplicação é estruturada em padrões web nativos (HTML5, Vanilla JS e CSS3), execute com qualquer servidor HTTP local:
 
 ```powershell
 python -m http.server 8000
 ```
 
-Em seguida, acesse: [http://localhost:8000](http://localhost:8000)
+Em seguida, acesse no navegador: **`http://localhost:8000`**
 
 ---
 

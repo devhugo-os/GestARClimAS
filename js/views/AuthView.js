@@ -1,17 +1,16 @@
 /**
  * ============================================================================
  * GestARClimAS - AuthView.js
- * View: Autenticação Segura em login.html (Login, Cadastro Enxuto e Recuperação Criptografada com Notificação)
- * e Gestão do Perfil Oficial em index.html
+ * View: Autenticação Segura via Firebase Auth em login.html (Login e Cadastro)
+ * e Gestão do Perfil Oficial do Usuário em index.html
  * ============================================================================
  */
 
 class AuthView {
   constructor(authService) {
     this.authService = authService;
-    this.currentMode = 'login'; // 'login' | 'register' | 'forgot' | 'reset'
+    this.currentMode = 'login'; // 'login' | 'register'
     this.tempPhotoBase64 = '';
-    this.tempRecoveryEmail = '';
   }
 
   init(onAuthSuccessCallback) {
@@ -21,29 +20,44 @@ class AuthView {
   }
 
   /**
-   * Vincula os eventos da tela de autenticação (Login, Cadastro e Recuperação)
+   * Vincula os eventos da tela de autenticação (Login e Cadastro)
    */
   bindAuthEvents() {
     const tabLogin = document.getElementById('authTabLogin');
     const tabRegister = document.getElementById('authTabRegister');
-    const linkForgot = document.getElementById('linkForgotPassword');
-    const linkBackToLogin = document.getElementById('linkBackToLogin');
-    const linkBackToLoginFromReset = document.getElementById('linkBackToLoginFromReset');
 
     if (tabLogin) tabLogin.addEventListener('click', () => this.setMode('login'));
     if (tabRegister) tabRegister.addEventListener('click', () => this.setMode('register'));
-    if (linkForgot) linkForgot.addEventListener('click', (e) => {
-      e.preventDefault();
-      this.setMode('forgot');
-    });
-    if (linkBackToLogin) linkBackToLogin.addEventListener('click', (e) => {
-      e.preventDefault();
-      this.setMode('login');
-    });
-    if (linkBackToLoginFromReset) linkBackToLoginFromReset.addEventListener('click', (e) => {
-      e.preventDefault();
-      this.setMode('login');
-    });
+
+    // Botões de Autenticação com Google (Login e Cadastro)
+    const btnGoogleLogin = document.getElementById('btnGoogleLogin');
+    const btnGoogleRegister = document.getElementById('btnGoogleRegister');
+
+    const handleGoogleAuth = async (btn) => {
+      try {
+        if (btn) {
+          btn.disabled = true;
+          btn.style.opacity = '0.7';
+        }
+        const user = await this.authService.loginComGoogle();
+        if (window.gestarclimasApp) {
+          window.gestarclimasApp.showToast(`Autenticado com Google: Bem-vindo(a), ${user.nome}!`, 'success');
+        }
+        if (this.onAuthSuccess) this.onAuthSuccess(user);
+      } catch (err) {
+        if (window.gestarclimasApp) {
+          window.gestarclimasApp.showToast(err.message, 'error');
+        }
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.style.opacity = '1';
+        }
+      }
+    };
+
+    if (btnGoogleLogin) btnGoogleLogin.addEventListener('click', () => handleGoogleAuth(btnGoogleLogin));
+    if (btnGoogleRegister) btnGoogleRegister.addEventListener('click', () => handleGoogleAuth(btnGoogleRegister));
 
     // Submissão do formulário de Login
     const formLogin = document.getElementById('formAuthLogin');
@@ -52,8 +66,13 @@ class AuthView {
         e.preventDefault();
         const email = document.getElementById('loginEmail')?.value;
         const senha = document.getElementById('loginPassword')?.value;
+        const btnSubmit = formLogin.querySelector('button[type="submit"]');
 
         try {
+          if (btnSubmit) {
+            btnSubmit.disabled = true;
+            btnSubmit.textContent = 'Autenticando no Firebase...';
+          }
           const user = await this.authService.login(email, senha);
           if (window.gestarclimasApp) {
             window.gestarclimasApp.showToast(`Bem-vindo(a), ${user.nome}!`, 'success');
@@ -62,6 +81,11 @@ class AuthView {
         } catch (err) {
           if (window.gestarclimasApp) {
             window.gestarclimasApp.showToast(err.message, 'error');
+          }
+        } finally {
+          if (btnSubmit) {
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = 'Acessar Plataforma';
           }
         }
       });
@@ -76,6 +100,7 @@ class AuthView {
         const email = document.getElementById('regEmail')?.value;
         const senha = document.getElementById('regPassword')?.value;
         const senhaConf = document.getElementById('regPasswordConfirm')?.value;
+        const btnSubmit = formRegister.querySelector('button[type="submit"]');
 
         if (senha !== senhaConf) {
           if (window.gestarclimasApp) window.gestarclimasApp.showToast('As senhas digitadas não coincidem.', 'error');
@@ -83,6 +108,10 @@ class AuthView {
         }
 
         try {
+          if (btnSubmit) {
+            btnSubmit.disabled = true;
+            btnSubmit.textContent = 'Criando conta no Firebase...';
+          }
           const user = await this.authService.cadastrar({
             nome,
             email,
@@ -97,6 +126,11 @@ class AuthView {
         } catch (err) {
           if (window.gestarclimasApp) {
             window.gestarclimasApp.showToast(err.message, 'error');
+          }
+        } finally {
+          if (btnSubmit) {
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = 'Concluir Cadastro & Acessar';
           }
         }
       });
@@ -120,85 +154,10 @@ class AuthView {
         }
       });
     }
-
-    // Submissão de Solicitação de Código via E-mail
-    const formForgot = document.getElementById('formAuthForgot');
-    if (formForgot) {
-      formForgot.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('forgotEmail')?.value;
-
-        try {
-          const resp = await this.authService.solicitarCodigoRecuperacao(email);
-          this.tempRecoveryEmail = resp.email;
-
-          if (window.gestarclimasApp) {
-            window.gestarclimasApp.showToast(`Código de segurança enviado para: ${resp.email}`, 'info');
-          }
-
-          const spanEmail = document.getElementById('resetTargetEmailDisplay');
-          if (spanEmail) spanEmail.textContent = resp.email;
-
-          const previewBox = document.getElementById('resetSimulatedInbox');
-          if (previewBox && resp.codigoEnviado) {
-            previewBox.style.display = 'block';
-            previewBox.innerHTML = `
-              <div style="background: #ffffff; border: 1.5px solid var(--primary-400); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 1rem; box-shadow: var(--shadow-sm);">
-                <div style="font-size: 0.78rem; color: var(--primary-900); font-weight: 800; display: flex; align-items: center; justify-content: space-between;">
-                  <span><img src="assets/icons/mail.svg" class="icon-img" alt="" /> Mensagem de E-mail Despachada</span>
-                  <span style="background: var(--primary-100); padding: 0.15rem 0.5rem; border-radius: var(--radius-full); font-size: 0.7rem;">Agora</span>
-                </div>
-                <div style="font-size: 0.76rem; color: var(--neutral-600); margin-top: 0.35rem; line-height: 1.35;">
-                  Para: <strong>${resp.email}</strong><br/>
-                  Assunto: <em>Código de Recuperação - GestARClimAS</em>
-                </div>
-                <div style="margin-top: 0.6rem; padding: 0.5rem; background: var(--neutral-50); border: 1px dashed var(--primary-500); border-radius: var(--radius-sm); text-align: center;">
-                  <span style="font-size: 0.75rem; color: var(--neutral-500); display: block;">Seu código de validação é:</span>
-                  <span style="font-size: 1.3rem; font-weight: 900; letter-spacing: 0.25em; color: var(--primary-800);">${resp.codigoEnviado}</span>
-                </div>
-              </div>
-            `;
-          }
-
-          const inputCodigo = document.getElementById('resetCode');
-          if (inputCodigo) inputCodigo.value = '';
-
-          this.setMode('reset');
-        } catch (err) {
-          if (window.gestarclimasApp) window.gestarclimasApp.showToast(err.message, 'error');
-        }
-      });
-    }
-
-    // Submissão da Validação de Código e Nova Senha
-    const formReset = document.getElementById('formAuthReset');
-    if (formReset) {
-      formReset.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const codigo = document.getElementById('resetCode')?.value;
-        const novaSenha = document.getElementById('resetNewPassword')?.value;
-
-        try {
-          await this.authService.redefinirSenha(this.tempRecoveryEmail, codigo, novaSenha);
-          const user = await this.authService.login(this.tempRecoveryEmail, novaSenha);
-          
-          if (window.gestarclimasApp) {
-            window.gestarclimasApp.showToast('Senha alterada com sucesso! Acessando plataforma...', 'success');
-          }
-          if (this.onAuthSuccess) {
-            this.onAuthSuccess(user);
-          } else {
-            window.location.replace('index.html');
-          }
-        } catch (err) {
-          if (window.gestarclimasApp) window.gestarclimasApp.showToast(err.message, 'error');
-        }
-      });
-    }
   }
 
   /**
-   * Altera a visualização entre Login, Cadastro, Esqueci a Senha e Redefinir Senha
+   * Alterna a visualização entre Login e Cadastro
    */
   setMode(mode) {
     this.currentMode = mode;
@@ -206,31 +165,22 @@ class AuthView {
     const tabRegister = document.getElementById('authTabRegister');
     const boxLogin = document.getElementById('boxAuthLogin');
     const boxRegister = document.getElementById('boxAuthRegister');
-    const boxForgot = document.getElementById('boxAuthForgot');
-    const boxReset = document.getElementById('boxAuthReset');
     const tabsHeader = document.getElementById('authTabsHeader');
 
-    [boxLogin, boxRegister, boxForgot, boxReset].forEach(b => {
-      if (b) b.style.display = 'none';
-    });
+    if (boxLogin) boxLogin.style.display = 'none';
+    if (boxRegister) boxRegister.style.display = 'none';
 
     if (tabLogin) tabLogin.classList.remove('active');
     if (tabRegister) tabRegister.classList.remove('active');
 
+    if (tabsHeader) tabsHeader.style.display = 'flex';
+
     if (mode === 'login') {
-      if (tabsHeader) tabsHeader.style.display = 'flex';
       if (tabLogin) tabLogin.classList.add('active');
       if (boxLogin) boxLogin.style.display = 'block';
     } else if (mode === 'register') {
-      if (tabsHeader) tabsHeader.style.display = 'flex';
       if (tabRegister) tabRegister.classList.add('active');
       if (boxRegister) boxRegister.style.display = 'block';
-    } else if (mode === 'forgot') {
-      if (tabsHeader) tabsHeader.style.display = 'none';
-      if (boxForgot) boxForgot.style.display = 'block';
-    } else if (mode === 'reset') {
-      if (tabsHeader) tabsHeader.style.display = 'none';
-      if (boxReset) boxReset.style.display = 'block';
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -255,11 +205,45 @@ class AuthView {
           
           if (window.gestarclimasApp) {
             window.gestarclimasApp.atualizarHeaderUsuario();
-            window.gestarclimasApp.showToast('Foto de perfil atualizada com sucesso!', 'success');
+            window.gestarclimasApp.showToast('Foto de perfil atualizada no Firebase!', 'success');
           }
           this.renderProfileTab();
         } catch (err) {
           if (window.gestarclimasApp) window.gestarclimasApp.showToast(err.message, 'error');
+        }
+      });
+    }
+
+    // Formulário de Atualização do Nome do Perfil
+    const formProfile = document.getElementById('formProfileUpdate');
+    if (formProfile) {
+      formProfile.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const inputName = document.getElementById('profileInputName');
+        const novoNome = inputName?.value?.trim();
+        if (!novoNome) {
+          if (window.gestarclimasApp) window.gestarclimasApp.showToast('Por favor, informe seu nome completo.', 'error');
+          return;
+        }
+        const btnSave = document.getElementById('btnSaveProfileName');
+        try {
+          if (btnSave) {
+            btnSave.disabled = true;
+            btnSave.textContent = 'Salvando no Firebase...';
+          }
+          await this.authService.atualizarPerfil({ nome: novoNome });
+          if (window.gestarclimasApp) {
+            window.gestarclimasApp.atualizarHeaderUsuario();
+            window.gestarclimasApp.showToast('Nome atualizado com sucesso no Firebase!', 'success');
+          }
+          this.renderProfileTab();
+        } catch (err) {
+          if (window.gestarclimasApp) window.gestarclimasApp.showToast(err.message, 'error');
+        } finally {
+          if (btnSave) {
+            btnSave.disabled = false;
+            btnSave.innerHTML = '<img src="assets/icons/save.svg" class="icon-img" alt="" /> Salvar Nome Completo';
+          }
         }
       });
     }
@@ -277,11 +261,11 @@ class AuthView {
             btnClasse: 'btn-secondary'
           });
           if (ok) {
-            this.authService.logout();
+            await this.authService.logout();
             window.location.replace('login.html');
           }
         } else {
-          this.authService.logout();
+          await this.authService.logout();
           window.location.replace('login.html');
         }
       });
@@ -320,14 +304,14 @@ class AuthView {
     const elName = document.getElementById('profileNameDisplay');
     const elEmail = document.getElementById('profileEmailDisplay');
     const elDate = document.getElementById('profileCreatedDisplay');
-    const infoName = document.getElementById('profileReadOnlyName');
+    const inputName = document.getElementById('profileInputName');
     const infoEmail = document.getElementById('profileReadOnlyEmail');
 
     if (elPhoto) elPhoto.src = user.fotoBase64;
     if (elName) elName.textContent = user.nome;
     if (elEmail) elEmail.textContent = user.email;
-    if (infoName) infoName.textContent = user.nome;
-    if (infoEmail) infoEmail.textContent = user.email;
+    if (inputName) inputName.value = user.nome || '';
+    if (infoEmail) infoEmail.textContent = user.email || 'Não informado';
 
     if (elDate) {
       const d = user.createdAt ? new Date(user.createdAt).toLocaleDateString('pt-BR') : 'Hoje';
